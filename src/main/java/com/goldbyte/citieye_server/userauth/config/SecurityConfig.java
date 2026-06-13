@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,19 +28,16 @@ public class SecurityConfig {
      * */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
-        return httpSecurity.csrf(Customizer.withDefaults()) // enable csrf
+        return httpSecurity.csrf(csrf -> csrf.disable()) // disable csrf
+                .authorizeHttpRequests(requests -> requests.requestMatchers("/login", "/register", "/", "/content").permitAll())
                 .authorizeHttpRequests(request -> request.requestMatchers("/dashboard/**").authenticated())  // defines urls that need to be authenticated
-                .authorizeHttpRequests(requests -> requests.requestMatchers("/login", "/").permitAll())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).build();
     }
 
-    /**
-     * This Bean is responsible for informing spring that we want to use a custom login credential setup from users.
-     * */
-    @Bean
-    public UserDetailsService userDetailsService(){
-        return new InMemoryUserDetailsManager();
-    }
+  @Bean
+    public PasswordEncoder myPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+  }
 
 }
