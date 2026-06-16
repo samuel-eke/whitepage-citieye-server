@@ -1,0 +1,29 @@
+SRS CitiEye App
+Functional Requirements 
+1. Users should be able to register on the app, either mobile or web and receive their unique user code.
+2. Users should be able to login to their accounts safely either on mobile or web
+3. Users should be able to provide all relevant data, and have the data safely secured against third-parties
+4. Users should be able categorized based on their age, economic status and other state paramenters.
+5. User should be able to have access to their dashboard that is personalized based on various chosen parameters (age bracket)
+6. Users should be able to interact with the content published to their dashboard
+7. Users eligible for an assessment should be able to take the assessment easily and conveniently on the app. Once assessment is done, should be able to view the results of such assessment and what it entails for them.
+8. Users profile should be updated automatically after each age bracket has been outgrown.
+9. Field officers should be able to create an account, and login to the account on their mobile app
+10. Field officers should be able to view assigned users cohort/age bracket and all users within that particular demography
+11. Field officers should be able to report on users status across all socio-economic dimensions
+12. Super admins can create account for agency admins
+13. Agency admins can create, target, and publish socio-economic content and programmes to specific citizen cohorts, socio-economic scope (economic, social welfare, medical, educational)
+14. Super admins and agency admins should be able to view all users� information that have been registered
+15. Super admin should be able to configure programme eligibility criteria, manage field officer assignments, and export reports
+16. Super admin should be able to take action on individual users and field officers.
+17. Super admin and agency admins should be able to get a data analytics and model on users and field officers, to be able to make predictions on user behaviour.
+18. Super admins should be able to add and remove agency admins and field officers.
+19. The system automatically flags citizens who are overdue for phase-specific milestone
+
+Non-functional Requirements
+� Performance: API responses must return within 500ms under normal load; analytics dashboards within 3 seconds for up to 500,000 records
+� Availability: Core registration and record functions must maintain 99.5% uptime
+� Scalability: Architecture must support horizontal scaling for multi-state rollout and 100M+ citizen records
+� Data Integrity: Age cohort assignment must be derived from date of birth, not manually entered; duplicate registrations must be detected at point of entry
+� Usability: Field Officer mobile app must be operable on mid-range Android devices with intermittent connectivity
+

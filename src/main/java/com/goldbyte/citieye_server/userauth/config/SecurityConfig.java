@@ -3,19 +3,17 @@ package com.goldbyte.citieye_server.userauth.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity  // this informs spring security to use this configuration class for its security clearance
+@EnableMethodSecurity
 public class SecurityConfig {
 
     /**
@@ -29,15 +27,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         return httpSecurity.csrf(csrf -> csrf.disable()) // disable csrf
-                .authorizeHttpRequests(requests -> requests.requestMatchers("/login", "/register", "/", "/content").permitAll())
-                .authorizeHttpRequests(request -> request.requestMatchers("/dashboard/**").authenticated())  // defines urls that need to be authenticated
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers("/login", "/register", "/", "/content", "/api/user/register").permitAll()
+                        .requestMatchers("/api/admin/content/**").hasAnyRole("agency_admin", "super_admin")
+                        .anyRequest().authenticated()
+                )
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).build();
     }
 
-  @Bean
+    @Bean
     public PasswordEncoder myPasswordEncoder(){
         return new BCryptPasswordEncoder();
-  }
+    }
 
 }
+
