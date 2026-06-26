@@ -1,4 +1,4 @@
-package com.goldbyte.citieye_server.userauth.internal.entity;
+package com.goldbyte.citieye_server.rbac.internal;
 
 public enum UserRole {
     super_admin,

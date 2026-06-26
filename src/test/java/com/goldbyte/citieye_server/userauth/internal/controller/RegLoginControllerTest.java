@@ -1,0 +1,183 @@
+package com.goldbyte.citieye_server.userauth.internal.controller;
+
+import com.goldbyte.citieye_server.userauth.CitizenRegisteredEvent;
+import com.goldbyte.citieye_server.userauth.internal.dto.CitizenRegRequest;
+import com.goldbyte.citieye_server.userauth.internal.dto.CitizenRegResponse;
+import com.goldbyte.citieye_server.userauth.internal.model.CitizenAuthEntity;
+import com.goldbyte.citieye_server.userauth.internal.model.enums.GenderType;
+import com.goldbyte.citieye_server.userauth.internal.model.enums.NigerianState;
+import com.goldbyte.citieye_server.userauth.internal.model.enums.UserRole;
+import com.goldbyte.citieye_server.userauth.internal.repo.CitizenRegRepo;
+import jakarta.persistence.EntityManager;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+
+class RegLoginControllerTest {
+
+    @Mock
+    private CitizenRegRepo citizenRegRepo;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private EntityManager entityManager;
+
+    @InjectMocks
+    private RegLoginController regLoginController;
+
+    private Validator validator;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
+
+    @Test
+    void testRequestValidation_withValidData_hasNoViolations() {
+        CitizenRegRequest request = new CitizenRegRequest();
+        request.setFirstName("John");
+        request.setLastName("Doe");
+        request.setEmail("john.doe@example.com");
+        request.setPhoneNumber("08012345678");
+        request.setPassword("password123");
+        request.setNin("1234567890");
+        request.setDateOfBirth(LocalDate.of(2000, 1, 1));
+        request.setDesiredSupport("skill_acquisition");
+
+        Set<ConstraintViolation<CitizenRegRequest>> violations = validator.validate(request);
+        assertTrue(violations.isEmpty(), "Valid request should have no validation violations");
+    }
+
+    @Test
+    void testRequestValidation_withBlankRequiredFields_hasViolations() {
+        CitizenRegRequest request = new CitizenRegRequest();
+        // leave required fields blank
+
+        Set<ConstraintViolation<CitizenRegRequest>> violations = validator.validate(request);
+        assertFalse(violations.isEmpty(), "Request with blank fields should have validation violations");
+
+        boolean hasFirstNameViolation = violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("firstName"));
+        boolean hasLastNameViolation = violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("lastName"));
+        boolean hasEmailViolation = violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("email"));
+        boolean hasDateOfBirthViolation = violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("dateOfBirth"));
+        boolean hasDesiredSupportViolation = violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("desiredSupport"));
+
+        assertTrue(hasFirstNameViolation, "Should violate first name constraint");
+        assertTrue(hasLastNameViolation, "Should violate last name constraint");
+        assertTrue(hasEmailViolation, "Should violate email constraint");
+        assertTrue(hasDateOfBirthViolation, "Should violate dateOfBirth constraint");
+        assertTrue(hasDesiredSupportViolation, "Should violate desiredSupport constraint");
+    }
+
+    @Test
+    void testRequestValidation_withInvalidEmailAndNin_hasViolations() {
+        CitizenRegRequest request = new CitizenRegRequest();
+        request.setFirstName("John");
+        request.setLastName("Doe");
+        request.setEmail("invalid-email");
+        request.setPhoneNumber("08012345678");
+        request.setPassword("password123");
+        request.setNin("123"); // should be exactly 10 characters
+        request.setDateOfBirth(LocalDate.of(2000, 1, 1));
+        request.setDesiredSupport("skill_acquisition");
+
+        Set<ConstraintViolation<CitizenRegRequest>> violations = validator.validate(request);
+        assertFalse(violations.isEmpty());
+
+        boolean hasEmailViolation = violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("email") && v.getMessage().contains("Invalid email format"));
+        boolean hasNinViolation = violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("nin") && v.getMessage().contains("NIN must be exactly 10 characters"));
+
+        assertTrue(hasEmailViolation, "Should detect invalid email format");
+        assertTrue(hasNinViolation, "Should detect invalid NIN length");
+    }
+
+    @Test
+    void testRegisterCitizen_success() {
+        CitizenRegRequest request = new CitizenRegRequest();
+        request.setFirstName("John");
+        request.setLastName("Doe");
+        request.setEmail("john.doe@example.com");
+        request.setPhoneNumber("08012345678");
+        request.setPassword("password123");
+        request.setNin("1234567890");
+        request.setDateOfBirth(LocalDate.of(1995, 5, 10));
+        request.setDesiredSupport("skill_acquisition");
+        request.setGender("male");
+        request.setStateOfResidence("Lagos");
+        request.setStateOfOrigin("Lagos");
+
+        CitizenAuthEntity savedModel = new CitizenAuthEntity();
+        savedModel.setId(1L);
+        savedModel.setFirstName("John");
+        savedModel.setLastName("Doe");
+        savedModel.setEmail("john.doe@example.com");
+        savedModel.setPhoneNumber("08012345678");
+        savedModel.setPassword("hashed_password");
+        savedModel.setNin("1234567890");
+        savedModel.setCitizenCode("CIT123");
+        savedModel.setDateOfBirth(LocalDate.of(1995, 5, 10));
+        savedModel.setGender(GenderType.male);
+        savedModel.setStateOfResidence(NigerianState.Lagos);
+        savedModel.setStateOfOrigin(NigerianState.Lagos);
+        savedModel.setRole(UserRole.citizen);
+        savedModel.setCreatedAt(OffsetDateTime.now());
+
+        Mockito.when(passwordEncoder.encode("password123")).thenReturn("hashed_password");
+        Mockito.when(citizenRegRepo.saveAndFlush(any(CitizenAuthEntity.class))).thenReturn(savedModel);
+
+        // Populate mutable event cohort name during publication
+        Mockito.doAnswer(invocation -> {
+            CitizenRegisteredEvent event = invocation.getArgument(0);
+            event.setCohortName("Workforce Integration");
+            return null;
+        }).when(eventPublisher).publishEvent(any(CitizenRegisteredEvent.class));
+
+        ResponseEntity<CitizenRegResponse> response = regLoginController.reg(request);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Citizen created successfully", response.getBody().getMessage());
+        assertEquals(1L, response.getBody().getId());
+        assertEquals("john.doe@example.com", response.getBody().getEmail());
+        assertEquals("CIT123", response.getBody().getCitizenCode());
+        assertEquals("Workforce Integration", response.getBody().getCohortPlacement());
+        assertEquals(31, response.getBody().getAge());
+
+        Mockito.verify(passwordEncoder).encode("password123");
+        Mockito.verify(citizenRegRepo).saveAndFlush(any(CitizenAuthEntity.class));
+        Mockito.verify(entityManager).refresh(savedModel);
+        Mockito.verify(eventPublisher).publishEvent(any(CitizenRegisteredEvent.class));
+    }
+}
