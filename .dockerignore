@@ -1,0 +1,41 @@
+# ===========================================================================
+# .dockerignore — Exclude files from Docker build context
+# ===========================================================================
+# Without this file, docker build sends the entire project directory
+# (including .git, target, IDE configs) to the Docker daemon, which
+# significantly slows down builds and bloats layers unnecessarily.
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.idea
+.vscode
+*.iml
+*.iws
+*.ipr
+
+# Maven build output (we rebuild inside Docker)
+target/
+
+# Maven wrapper (we use the Maven image directly)
+.mvn
+
+# Docker files (no need to include themselves)
+Dockerfile
+docker-compose.yaml
+docker-compose*.yaml
+.dockerignore
+
+# Documentation and agent configs
+docs/
+AGENTS.md
+HELP.md
+README.md
+*.md
+
+# Environment and secrets (should never enter the image)
+.env
+*.env
