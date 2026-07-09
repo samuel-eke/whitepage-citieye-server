@@ -20,10 +20,6 @@ services:
     # Container name for easier reference
     container_name: citieye-app
 
-    # Port mapping: host_port:container_port
-    # Access the app at http://localhost:8080
-    ports:
-      - "8080:8080"
 
     # Environment variables passed to the Spring Boot application
     # These override values in the packaged application.properties
@@ -128,6 +124,41 @@ services:
       retries: 5
 
     # Networks
+    networks:
+      - backend
+
+  # ========================================================================
+  # Nginx Gateway (Reverse Proxy)
+  # ========================================================================
+  gateway:
+    image: nginx:alpine
+    container_name: citieye-gateway
+    ports:
+      - "80:80"        # Expose standard HTTP port to host
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - backend
+
+  # ========================================================================
+  # Ngrok Tunnel
+  # ========================================================================
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: citieye-ngrok
+    restart: unless-stopped
+    command:
+      - "http"
+      - "gateway:80"
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    depends_on:
+      gateway:
+        condition: service_started
     networks:
       - backend
 

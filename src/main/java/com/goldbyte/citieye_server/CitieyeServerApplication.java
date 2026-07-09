@@ -10,8 +10,8 @@ public class CitieyeServerApplication {
         SpringApplication.run(CitieyeServerApplication.class, args);
     }
 /**
- * todo: implement flyway migration script for the database. including all the functions and triggers written
- * todo: use docker, contanirize and deploy
+ * todo: implement registration for miniors without nin
+ *
  * todo: implement jwt and login with UI
  * */
 }

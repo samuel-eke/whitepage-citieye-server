@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class CitiEyeRegAuthProvider implements AuthenticationProvider {
@@ -28,17 +29,19 @@ public class CitiEyeRegAuthProvider implements AuthenticationProvider {
 
     @Override
     public @Nullable Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String citizenusername = authentication.getName();
+        String identifier = authentication.getName();
         String citizenPassword = authentication.getCredentials().toString();
 
-        List<CitizenAuthEntity> citizen = citizenRegRepo.findByEmail(citizenusername);
+        // Resolve user by identifier type (email, NIN, phone, or citizen code)
+        Optional<CitizenAuthEntity> citizenOpt = resolveUser(identifier);
 
-        if (citizen.size() > 0) {
-            if (passwordEncoder.matches(citizenPassword, citizen.getFirst().getPassword())) {
+        if (citizenOpt.isPresent()) {
+            CitizenAuthEntity citizen = citizenOpt.get();
+            if (passwordEncoder.matches(citizenPassword, citizen.getPassword())) {
                 List<GrantedAuthority> authorities = new ArrayList<>();
                 // Prepend ROLE_ to match Spring Security's hasRole expectation
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + citizen.getFirst().getRole().name()));
-                return new UsernamePasswordAuthenticationToken(citizenusername, citizenPassword, authorities);
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + citizen.getRole().name()));
+                return new UsernamePasswordAuthenticationToken(identifier, citizenPassword, authorities);
 
             } else {
                 throw new BadCredentialsException("Invalid password");
@@ -48,8 +51,39 @@ public class CitiEyeRegAuthProvider implements AuthenticationProvider {
         }
     }
 
+    /**
+     * Resolves a user by detecting the identifier type and querying accordingly.
+     * - Contains '@' → email
+     * - Exactly 11 digits → NIN (fallback to phone)
+     * - Starts with '0' or '+' → phone number
+     * - Anything else → citizen code
+     */
+    private Optional<CitizenAuthEntity> resolveUser(String identifier) {
+        if (identifier.contains("@")) {
+            return citizenRegRepo.findFirstByEmail(identifier);
+        }
+
+        if (identifier.matches("\\d{11}")) {
+            Optional<CitizenAuthEntity> byNin = citizenRegRepo.findFirstByNin(identifier);
+            if (byNin.isPresent()) {
+                return byNin;
+            }
+            return citizenRegRepo.findFirstByPhoneNumber(identifier);
+        }
+
+        if (identifier.startsWith("0") || identifier.startsWith("+")) {
+            Optional<CitizenAuthEntity> byPhone = citizenRegRepo.findFirstByPhoneNumber(identifier);
+            if (byPhone.isPresent()) {
+                return byPhone;
+            }
+        }
+
+        return citizenRegRepo.findFirstByCitizenCode(identifier);
+    }
+
     @Override
     public boolean supports(Class<?> authentication) {
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }
 }
+

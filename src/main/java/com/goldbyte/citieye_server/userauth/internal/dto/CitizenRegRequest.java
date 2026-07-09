@@ -37,7 +37,7 @@ public class CitizenRegRequest {
     private String password;
 
     @NotBlank(message = "NIN is required")
-    @Size(min = 10, max = 10, message = "NIN must be exactly 10 characters")
+    @Size(min = 11, max = 11, message = "NIN must be exactly 11 characters")
     private String nin;
 
     @Size(max = 7, message = "Gender cannot exceed 7 characters")

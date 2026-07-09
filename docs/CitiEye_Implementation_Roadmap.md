@@ -9,13 +9,13 @@ This application is designed as a **Modular Monolith** using the **Spring Moduli
 - **Verification**: Modulith verification will be enforced via unit test executions using `ApplicationModules.of(CitieyeServerApplication.class).verify();`.
 - **Database Schema Encapsulation**: Each Modulith module must map to its own dedicated PostgreSQL schema:
   - `userauth` module -> `auth` schema.
-  - `citizen_content_cms` module -> `citizencontent` schema.
-  - `admin_content_cms` module -> `admins` schema.
+  - `content_cms` module -> `content_cms` schema (unified Content CMS handled by admin, consumed by citizens).
   - `cohort_placement` and `fieldofficer` modules -> `officers` schema.
   - `citizen_profile` module -> `citizen` schema.
   - `child_assessment` module -> `assessments` schema.
-  - `audit` module -> `audit` or `admins` schema.
-  - **Minimal Schema Manipulation**: Maintain the database schemas already designed. We will not create any schemas or tables unless they are absolutely necessary for the application requirements.
+  - `audit` module -> `audit` schema.
+  - **Dynamic Clean Database Strategy**: The database is starting completely clean (wiped). Schemas and tables will be created dynamically at runtime/tests based on what is implemented in the active phase, so only what is needed is built.
+
 
 
 ---
@@ -62,7 +62,11 @@ We will update `auth.users` to support:
   - *Request*: `LoginRequest` (username/email/phone, password).
   - *Response*: `{ token: "jwt-string", role: "citizen", code: "..." }`
 
+#### Build Configuration Changes
+- Modify `pom.xml` to set the `lombok` dependency scope from `annotationProcessor` to `provided` so that IDE and compiler Lombok processing works properly.
+
 ---
+
 
 ### Phase 2: Citizen Profiles & Cohort Engine
 #### Objective
@@ -103,12 +107,13 @@ Enable Agency Admins to publish targeted communications and programmes. Give cit
 - **Interaction Tracker**: Records user interactions (views, applications, status).
 
 #### Database Changes
-- Create `citizencontent.interactions`:
+- Create `content_cms.interactions`:
   - `id`: `UUID PRIMARY KEY`
   - `user_id`: `UUID FOREIGN KEY`
-  - `item_id`: `UUID FOREIGN KEY -> citizencontent.items(id)`
+  - `item_id`: `UUID FOREIGN KEY -> content_cms.items(id)`
   - `interaction_type`: `VARCHAR(50)` (view, apply, dismissed)
   - `interacted_at`: `TIMESTAMP`
+
 
 #### Core API Contracts
 - `GET /api/citizen/dashboard`

@@ -49,7 +49,7 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 CREATE OR REPLACE FUNCTION auth.generate_random_suffix(suffix_length INT, numeric_only BOOLEAN DEFAULT FALSE)
 RETURNS TEXT AS $$
 DECLARE
-    allowed_chars TEXT := 'abcdefghijklmnopqrstuvwxyz0123456789';
+    allowed_chars TEXT := 'abcdef0123456789';
     result TEXT := '';
     i INT;
 BEGIN
@@ -84,8 +84,8 @@ CREATE TABLE auth.users_auth (
     state_of_origin auth.nigerian_state NOT NULL,
     gender auth.gender_type NOT NULL,
 
-    -- Enforces exactly 10 digits as requested
-    nin VARCHAR(10) UNIQUE NOT NULL CHECK (nin ~ '^[0-9]{10}$'),
+    -- Enforces exactly 11 digits as requested
+    nin VARCHAR(10) UNIQUE NOT NULL CHECK (nin ~ '^[0-9]{11}$'),
 
     address TEXT NOT NULL,
     role auth.user_role NOT NULL,

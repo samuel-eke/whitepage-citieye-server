@@ -1,6 +1,8 @@
 package com.goldbyte.citieye_server.userauth.internal.controller;
 
 import com.goldbyte.citieye_server.userauth.CitizenRegisteredEvent;
+import com.goldbyte.citieye_server.userauth.internal.dto.CitizeLoginRequest;
+import com.goldbyte.citieye_server.userauth.internal.dto.CitizenLoginResponse;
 import com.goldbyte.citieye_server.userauth.internal.dto.CitizenRegRequest;
 import com.goldbyte.citieye_server.userauth.internal.dto.CitizenRegResponse;
 import com.goldbyte.citieye_server.userauth.internal.model.CitizenAuthEntity;
@@ -8,6 +10,7 @@ import com.goldbyte.citieye_server.userauth.internal.model.enums.GenderType;
 import com.goldbyte.citieye_server.userauth.internal.model.enums.NigerianState;
 import com.goldbyte.citieye_server.userauth.internal.model.enums.UserRole;
 import com.goldbyte.citieye_server.userauth.internal.repo.CitizenRegRepo;
+import com.goldbyte.citieye_server.userauth.internal.service.CitizenLoginService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.Period;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -42,6 +47,9 @@ public class RegLoginController {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private CitizenLoginService citizenLoginService;
+
     @PostMapping("/register/citizen")
     @Transactional
     public ResponseEntity<CitizenRegResponse> reg(@Valid @RequestBody CitizenRegRequest request) {
@@ -55,13 +63,16 @@ public class RegLoginController {
         citizenAuthEntity.setAddress(request.getAddress());
 
         String citizenHashPassword = passwordEncoder.encode(request.getPassword());
+//         String citizenHashNin = passwordEncoder.encode(request.getNin());
         citizenAuthEntity.setPassword(citizenHashPassword);
+//        citizenAuthEntity.setNin(citizenHashNin);
         citizenAuthEntity.setNin(request.getNin());
         citizenAuthEntity.setCreatedAt(OffsetDateTime.now());
 
         // Map stateOfResidence (String to Enum)
         if (request.getStateOfResidence() != null) {
-            NigerianState residenceState = NigerianState.valueOf(request.getStateOfResidence().trim().replace(' ', '_'));
+            NigerianState residenceState = NigerianState
+                    .valueOf(request.getStateOfResidence().trim().replace(' ', '_'));
             citizenAuthEntity.setStateOfResidence(residenceState);
         }
 
@@ -71,7 +82,8 @@ public class RegLoginController {
             citizenAuthEntity.setStateOfOrigin(originState);
         } else if (request.getStateOfResidence() != null) {
             // Fallback to state of residence if state of origin is not provided
-            NigerianState residenceState = NigerianState.valueOf(request.getStateOfResidence().trim().replace(' ', '_'));
+            NigerianState residenceState = NigerianState
+                    .valueOf(request.getStateOfResidence().trim().replace(' ', '_'));
             citizenAuthEntity.setStateOfOrigin(residenceState);
         }
 
@@ -89,13 +101,13 @@ public class RegLoginController {
         // Refresh the entity to fetch the trigger-generated citizenCode
         entityManager.refresh(newlyCreatedCitizen);
 
-        // Publish application event to trigger profile creation and cohort placement in the same transaction
+        // Publish application event to trigger profile creation and cohort placement in
+        // the same transaction
         CitizenRegisteredEvent registrationEvent = new CitizenRegisteredEvent(
                 newlyCreatedCitizen.getCitizenCode(),
                 request.getDateOfBirth(),
                 request.getDesiredSupport(),
-                newlyCreatedCitizen.getGender().name()
-        );
+                newlyCreatedCitizen.getGender().name());
         eventPublisher.publishEvent(registrationEvent);
 
         int age = Period.between(newlyCreatedCitizen.getDateOfBirth(), LocalDate.now()).getYears();
@@ -122,4 +134,25 @@ public class RegLoginController {
                 .status(HttpStatus.CREATED)
                 .body(responseBody);
     }
+
+    /**
+     * Authenticates a citizen using a flexible identifier (email, NIN, phone number, or citizen code)
+     * and returns a comprehensive response containing auth data, profile information,
+     * cohort placement details.
+     *
+     * @param request the login request containing the identifier and password
+     * @return ResponseEntity with full citizen profile data
+     */
+    @PostMapping("/login")
+    public ResponseEntity<?> citizenLogin(@Valid @RequestBody CitizeLoginRequest request) {
+        try {
+            CitizenLoginResponse response = citizenLoginService.login(request);
+            return ResponseEntity.ok(response);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
 }
+

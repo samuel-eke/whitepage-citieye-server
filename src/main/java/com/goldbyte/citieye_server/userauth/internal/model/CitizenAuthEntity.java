@@ -57,9 +57,9 @@ public class CitizenAuthEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Size(max = 10)
+    @Size(max = 11)
     @NotNull
-    @Column(name = "nin", nullable = false, length = 10)
+    @Column(name = "nin", nullable = false, length = 11)
     private String nin;
     @Size(max = 30)
     @Column(name = "citizen_code", length = 30)

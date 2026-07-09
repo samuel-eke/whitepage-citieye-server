@@ -1,6 +1,8 @@
 package com.goldbyte.citieye_server.userauth.internal.controller;
 
 import com.goldbyte.citieye_server.userauth.CitizenRegisteredEvent;
+import com.goldbyte.citieye_server.userauth.internal.dto.CitizeLoginRequest;
+import com.goldbyte.citieye_server.userauth.internal.dto.CitizenLoginResponse;
 import com.goldbyte.citieye_server.userauth.internal.dto.CitizenRegRequest;
 import com.goldbyte.citieye_server.userauth.internal.dto.CitizenRegResponse;
 import com.goldbyte.citieye_server.userauth.internal.model.CitizenAuthEntity;
@@ -8,6 +10,7 @@ import com.goldbyte.citieye_server.userauth.internal.model.enums.GenderType;
 import com.goldbyte.citieye_server.userauth.internal.model.enums.NigerianState;
 import com.goldbyte.citieye_server.userauth.internal.model.enums.UserRole;
 import com.goldbyte.citieye_server.userauth.internal.repo.CitizenRegRepo;
+import com.goldbyte.citieye_server.userauth.internal.service.CitizenLoginService;
 import jakarta.persistence.EntityManager;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -22,6 +25,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -45,6 +49,9 @@ class RegLoginControllerTest {
     @Mock
     private EntityManager entityManager;
 
+    @Mock
+    private CitizenLoginService citizenLoginService;
+
     @InjectMocks
     private RegLoginController regLoginController;
 
@@ -65,7 +72,7 @@ class RegLoginControllerTest {
         request.setEmail("john.doe@example.com");
         request.setPhoneNumber("08012345678");
         request.setPassword("password123");
-        request.setNin("1234567890");
+        request.setNin("12345678901");
         request.setDateOfBirth(LocalDate.of(2000, 1, 1));
         request.setDesiredSupport("skill_acquisition");
 
@@ -107,7 +114,7 @@ class RegLoginControllerTest {
         request.setEmail("invalid-email");
         request.setPhoneNumber("08012345678");
         request.setPassword("password123");
-        request.setNin("123"); // should be exactly 10 characters
+        request.setNin("123"); // should be exactly 11 characters
         request.setDateOfBirth(LocalDate.of(2000, 1, 1));
         request.setDesiredSupport("skill_acquisition");
 
@@ -117,7 +124,7 @@ class RegLoginControllerTest {
         boolean hasEmailViolation = violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("email") && v.getMessage().contains("Invalid email format"));
         boolean hasNinViolation = violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("nin") && v.getMessage().contains("NIN must be exactly 10 characters"));
+                .anyMatch(v -> v.getPropertyPath().toString().equals("nin") && v.getMessage().contains("NIN must be exactly 11 characters"));
 
         assertTrue(hasEmailViolation, "Should detect invalid email format");
         assertTrue(hasNinViolation, "Should detect invalid NIN length");
@@ -131,7 +138,7 @@ class RegLoginControllerTest {
         request.setEmail("john.doe@example.com");
         request.setPhoneNumber("08012345678");
         request.setPassword("password123");
-        request.setNin("1234567890");
+        request.setNin("12345678901");
         request.setDateOfBirth(LocalDate.of(1995, 5, 10));
         request.setDesiredSupport("skill_acquisition");
         request.setGender("male");
@@ -145,7 +152,7 @@ class RegLoginControllerTest {
         savedModel.setEmail("john.doe@example.com");
         savedModel.setPhoneNumber("08012345678");
         savedModel.setPassword("hashed_password");
-        savedModel.setNin("1234567890");
+        savedModel.setNin("12345678901");
         savedModel.setCitizenCode("CIT123");
         savedModel.setDateOfBirth(LocalDate.of(1995, 5, 10));
         savedModel.setGender(GenderType.male);
@@ -179,5 +186,48 @@ class RegLoginControllerTest {
         Mockito.verify(citizenRegRepo).saveAndFlush(any(CitizenAuthEntity.class));
         Mockito.verify(entityManager).refresh(savedModel);
         Mockito.verify(eventPublisher).publishEvent(any(CitizenRegisteredEvent.class));
+    }
+
+    @Test
+    void testLogin_success() {
+        CitizeLoginRequest request = new CitizeLoginRequest();
+        request.setIdentifier("john.doe@example.com");
+        request.setPassword("password123");
+
+        CitizenLoginResponse expectedResponse = CitizenLoginResponse.builder()
+                .id(1L)
+                .email("john.doe@example.com")
+                .role("citizen")
+                .message("Login successful")
+                .build();
+
+        Mockito.when(citizenLoginService.login(any(CitizeLoginRequest.class))).thenReturn(expectedResponse);
+
+        ResponseEntity<?> response = regLoginController.citizenLogin(request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody() instanceof CitizenLoginResponse);
+        CitizenLoginResponse body = (CitizenLoginResponse) response.getBody();
+        assertEquals("john.doe@example.com", body.getEmail());
+        assertEquals("Login successful", body.getMessage());
+    }
+
+    @Test
+    void testLogin_failure() {
+        CitizeLoginRequest request = new CitizeLoginRequest();
+        request.setIdentifier("john.doe@example.com");
+        request.setPassword("wrongpassword");
+
+        Mockito.when(citizenLoginService.login(any(CitizeLoginRequest.class)))
+                .thenThrow(new BadCredentialsException("Invalid password"));
+
+        ResponseEntity<?> response = regLoginController.citizenLogin(request);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody() instanceof java.util.Map);
+        java.util.Map<?, ?> body = (java.util.Map<?, ?>) response.getBody();
+        assertEquals("Invalid password", body.get("message"));
     }
 }
