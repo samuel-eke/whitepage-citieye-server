@@ -1,7 +1,8 @@
 package com.goldbyte.citieye_server.userauth.internal.controller;
 
 import com.goldbyte.citieye_server.userauth.CitizenRegisteredEvent;
-import com.goldbyte.citieye_server.userauth.internal.dto.CitizeLoginRequest;
+import com.goldbyte.citieye_server.userauth.FetchUserAuthoritiesEvent;
+import com.goldbyte.citieye_server.userauth.internal.dto.CitizenLoginRequest;
 import com.goldbyte.citieye_server.userauth.internal.dto.CitizenLoginResponse;
 import com.goldbyte.citieye_server.userauth.internal.dto.CitizenRegRequest;
 import com.goldbyte.citieye_server.userauth.internal.dto.CitizenRegResponse;
@@ -11,6 +12,7 @@ import com.goldbyte.citieye_server.userauth.internal.model.enums.NigerianState;
 import com.goldbyte.citieye_server.userauth.internal.model.enums.UserRole;
 import com.goldbyte.citieye_server.userauth.internal.repo.CitizenRegRepo;
 import com.goldbyte.citieye_server.userauth.internal.service.CitizenLoginService;
+import com.goldbyte.citieye_server.userauth.internal.service.JwtTokenService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
@@ -49,6 +51,9 @@ public class RegLoginController {
 
     @Autowired
     private CitizenLoginService citizenLoginService;
+
+    @Autowired
+    private JwtTokenService jwtTokenService;
 
     @PostMapping("/register/citizen")
     @Transactional
@@ -110,6 +115,19 @@ public class RegLoginController {
                 newlyCreatedCitizen.getGender().name());
         eventPublisher.publishEvent(registrationEvent);
 
+        // Fetch authorities from RBAC module to populate in the JWT token
+        FetchUserAuthoritiesEvent authorityEvent = new FetchUserAuthoritiesEvent(newlyCreatedCitizen.getRole().name(), newlyCreatedCitizen.getCitizenCode());
+        eventPublisher.publishEvent(authorityEvent);
+
+        java.util.List<String> tokenAuthorities = new java.util.ArrayList<>();
+        if (newlyCreatedCitizen.getRole() != null) {
+            tokenAuthorities.add(newlyCreatedCitizen.getRole().name());
+        }
+        if (authorityEvent.getAuthorities() != null) {
+            tokenAuthorities.addAll(authorityEvent.getAuthorities());
+        }
+        String token = jwtTokenService.generateToken(newlyCreatedCitizen.getCitizenCode(), tokenAuthorities);
+
         int age = Period.between(newlyCreatedCitizen.getDateOfBirth(), LocalDate.now()).getYears();
 
         CitizenRegResponse responseBody = CitizenRegResponse.builder()
@@ -127,6 +145,7 @@ public class RegLoginController {
                 .userRole(newlyCreatedCitizen.getRole().name())
                 .cohortPlacement(registrationEvent.getCohortName())
                 .age(age)
+                .data(token)
                 .message("Citizen created successfully")
                 .build();
 
@@ -144,7 +163,7 @@ public class RegLoginController {
      * @return ResponseEntity with full citizen profile data
      */
     @PostMapping("/login")
-    public ResponseEntity<?> citizenLogin(@Valid @RequestBody CitizeLoginRequest request) {
+    public ResponseEntity<?> citizenLogin(@Valid @RequestBody CitizenLoginRequest request) {
         try {
             CitizenLoginResponse response = citizenLoginService.login(request);
             return ResponseEntity.ok(response);

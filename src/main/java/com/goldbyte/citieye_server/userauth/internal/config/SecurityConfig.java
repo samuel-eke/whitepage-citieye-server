@@ -1,6 +1,8 @@
-package com.goldbyte.citieye_server.userauth.config;
+package com.goldbyte.citieye_server.userauth.internal.config;
 
-import com.goldbyte.citieye_server.userauth.filter.CsrfCookieFilter;
+import com.goldbyte.citieye_server.userauth.internal.filter.CsrfCookieFilter;
+import com.goldbyte.citieye_server.userauth.internal.filter.JWTTokenGenertorFilter;
+import com.goldbyte.citieye_server.userauth.internal.filter.JWTValidationFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +16,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -21,9 +26,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.goldbyte.citieye_server.userauth.internal.service.JwtTokenService;
+import org.springframework.beans.factory.annotation.Autowired;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Autowired
+    private JwtTokenService jwtTokenService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -39,6 +50,7 @@ public class SecurityConfig {
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
+                        configuration.setExposedHeaders(List.of("Authorization"));
                         configuration.setMaxAge(86400L);
                         return configuration;
                     }
@@ -51,6 +63,8 @@ public class SecurityConfig {
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(csrfHandler)) // Enable CSRF protection with cookie-based token repository
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class) // the csrf filter will run after authentication is successful
+                .addFilterAfter(new JWTTokenGenertorFilter(jwtTokenService), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JWTValidationFilter(jwtTokenService), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
                                 "/",
@@ -64,6 +78,18 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable()) // Disable HTTP Basic auth
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return httpSecurity.build();
+    }
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.fromHierarchy("super_admin > agency_admin\n" +
+                                               "agency_admin > field_officer\n" +
+                                               "field_officer > citizen");
+    }
+
+    @Bean
+    public GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
     }
 
     @Bean

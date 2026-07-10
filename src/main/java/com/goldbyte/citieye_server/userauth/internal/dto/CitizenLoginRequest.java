@@ -10,7 +10,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class CitizeLoginRequest {
+public class CitizenLoginRequest {
 
     @NotBlank(message = "Identifier is required (email, NIN, phone number, or citizen code)")
     private String identifier;

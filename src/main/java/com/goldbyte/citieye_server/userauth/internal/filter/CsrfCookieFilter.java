@@ -1,4 +1,4 @@
-package com.goldbyte.citieye_server.userauth.filter;
+package com.goldbyte.citieye_server.userauth.internal.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -1,9 +1,11 @@
-package com.goldbyte.citieye_server.userauth.config;
+package com.goldbyte.citieye_server.userauth.internal.config;
 
+import com.goldbyte.citieye_server.userauth.FetchUserAuthoritiesEvent;
 import com.goldbyte.citieye_server.userauth.internal.model.CitizenAuthEntity;
 import com.goldbyte.citieye_server.userauth.internal.repo.CitizenRegRepo;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +29,9 @@ public class CitiEyeRegAuthProvider implements AuthenticationProvider {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     @Override
     public @Nullable Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String identifier = authentication.getName();
@@ -39,8 +44,18 @@ public class CitiEyeRegAuthProvider implements AuthenticationProvider {
             CitizenAuthEntity citizen = citizenOpt.get();
             if (passwordEncoder.matches(citizenPassword, citizen.getPassword())) {
                 List<GrantedAuthority> authorities = new ArrayList<>();
-                // Prepend ROLE_ to match Spring Security's hasRole expectation
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + citizen.getRole().name()));
+                // Add role directly as GrantedAuthority (relying on custom GrantedAuthorityDefaults to omit prefix)
+                authorities.add(new SimpleGrantedAuthority(citizen.getRole().name()));
+                
+                // Publish event to query granular permissions from the RBAC module
+                FetchUserAuthoritiesEvent event = new FetchUserAuthoritiesEvent(citizen.getRole().name(), citizen.getCitizenCode());
+                eventPublisher.publishEvent(event);
+                
+                // Add permissions as authorities
+                for (String permission : event.getAuthorities()) {
+                    authorities.add(new SimpleGrantedAuthority(permission));
+                }
+
                 return new UsernamePasswordAuthenticationToken(identifier, citizenPassword, authorities);
 
             } else {
@@ -50,6 +65,7 @@ public class CitiEyeRegAuthProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Such user doesn't exist");
         }
     }
+
 
     /**
      * Resolves a user by detecting the identifier type and querying accordingly.

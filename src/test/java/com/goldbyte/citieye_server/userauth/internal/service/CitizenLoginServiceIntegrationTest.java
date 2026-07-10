@@ -1,7 +1,7 @@
 package com.goldbyte.citieye_server.userauth.internal.service;
 
 import com.goldbyte.citieye_server.userauth.CitizenRegisteredEvent;
-import com.goldbyte.citieye_server.userauth.internal.dto.CitizeLoginRequest;
+import com.goldbyte.citieye_server.userauth.internal.dto.CitizenLoginRequest;
 import com.goldbyte.citieye_server.userauth.internal.dto.CitizenLoginResponse;
 import com.goldbyte.citieye_server.userauth.internal.model.CitizenAuthEntity;
 import com.goldbyte.citieye_server.userauth.internal.model.enums.GenderType;
@@ -99,7 +99,7 @@ public class CitizenLoginServiceIntegrationTest {
 
     @Test
     void testLoginWithEmail_success() {
-        CitizeLoginRequest request = new CitizeLoginRequest();
+        CitizenLoginRequest request = new CitizenLoginRequest();
         request.setIdentifier("jane.doe@example.com");
         request.setPassword("securePass123");
 
@@ -117,11 +117,17 @@ public class CitizenLoginServiceIntegrationTest {
         
         // Assert cohort placement details fetched
         assertNotNull(response.getCohortName());
+
+        // Assert permissions fetched from RBAC module
+        assertNotNull(response.getPermissions());
+        assertTrue(response.getPermissions().contains("READ_PROFILE"));
+        assertTrue(response.getPermissions().contains("TAKE_ASSESSMENT"));
+        assertTrue(response.getPermissions().contains("INTERACT_CMS"));
     }
 
     @Test
     void testLoginWithPhoneNumber_success() {
-        CitizeLoginRequest request = new CitizeLoginRequest();
+        CitizenLoginRequest request = new CitizenLoginRequest();
         request.setIdentifier("09012345678");
         request.setPassword("securePass123");
 
@@ -134,7 +140,7 @@ public class CitizenLoginServiceIntegrationTest {
 
     @Test
     void testLoginWithNin_success() {
-        CitizeLoginRequest request = new CitizeLoginRequest();
+        CitizenLoginRequest request = new CitizenLoginRequest();
         request.setIdentifier("98765432109");
         request.setPassword("securePass123");
 
@@ -147,7 +153,7 @@ public class CitizenLoginServiceIntegrationTest {
 
     @Test
     void testLoginWithCitizenCode_success() {
-        CitizeLoginRequest request = new CitizeLoginRequest();
+        CitizenLoginRequest request = new CitizenLoginRequest();
         request.setIdentifier(citizenUser.getCitizenCode());
         request.setPassword("securePass123");
 
@@ -160,7 +166,7 @@ public class CitizenLoginServiceIntegrationTest {
 
     @Test
     void testLoginFieldOfficer_success() {
-        CitizeLoginRequest request = new CitizeLoginRequest();
+        CitizenLoginRequest request = new CitizenLoginRequest();
         request.setIdentifier("officer.smith@example.com");
         request.setPassword("officerPass123");
 
@@ -174,11 +180,17 @@ public class CitizenLoginServiceIntegrationTest {
         // Profile/Cohort info should be null for non-citizen
         assertNull(response.getAge());
         assertNull(response.getCohortName());
+
+        // Assert permissions fetched from RBAC module
+        assertNotNull(response.getPermissions());
+        assertTrue(response.getPermissions().contains("READ_ASSIGNED_COHORTS"));
+        assertTrue(response.getPermissions().contains("SUBMIT_SOCIO_ECONOMIC_REPORT"));
+        assertTrue(response.getPermissions().contains("OFFLINE_SYNC"));
     }
 
     @Test
     void testLogin_invalidPassword_throwsBadCredentialsException() {
-        CitizeLoginRequest request = new CitizeLoginRequest();
+        CitizenLoginRequest request = new CitizenLoginRequest();
         request.setIdentifier("jane.doe@example.com");
         request.setPassword("wrongpassword");
 
@@ -187,7 +199,7 @@ public class CitizenLoginServiceIntegrationTest {
 
     @Test
     void testLogin_nonExistentUser_throwsBadCredentialsException() {
-        CitizeLoginRequest request = new CitizeLoginRequest();
+        CitizenLoginRequest request = new CitizenLoginRequest();
         request.setIdentifier("doesnotexist@example.com");
         request.setPassword("password");
 

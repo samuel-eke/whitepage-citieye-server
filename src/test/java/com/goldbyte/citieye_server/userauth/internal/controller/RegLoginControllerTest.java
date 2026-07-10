@@ -1,7 +1,7 @@
 package com.goldbyte.citieye_server.userauth.internal.controller;
 
 import com.goldbyte.citieye_server.userauth.CitizenRegisteredEvent;
-import com.goldbyte.citieye_server.userauth.internal.dto.CitizeLoginRequest;
+import com.goldbyte.citieye_server.userauth.internal.dto.CitizenLoginRequest;
 import com.goldbyte.citieye_server.userauth.internal.dto.CitizenLoginResponse;
 import com.goldbyte.citieye_server.userauth.internal.dto.CitizenRegRequest;
 import com.goldbyte.citieye_server.userauth.internal.dto.CitizenRegResponse;
@@ -11,6 +11,7 @@ import com.goldbyte.citieye_server.userauth.internal.model.enums.NigerianState;
 import com.goldbyte.citieye_server.userauth.internal.model.enums.UserRole;
 import com.goldbyte.citieye_server.userauth.internal.repo.CitizenRegRepo;
 import com.goldbyte.citieye_server.userauth.internal.service.CitizenLoginService;
+import com.goldbyte.citieye_server.userauth.internal.service.JwtTokenService;
 import jakarta.persistence.EntityManager;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -51,6 +52,9 @@ class RegLoginControllerTest {
 
     @Mock
     private CitizenLoginService citizenLoginService;
+
+    @Mock
+    private JwtTokenService jwtTokenService;
 
     @InjectMocks
     private RegLoginController regLoginController;
@@ -163,6 +167,7 @@ class RegLoginControllerTest {
 
         Mockito.when(passwordEncoder.encode("password123")).thenReturn("hashed_password");
         Mockito.when(citizenRegRepo.saveAndFlush(any(CitizenAuthEntity.class))).thenReturn(savedModel);
+        Mockito.when(jwtTokenService.generateToken(any(), any())).thenReturn("mocked_jwt_token");
 
         // Populate mutable event cohort name during publication
         Mockito.doAnswer(invocation -> {
@@ -181,6 +186,7 @@ class RegLoginControllerTest {
         assertEquals("CIT123", response.getBody().getCitizenCode());
         assertEquals("Workforce Integration", response.getBody().getCohortPlacement());
         assertEquals(31, response.getBody().getAge());
+        assertEquals("mocked_jwt_token", response.getBody().getData());
 
         Mockito.verify(passwordEncoder).encode("password123");
         Mockito.verify(citizenRegRepo).saveAndFlush(any(CitizenAuthEntity.class));
@@ -190,7 +196,7 @@ class RegLoginControllerTest {
 
     @Test
     void testLogin_success() {
-        CitizeLoginRequest request = new CitizeLoginRequest();
+        CitizenLoginRequest request = new CitizenLoginRequest();
         request.setIdentifier("john.doe@example.com");
         request.setPassword("password123");
 
@@ -201,7 +207,7 @@ class RegLoginControllerTest {
                 .message("Login successful")
                 .build();
 
-        Mockito.when(citizenLoginService.login(any(CitizeLoginRequest.class))).thenReturn(expectedResponse);
+        Mockito.when(citizenLoginService.login(any(CitizenLoginRequest.class))).thenReturn(expectedResponse);
 
         ResponseEntity<?> response = regLoginController.citizenLogin(request);
 
@@ -215,11 +221,11 @@ class RegLoginControllerTest {
 
     @Test
     void testLogin_failure() {
-        CitizeLoginRequest request = new CitizeLoginRequest();
+        CitizenLoginRequest request = new CitizenLoginRequest();
         request.setIdentifier("john.doe@example.com");
         request.setPassword("wrongpassword");
 
-        Mockito.when(citizenLoginService.login(any(CitizeLoginRequest.class)))
+        Mockito.when(citizenLoginService.login(any(CitizenLoginRequest.class)))
                 .thenThrow(new BadCredentialsException("Invalid password"));
 
         ResponseEntity<?> response = regLoginController.citizenLogin(request);

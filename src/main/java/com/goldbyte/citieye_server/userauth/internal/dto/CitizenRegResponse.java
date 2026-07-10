@@ -23,4 +23,5 @@ public class CitizenRegResponse {
     private String cohortPlacement;
     private Integer age;
     private String message;
+    private String data; // this is for jwt and other tokens
 }

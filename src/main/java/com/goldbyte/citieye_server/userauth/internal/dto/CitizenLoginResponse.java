@@ -67,4 +67,6 @@ public class CitizenLoginResponse {
     private String message;
     // this is for jwt and other tokens
     private String data;
+    private java.util.List<String> permissions;
 }
+

@@ -1,11 +1,8 @@
 package com.goldbyte.citieye_server.userauth.internal.service;
 
-import com.goldbyte.citieye_server.userauth.internal.dto.CitizeLoginRequest;
+import com.goldbyte.citieye_server.userauth.internal.dto.CitizenLoginRequest;
 import com.goldbyte.citieye_server.userauth.internal.dto.CitizenLoginResponse;
-import com.goldbyte.citieye_server.userauth.internal.model.CitizenAuthEntity;
-import com.goldbyte.citieye_server.userauth.internal.repo.CitizenRegRepo;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+
+import org.springframework.context.ApplicationEventPublisher;
+import com.goldbyte.citieye_server.userauth.FetchUserAuthoritiesEvent;
 
 /**
  * Service handling citizen login logic.
@@ -31,8 +30,14 @@ public class CitizenLoginService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    private JwtTokenService jwtTokenService;
+
     @Transactional(readOnly = true)
-    public CitizenLoginResponse login(CitizeLoginRequest request) {
+    public CitizenLoginResponse login(CitizenLoginRequest request) {
         String identifier = request.getIdentifier();
         if (identifier == null) {
             throw new BadCredentialsException("Identifier is required");
@@ -104,7 +109,25 @@ public class CitizenLoginService {
             throw new BadCredentialsException("Invalid password");
         }
 
-        return mapTupleToResponse(tuple);
+        CitizenLoginResponse response = mapTupleToResponse(tuple);
+        
+        // Publish event to query authorities from RBAC module to populate the response for client/UI usage
+        FetchUserAuthoritiesEvent event = new FetchUserAuthoritiesEvent(response.getRole(), response.getCitizenCode());
+        eventPublisher.publishEvent(event);
+        response.setPermissions(event.getAuthorities());
+
+        // Generate JWT Token
+        java.util.List<String> tokenAuthorities = new java.util.ArrayList<>();
+        if (response.getRole() != null) {
+            tokenAuthorities.add(response.getRole());
+        }
+        if (event.getAuthorities() != null) {
+            tokenAuthorities.addAll(event.getAuthorities());
+        }
+        String token = jwtTokenService.generateToken(response.getCitizenCode(), tokenAuthorities);
+        response.setData(token);
+
+        return response;
     }
 
     private CitizenLoginResponse mapTupleToResponse(Tuple tuple) {
