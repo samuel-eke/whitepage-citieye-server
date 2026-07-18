@@ -12,7 +12,12 @@ import com.goldbyte.citieye_server.userauth.internal.model.enums.UserRole;
 import com.goldbyte.citieye_server.userauth.internal.repo.CitizenRegRepo;
 import com.goldbyte.citieye_server.userauth.internal.service.CitizenLoginService;
 import com.goldbyte.citieye_server.userauth.internal.service.JwtTokenService;
+import com.goldbyte.citieye_server.userauth.internal.service.RefreshTokenService;
+import com.goldbyte.citieye_server.userauth.internal.repo.RefreshTokenRepository;
+import com.goldbyte.citieye_server.userauth.internal.model.RefreshToken;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -55,6 +60,12 @@ class RegLoginControllerTest {
 
     @Mock
     private JwtTokenService jwtTokenService;
+
+    @Mock
+    private RefreshTokenService refreshTokenService;
+
+    @Mock
+    private RefreshTokenRepository refreshTokenRepository;
 
     @InjectMocks
     private RegLoginController regLoginController;
@@ -168,6 +179,8 @@ class RegLoginControllerTest {
         Mockito.when(passwordEncoder.encode("password123")).thenReturn("hashed_password");
         Mockito.when(citizenRegRepo.saveAndFlush(any(CitizenAuthEntity.class))).thenReturn(savedModel);
         Mockito.when(jwtTokenService.generateToken(any(), any())).thenReturn("mocked_jwt_token");
+        RefreshToken dummyToken = RefreshToken.builder().token("dummy_refresh_token").build();
+        Mockito.when(refreshTokenService.createRefreshToken(any())).thenReturn(dummyToken);
 
         // Populate mutable event cohort name during publication
         Mockito.doAnswer(invocation -> {
@@ -204,9 +217,12 @@ class RegLoginControllerTest {
                 .id(1L)
                 .email("john.doe@example.com")
                 .role("citizen")
+                .citizenCode("CIT123")
                 .message("Login successful")
                 .build();
 
+        RefreshToken dummyToken = RefreshToken.builder().token("dummy_refresh_token").build();
+        Mockito.when(refreshTokenService.createRefreshToken("CIT123")).thenReturn(dummyToken);
         Mockito.when(citizenLoginService.login(any(CitizenLoginRequest.class))).thenReturn(expectedResponse);
 
         ResponseEntity<?> response = regLoginController.citizenLogin(request);
@@ -226,7 +242,7 @@ class RegLoginControllerTest {
         request.setPassword("wrongpassword");
 
         Mockito.when(citizenLoginService.login(any(CitizenLoginRequest.class)))
-                .thenThrow(new BadCredentialsException("Invalid password"));
+                .thenThrow(new BadCredentialsException("Invalid identifier or password"));
 
         ResponseEntity<?> response = regLoginController.citizenLogin(request);
 
@@ -234,6 +250,49 @@ class RegLoginControllerTest {
         assertNotNull(response.getBody());
         assertTrue(response.getBody() instanceof java.util.Map);
         java.util.Map<?, ?> body = (java.util.Map<?, ?>) response.getBody();
-        assertEquals("Invalid password", body.get("message"));
+        assertEquals("Invalid identifier or password", body.get("message"));
+
+    }
+
+    @Test
+    void testRefreshToken_success() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Cookie cookie = new Cookie("refreshToken", "valid_token");
+        Mockito.when(request.getCookies()).thenReturn(new Cookie[]{cookie});
+
+        RefreshToken mockToken = RefreshToken.builder()
+                .token("valid_token")
+                .citizenCode("CIT123")
+                .revoked(false)
+                .build();
+
+        Mockito.when(refreshTokenRepository.findByToken("valid_token")).thenReturn(java.util.Optional.of(mockToken));
+        Mockito.when(refreshTokenService.verifyExpiration(any())).thenReturn(mockToken);
+        Mockito.when(jwtTokenService.generateToken(any(), any())).thenReturn("new_access_token");
+
+        ResponseEntity<?> response = regLoginController.refreshToken(request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody() instanceof java.util.Map);
+        java.util.Map<?, ?> body = (java.util.Map<?, ?>) response.getBody();
+        assertEquals("new_access_token", body.get("accessToken"));
+    }
+
+    @Test
+    void testLogout_success() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Cookie cookie = new Cookie("refreshToken", "valid_token");
+        Mockito.when(request.getCookies()).thenReturn(new Cookie[]{cookie});
+
+        ResponseEntity<?> response = regLoginController.logout(request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody() instanceof java.util.Map);
+        java.util.Map<?, ?> body = (java.util.Map<?, ?>) response.getBody();
+        assertEquals("Logged out successfully", body.get("message"));
+        
+        Mockito.verify(refreshTokenService).revokeToken("valid_token");
     }
 }

@@ -37,20 +37,21 @@ public class CitiEyeRegAuthProvider implements AuthenticationProvider {
         String identifier = authentication.getName();
         String citizenPassword = authentication.getCredentials().toString();
 
-        // Resolve user by identifier type (email, NIN, phone, or citizen code)
         Optional<CitizenAuthEntity> citizenOpt = resolveUser(identifier);
 
         if (citizenOpt.isPresent()) {
             CitizenAuthEntity citizen = citizenOpt.get();
             if (passwordEncoder.matches(citizenPassword, citizen.getPassword())) {
                 List<GrantedAuthority> authorities = new ArrayList<>();
-                // Add role directly as GrantedAuthority (relying on custom GrantedAuthorityDefaults to omit prefix)
+                // Add role directly as GrantedAuthority (relying on custom
+                // GrantedAuthorityDefaults to omit prefix)
                 authorities.add(new SimpleGrantedAuthority(citizen.getRole().name()));
-                
+
                 // Publish event to query granular permissions from the RBAC module
-                FetchUserAuthoritiesEvent event = new FetchUserAuthoritiesEvent(citizen.getRole().name(), citizen.getCitizenCode());
+                FetchUserAuthoritiesEvent event = new FetchUserAuthoritiesEvent(citizen.getRole().name(),
+                        citizen.getCitizenCode());
                 eventPublisher.publishEvent(event);
-                
+
                 // Add permissions as authorities
                 for (String permission : event.getAuthorities()) {
                     authorities.add(new SimpleGrantedAuthority(permission));
@@ -59,21 +60,14 @@ public class CitiEyeRegAuthProvider implements AuthenticationProvider {
                 return new UsernamePasswordAuthenticationToken(identifier, citizenPassword, authorities);
 
             } else {
-                throw new BadCredentialsException("Invalid password");
+                throw new BadCredentialsException("Invalid identifier or password");
             }
         } else {
-            throw new BadCredentialsException("Such user doesn't exist");
+            throw new BadCredentialsException("Invalid identifier or password");
         }
+
     }
 
-
-    /**
-     * Resolves a user by detecting the identifier type and querying accordingly.
-     * - Contains '@' → email
-     * - Exactly 11 digits → NIN (fallback to phone)
-     * - Starts with '0' or '+' → phone number
-     * - Anything else → citizen code
-     */
     private Optional<CitizenAuthEntity> resolveUser(String identifier) {
         if (identifier.contains("@")) {
             return citizenRegRepo.findFirstByEmail(identifier);
@@ -102,4 +96,3 @@ public class CitiEyeRegAuthProvider implements AuthenticationProvider {
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }
 }
-

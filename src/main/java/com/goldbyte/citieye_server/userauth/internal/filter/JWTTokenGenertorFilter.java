@@ -26,21 +26,25 @@ public class JWTTokenGenertorFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (null != authentication){
+        if (null != authentication) {
             Set<String> authoritiesSet = new HashSet<>();
-            for (GrantedAuthority grantedAuthority : authentication.getAuthorities()){
+            for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
                 authoritiesSet.add(grantedAuthority.getAuthority());
             }
 
             String jwt = jwtTokenService.generateToken(authentication.getName(), authoritiesSet);
             response.setHeader(SecurityConstants.JWT_HEADER, jwt);
-            System.out.println("the response " + response);
 
         }
         filterChain.doFilter(request, response);
     }
-}
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return !request.getServletPath().equals("/api/auth/");
+    }
+}

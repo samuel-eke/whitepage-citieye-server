@@ -35,7 +35,7 @@ public class JwtTokenService {
                 .claim("username", username)
                 .claim("authorities", String.join(",", authorities))
                 .issuedAt(new Date())
-                .expiration(new Date((new Date().getTime() + 3000000))) // ~50 minutes validity
+                .expiration(new Date((new Date().getTime() + 900000))) // ~15 minutes validity
                 .signWith(getSigningKey()).compact();
     }
 

@@ -11,17 +11,16 @@ import java.util.List;
 public class ServiceAdminCMS {
     private final AdminCMSContentEntityRepository adminCMSContentEntityRepository;
 
-
     ServiceAdminCMS(AdminCMSContentEntityRepository adminCMSContentEntityRepository) {
         this.adminCMSContentEntityRepository = adminCMSContentEntityRepository;
     }
 
     @Transactional
-    public AdminCMSContentEntity createAPost(AdminCMSContentEntity cmsContent){
+    public AdminCMSContentEntity createAPost(AdminCMSContentEntity cmsContent) {
         return adminCMSContentEntityRepository.save(cmsContent);
     }
 
-    public List<AdminCMSContentEntity> viewAllPosts(){
+    public List<AdminCMSContentEntity> viewAllPosts() {
         return adminCMSContentEntityRepository.findAll();
     }
 }

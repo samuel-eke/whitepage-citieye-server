@@ -2,15 +2,13 @@ package com.goldbyte.citieye_server.userauth.internal.controller;
 
 import com.goldbyte.citieye_server.userauth.CitizenRegisteredEvent;
 import com.goldbyte.citieye_server.userauth.FetchUserAuthoritiesEvent;
-import com.goldbyte.citieye_server.userauth.internal.dto.CitizenLoginRequest;
-import com.goldbyte.citieye_server.userauth.internal.dto.CitizenLoginResponse;
-import com.goldbyte.citieye_server.userauth.internal.dto.CitizenRegRequest;
-import com.goldbyte.citieye_server.userauth.internal.dto.CitizenRegResponse;
+import com.goldbyte.citieye_server.userauth.internal.dto.*;
 import com.goldbyte.citieye_server.userauth.internal.model.CitizenAuthEntity;
 import com.goldbyte.citieye_server.userauth.internal.model.enums.GenderType;
 import com.goldbyte.citieye_server.userauth.internal.model.enums.NigerianState;
 import com.goldbyte.citieye_server.userauth.internal.model.enums.UserRole;
 import com.goldbyte.citieye_server.userauth.internal.repo.CitizenRegRepo;
+import com.goldbyte.citieye_server.userauth.internal.service.AdminLoginService;
 import com.goldbyte.citieye_server.userauth.internal.service.CitizenLoginService;
 import com.goldbyte.citieye_server.userauth.internal.service.JwtTokenService;
 import jakarta.persistence.EntityManager;
@@ -32,6 +30,14 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.Period;
 import java.util.Map;
+import com.goldbyte.citieye_server.userauth.internal.service.RefreshTokenService;
+import com.goldbyte.citieye_server.userauth.internal.model.RefreshToken;
+import com.goldbyte.citieye_server.userauth.internal.repo.RefreshTokenRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -53,7 +59,16 @@ public class RegLoginController {
     private CitizenLoginService citizenLoginService;
 
     @Autowired
+    private AdminLoginService adminLoginService;
+
+    @Autowired
     private JwtTokenService jwtTokenService;
+
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     @PostMapping("/register/citizen")
     @Transactional
@@ -149,8 +164,12 @@ public class RegLoginController {
                 .message("Citizen created successfully")
                 .build();
 
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(newlyCreatedCitizen.getCitizenCode());
+        HttpHeaders cookieHeaders = createCookieHeaders(refreshToken.getToken(), 604800);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
+                .headers(cookieHeaders)
                 .body(responseBody);
     }
 
@@ -162,16 +181,114 @@ public class RegLoginController {
      * @param request the login request containing the identifier and password
      * @return ResponseEntity with full citizen profile data
      */
-    @PostMapping("/login")
+    @PostMapping("/citizen/login")
     public ResponseEntity<?> citizenLogin(@Valid @RequestBody CitizenLoginRequest request) {
         try {
             CitizenLoginResponse response = citizenLoginService.login(request);
-            return ResponseEntity.ok(response);
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(response.getCitizenCode());
+            HttpHeaders cookieHeaders = createCookieHeaders(refreshToken.getToken(), 604800);
+            return ResponseEntity.ok()
+                    .headers(cookieHeaders)
+                    .body(response);
         } catch (BadCredentialsException e) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", e.getMessage()));
         }
+    }
+
+    /**
+     * Authenticates an admin user (agency_admin or super_admin) using their
+     * CitiEye citizen code and password.
+     *
+     * @param loginReq the login request containing the citizen code and password
+     * @return ResponseEntity with admin profile data and a signed JWT token
+     */
+    @PostMapping("/admin/login")
+    public ResponseEntity<?> adminLogin(@Valid @RequestBody AdminUserLoginReq loginReq) {
+        try {
+            AdminUserLoginResp response = adminLoginService.login(loginReq);
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(response.getCitizenCode());
+            HttpHeaders cookieHeaders = createCookieHeaders(refreshToken.getToken(), 604800);
+            return ResponseEntity.ok()
+                    .headers(cookieHeaders)
+                    .body(response);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+        String refreshTokenStr = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshTokenStr = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (refreshTokenStr == null || refreshTokenStr.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Refresh Token Cookie is missing"));
+        }
+
+        final String tokenVal = refreshTokenStr;
+        return refreshTokenRepository.findByToken(tokenVal)
+                .map(refreshTokenService::verifyExpiration)
+                .filter(token -> !token.isRevoked())
+                .map(token -> {
+                    FetchUserAuthoritiesEvent authorityEvent = new FetchUserAuthoritiesEvent("citizen", token.getCitizenCode());
+                    eventPublisher.publishEvent(authorityEvent);
+
+                    java.util.List<String> tokenAuthorities = new java.util.ArrayList<>();
+                    if (authorityEvent.getAuthorities() != null) {
+                        tokenAuthorities.addAll(authorityEvent.getAuthorities());
+                    }
+
+                    String newAccessToken = jwtTokenService.generateToken(token.getCitizenCode(), tokenAuthorities);
+
+                    return ResponseEntity.ok()
+                            .body(Map.of("accessToken", newAccessToken));
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid or revoked Refresh Token")));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshTokenService.revokeToken(cookie.getValue());
+                    break;
+                }
+            }
+        }
+
+        SecurityContextHolder.clearContext();
+
+        HttpHeaders headers = createCookieHeaders("", 0);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(Map.of("message", "Logged out successfully"));
+    }
+
+    private HttpHeaders createCookieHeaders(String refreshTokenValue, long maxAgeSeconds) {
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshTokenValue)
+                .httpOnly(true)
+                .secure(true)
+                .path("/api/auth")
+                .maxAge(maxAgeSeconds)
+                .sameSite("Strict")
+                .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+        return headers;
     }
 }
 

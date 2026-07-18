@@ -99,15 +99,16 @@ public class CitizenLoginService {
                 .getResultList();
 
         if (results.isEmpty()) {
-            throw new BadCredentialsException("Such user doesn't exist");
+            throw new BadCredentialsException("Invalid identifier or password");
         }
 
         Tuple tuple = results.get(0);
         String hashedPassword = tuple.get("password", String.class);
 
         if (!passwordEncoder.matches(request.getPassword(), hashedPassword)) {
-            throw new BadCredentialsException("Invalid password");
+            throw new BadCredentialsException("Invalid identifier or password");
         }
+
 
         CitizenLoginResponse response = mapTupleToResponse(tuple);
         

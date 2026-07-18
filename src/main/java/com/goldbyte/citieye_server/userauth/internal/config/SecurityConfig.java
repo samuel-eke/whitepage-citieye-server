@@ -46,7 +46,8 @@ public class SecurityConfig {
                     @Override
                     public @Nullable CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration configuration = new CorsConfiguration();
-                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://citieyecommunitygovernance.vercel.app"));
+                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000",
+                                "https://citieyecommunitygovernance.vercel.app"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -58,22 +59,33 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(
                                 "/api/auth/register/**", // Public URLs that don't require CSRF tokens
-                                "/api/auth/login"        // Login endpoint doesn't require CSRF tokens
-                        )
+                                "/api/auth/login", // Login endpoint doesn't require CSRF tokens
+                                "/api/auth/admin/login", // Admin login endpoint doesn't require CSRF tokens
+                                "/api/auth/refresh",
+                                "/api/auth/logout",
+                                "/api/admin/content/**")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .csrfTokenRequestHandler(csrfHandler)) // Enable CSRF protection with cookie-based token repository
-                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class) // the csrf filter will run after authentication is successful
+                        .csrfTokenRequestHandler(csrfHandler)) // Enable CSRF protection with cookie-based token
+                                                               // repository
+                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class) // the csrf filter will run
+                                                                                         // after authentication is
+                                                                                         // successful
                 .addFilterAfter(new JWTTokenGenertorFilter(jwtTokenService), BasicAuthenticationFilter.class)
                 .addFilterBefore(new JWTValidationFilter(jwtTokenService), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
                                 "/",
                                 "/error",
-                                "/api/auth/login",
-                                "/api/auth/register/citizen")
+                                "/api/auth/login/**",
+                                "/api/auth/admin/login",
+                                "/api/auth/register/**",
+                                "/api/auth/refresh",
+                                "/api/auth/logout")
                         .permitAll()
                         .requestMatchers("/api/admin/content", "/api/admin/content/**")
                         .hasAnyRole("agency_admin", "super_admin")
+                        .requestMatchers("/read")
+                        .hasAnyAuthority("agency_admin", "super_admin")
                         .anyRequest().authenticated())
                 .httpBasic(httpBasic -> httpBasic.disable()) // Disable HTTP Basic auth
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -83,8 +95,8 @@ public class SecurityConfig {
     @Bean
     public RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.fromHierarchy("super_admin > agency_admin\n" +
-                                               "agency_admin > field_officer\n" +
-                                               "field_officer > citizen");
+                "agency_admin > field_officer\n" +
+                "field_officer > citizen");
     }
 
     @Bean

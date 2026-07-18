@@ -31,7 +31,14 @@ public class JWTValidationFilter extends OncePerRequestFilter {
 
         String jwt = request.getHeader(SecurityConstants.JWT_HEADER);
 
-        if (null != jwt){
+        if (null != jwt && !jwt.trim().isEmpty()){
+            jwt = jwt.trim();
+            if (jwt.toLowerCase().startsWith("bearer ")) {
+                jwt = jwt.substring(7).trim();
+            }
+            if (jwt.startsWith("\"") && jwt.endsWith("\"")) {
+                jwt = jwt.substring(1, jwt.length() - 1).trim();
+            }
             try{
                 Claims claims = jwtTokenService.getClaimsFromToken(jwt);
 
@@ -41,9 +48,16 @@ public class JWTValidationFilter extends OncePerRequestFilter {
                 Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e){
-                throw new BadCredentialsException("Invalid token received");
+                e.printStackTrace(); // Log the actual cause of the token validation failure
+                throw new BadCredentialsException("Invalid token received: " + e.getMessage(), e);
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(jakarta.servlet.http.HttpServletRequest request) throws jakarta.servlet.ServletException {
+        String path = request.getServletPath();
+        return path.equals("/api/auth/refresh") || path.equals("/api/auth/logout");
     }
 }

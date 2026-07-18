@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/content")
+@RequestMapping("api/admin/content")
 class AdminCMSContorller {
     private final ServiceAdminCMS serviceAdminCMS;
 
@@ -16,15 +16,16 @@ class AdminCMSContorller {
         this.serviceAdminCMS = serviceAdminCMS;
     }
 
-    @PostMapping
-    public ResponseEntity<AdminCMSContentEntity> createContent(@RequestBody AdminCMSContentEntity cmsContent){
+    @PostMapping("/new")
+    public ResponseEntity<AdminCMSContentEntity> createContent(@RequestBody AdminCMSContentEntity cmsContent) {
         AdminCMSContentEntity newPost = serviceAdminCMS.createAPost(cmsContent);
-        return ResponseEntity.ok(cmsContent);
+        return ResponseEntity.ok(newPost);
     }
 
     @GetMapping
-    public List<AdminCMSContentEntity> getAllPosts(){
-        return serviceAdminCMS.viewAllPosts();
+    public ResponseEntity<List<AdminCMSContentEntity>> getAllPosts() {
+        List<AdminCMSContentEntity> allPosts = serviceAdminCMS.viewAllPosts();
+        return ResponseEntity.ok(allPosts);
     }
 
 }
