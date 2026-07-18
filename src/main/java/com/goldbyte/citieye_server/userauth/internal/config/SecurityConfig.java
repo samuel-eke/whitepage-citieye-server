@@ -59,7 +59,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(
                                 "/api/auth/register/**", // Public URLs that don't require CSRF tokens
-                                "/api/auth/login", // Login endpoint doesn't require CSRF tokens
+                                "/api/auth/citizen/login", // Citizen login endpoint doesn't require CSRF tokens
                                 "/api/auth/admin/login", // Admin login endpoint doesn't require CSRF tokens
                                 "/api/auth/refresh",
                                 "/api/auth/logout",
@@ -76,7 +76,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/error",
-                                "/api/auth/login/**",
+                                "/api/auth/citizen/login",
                                 "/api/auth/admin/login",
                                 "/api/auth/register/**",
                                 "/api/auth/refresh",
