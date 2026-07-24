@@ -48,4 +48,18 @@ public class AdminCMSContentEntity {
     @Column(name = "picture_url")
     private String pictureUrl;
 
+    @Column(name = "target_cohort_id")
+    private Integer targetCohortId;
+
+    @Convert(converter = NigerianStateTargetConverter.class)
+    @Column(name = "target_state_residence", columnDefinition = "auth.nigerian_state")
+    private String targetStateResidence;
+
+    @Convert(converter = NigerianStateTargetConverter.class)
+    @Column(name = "target_state_origin", columnDefinition = "auth.nigerian_state")
+    private String targetStateOrigin;
+
+    @Convert(converter = DesiredSupportTargetConverter.class)
+    @Column(name = "target_desired_support", columnDefinition = "citizen_profile.desired_support_type")
+    private String targetDesiredSupport;
 }

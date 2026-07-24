@@ -295,4 +295,30 @@ class RegLoginControllerTest {
         
         Mockito.verify(refreshTokenService).revokeToken("valid_token");
     }
+
+    @Test
+    void testRefreshToken_adminSuccess() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Cookie cookie = new Cookie("refreshToken", "valid_token");
+        Mockito.when(request.getCookies()).thenReturn(new Cookie[]{cookie});
+
+        RefreshToken mockToken = RefreshToken.builder()
+                .token("valid_token")
+                .citizenCode("cit-adm-123456")
+                .revoked(false)
+                .build();
+
+        Mockito.when(refreshTokenRepository.findByToken("valid_token")).thenReturn(java.util.Optional.of(mockToken));
+        Mockito.when(refreshTokenService.verifyExpiration(any())).thenReturn(mockToken);
+        Mockito.when(jwtTokenService.generateToken(any(), any())).thenReturn("new_access_token");
+
+        ResponseEntity<?> response = regLoginController.refreshToken(request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody() instanceof java.util.Map);
+        java.util.Map<?, ?> body = (java.util.Map<?, ?>) response.getBody();
+        assertEquals("new_access_token", body.get("accessToken"));
+    }
 }
+

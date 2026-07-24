@@ -241,7 +241,17 @@ public class RegLoginController {
                 .map(refreshTokenService::verifyExpiration)
                 .filter(token -> !token.isRevoked())
                 .map(token -> {
-                    FetchUserAuthoritiesEvent authorityEvent = new FetchUserAuthoritiesEvent("citizen", token.getCitizenCode());
+                    String citizenCode = token.getCitizenCode();
+                    String role = "citizen";
+                    if (citizenCode.startsWith("cit-fo-")) {
+                        role = "field_officer";
+                    } else if (citizenCode.startsWith("cit-adm-")) {
+                        role = "agency_admin";
+                    } else if (citizenCode.startsWith("cit-super-")) {
+                        role = "super_admin";
+                    }
+
+                    FetchUserAuthoritiesEvent authorityEvent = new FetchUserAuthoritiesEvent(role, citizenCode);
                     eventPublisher.publishEvent(authorityEvent);
 
                     java.util.List<String> tokenAuthorities = new java.util.ArrayList<>();
