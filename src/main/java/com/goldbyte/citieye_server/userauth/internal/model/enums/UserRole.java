@@ -6,6 +6,8 @@ package com.goldbyte.citieye_server.userauth.internal.model.enums;
 public enum UserRole {
     citizen,
     field_officer,
+    field_officer_health,
+    field_officer_education,
     agency_admin,
     super_admin
 }

@@ -46,12 +46,11 @@ class ServiceAdminCMSTest {
         entity.setTargetCohortId(1);
         entity.setTargetStateResidence("Lagos");
         entity.setTargetStateOrigin("Kano");
-        entity.setTargetDesiredSupport("HEALTHCARE");
 
-        when(repository.findTargetedPosts(1, "Lagos", "Kano", "HEALTHCARE"))
+        when(repository.findTargetedPosts(1, "Lagos", "Kano"))
                 .thenReturn(List.of(entity));
 
-        List<PostDto> result = serviceAdminCMS.getTargetedPosts(1, "Lagos", "Kano", "HEALTHCARE");
+        List<PostDto> result = serviceAdminCMS.getTargetedPosts(1, "Lagos", "Kano");
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo(postId);
@@ -59,17 +58,17 @@ class ServiceAdminCMSTest {
         assertThat(result.get(0).getTargetCohortId()).isEqualTo(1);
         assertThat(result.get(0).getTargetStateResidence()).isEqualTo("Lagos");
 
-        verify(repository, times(1)).findTargetedPosts(1, "Lagos", "Kano", "HEALTHCARE");
+        verify(repository, times(1)).findTargetedPosts(1, "Lagos", "Kano");
     }
 
     @Test
     void getTargetedPosts_handlesNullParameters() {
-        when(repository.findTargetedPosts(null, null, null, null))
+        when(repository.findTargetedPosts(null, null, null))
                 .thenReturn(List.of());
 
-        List<PostDto> result = serviceAdminCMS.getTargetedPosts(null, null, null, null);
+        List<PostDto> result = serviceAdminCMS.getTargetedPosts(null, null, null);
 
         assertThat(result).isEmpty();
-        verify(repository, times(1)).findTargetedPosts(null, null, null, null);
+        verify(repository, times(1)).findTargetedPosts(null, null, null);
     }
 }

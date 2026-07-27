@@ -33,6 +33,13 @@ import java.util.Map;
 import com.goldbyte.citieye_server.userauth.internal.service.RefreshTokenService;
 import com.goldbyte.citieye_server.userauth.internal.model.RefreshToken;
 import com.goldbyte.citieye_server.userauth.internal.repo.RefreshTokenRepository;
+import com.goldbyte.citieye_server.userauth.internal.service.StateLgaService;
+import com.goldbyte.citieye_server.userauth.internal.repo.AdminUserRepository;
+import com.goldbyte.citieye_server.userauth.internal.model.AdminUser;
+import org.springframework.http.CacheControl;
+import org.springframework.web.bind.annotation.GetMapping;
+import java.util.concurrent.TimeUnit;
+import java.util.List;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
@@ -70,9 +77,37 @@ public class RegLoginController {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
+    @Autowired
+    private StateLgaService stateLgaService;
+
+    @Autowired
+    private AdminUserRepository adminUserRepository;
+
+    @GetMapping("/states-lgas")
+    public ResponseEntity<Map<String, List<String>>> getStatesAndLgas() {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic())
+                .body(stateLgaService.getStatesAndLgas());
+    }
+
     @PostMapping("/register/citizen")
     @Transactional
     public ResponseEntity<CitizenRegResponse> reg(@Valid @RequestBody CitizenRegRequest request) {
+        int age = Period.between(request.getDateOfBirth(), LocalDate.now()).getYears();
+        if (age >= 18) {
+            if (request.getNin() == null || request.getNin().isBlank()) {
+                return ResponseEntity.badRequest().body(
+                    CitizenRegResponse.builder().message("NIN is required for adults").build()
+                );
+            }
+        } else {
+            if ((request.getNin() == null || request.getNin().isBlank()) && (request.getParentNin() == null || request.getParentNin().isBlank())) {
+                return ResponseEntity.badRequest().body(
+                    CitizenRegResponse.builder().message("NIN or Parent's NIN is required for minors").build()
+                );
+            }
+        }
+
         CitizenAuthEntity citizenAuthEntity = new CitizenAuthEntity();
         citizenAuthEntity.setFirstName(request.getFirstName());
         citizenAuthEntity.setMiddleName(request.getMiddleName());
@@ -81,11 +116,11 @@ public class RegLoginController {
         citizenAuthEntity.setPhoneNumber(request.getPhoneNumber());
         citizenAuthEntity.setDateOfBirth(request.getDateOfBirth());
         citizenAuthEntity.setAddress(request.getAddress());
+        citizenAuthEntity.setLga(request.getLga());
+        citizenAuthEntity.setParentNin(request.getParentNin());
 
         String citizenHashPassword = passwordEncoder.encode(request.getPassword());
-//         String citizenHashNin = passwordEncoder.encode(request.getNin());
         citizenAuthEntity.setPassword(citizenHashPassword);
-//        citizenAuthEntity.setNin(citizenHashNin);
         citizenAuthEntity.setNin(request.getNin());
         citizenAuthEntity.setCreatedAt(OffsetDateTime.now());
 
@@ -121,12 +156,10 @@ public class RegLoginController {
         // Refresh the entity to fetch the trigger-generated citizenCode
         entityManager.refresh(newlyCreatedCitizen);
 
-        // Publish application event to trigger profile creation and cohort placement in
-        // the same transaction
+        // Publish application event to trigger profile creation and cohort placement in the same transaction
         CitizenRegisteredEvent registrationEvent = new CitizenRegisteredEvent(
                 newlyCreatedCitizen.getCitizenCode(),
                 request.getDateOfBirth(),
-                request.getDesiredSupport(),
                 newlyCreatedCitizen.getGender().name());
         eventPublisher.publishEvent(registrationEvent);
 
@@ -142,8 +175,6 @@ public class RegLoginController {
             tokenAuthorities.addAll(authorityEvent.getAuthorities());
         }
         String token = jwtTokenService.generateToken(newlyCreatedCitizen.getCitizenCode(), tokenAuthorities);
-
-        int age = Period.between(newlyCreatedCitizen.getDateOfBirth(), LocalDate.now()).getYears();
 
         CitizenRegResponse responseBody = CitizenRegResponse.builder()
                 .id(newlyCreatedCitizen.getId())
@@ -299,6 +330,103 @@ public class RegLoginController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
         return headers;
+    }
+
+    @PostMapping("/register/officer")
+    @Transactional
+    public ResponseEntity<OfficerRegResponse> registerOfficer(@Valid @RequestBody OfficerRegRequest request) {
+        // Enforce state conversion
+        NigerianState residenceState;
+        NigerianState originState;
+        try {
+            residenceState = NigerianState.valueOf(request.getStateOfResidence().trim().replace(' ', '_'));
+            originState = NigerianState.valueOf(request.getStateOfOrigin().trim().replace(' ', '_'));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid state of origin or residence");
+        }
+
+        // Enforce gender conversion
+        GenderType genderEnum;
+        try {
+            genderEnum = GenderType.valueOf(request.getGender().trim().toLowerCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid gender. Must be male or female");
+        }
+
+        // Validate specialty and determine mapped role
+        String specialtyStr = request.getSpecialty().trim().toUpperCase();
+        UserRole mappedRole;
+        if ("MEDICAL".equals(specialtyStr) || "HEALTH".equals(specialtyStr)) {
+            mappedRole = UserRole.field_officer_health;
+        } else if ("EDUCATION".equals(specialtyStr)) {
+            mappedRole = UserRole.field_officer_education;
+        } else {
+            mappedRole = UserRole.field_officer; // Fallback default specialty
+        }
+
+        // Create AdminUser
+        AdminUser admin = new AdminUser();
+        admin.setFirstName(request.getFirstName().trim());
+        admin.setMiddleName(request.getMiddleName() != null ? request.getMiddleName().trim() : null);
+        admin.setLastName(request.getLastName().trim());
+        admin.setEmail(request.getEmail().trim().toLowerCase());
+        admin.setPhoneNumber(request.getPhoneNumber().trim());
+        admin.setNin(request.getNin().trim());
+        admin.setAddress(request.getAddress().trim());
+        admin.setLga(request.getLga().trim());
+        admin.setDateOfBirth(request.getDateOfBirth());
+        admin.setSpecialty(specialtyStr);
+        admin.setCreatedAt(OffsetDateTime.now());
+        admin.setUpdatedAt(OffsetDateTime.now());
+        admin.setStateOfResidence(residenceState);
+        admin.setStateOfOrigin(originState);
+        admin.setGender(genderEnum);
+        admin.setRole(mappedRole);
+
+        // Hashing password
+        admin.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        // Save
+        AdminUser newlyCreatedOfficer = adminUserRepository.saveAndFlush(admin);
+
+        // Refresh entity to get the trigger-generated citizenCode
+        entityManager.refresh(newlyCreatedOfficer);
+
+        // Fetch authorities from RBAC module for immediate login session token
+        FetchUserAuthoritiesEvent authorityEvent = new FetchUserAuthoritiesEvent(
+                newlyCreatedOfficer.getRole().name(),
+                newlyCreatedOfficer.getCitizenCode()
+        );
+        eventPublisher.publishEvent(authorityEvent);
+
+        java.util.List<String> tokenAuthorities = new java.util.ArrayList<>();
+        tokenAuthorities.add(newlyCreatedOfficer.getRole().name());
+        if (authorityEvent.getAuthorities() != null) {
+            tokenAuthorities.addAll(authorityEvent.getAuthorities());
+        }
+        String token = jwtTokenService.generateToken(newlyCreatedOfficer.getCitizenCode(), tokenAuthorities);
+
+        OfficerRegResponse responseBody = OfficerRegResponse.builder()
+                .id(newlyCreatedOfficer.getId())
+                .email(newlyCreatedOfficer.getEmail())
+                .phoneNumber(newlyCreatedOfficer.getPhoneNumber())
+                .nin(newlyCreatedOfficer.getNin())
+                .firstName(newlyCreatedOfficer.getFirstName())
+                .middleName(newlyCreatedOfficer.getMiddleName())
+                .lastName(newlyCreatedOfficer.getLastName())
+                .gender(newlyCreatedOfficer.getGender().name())
+                .address(newlyCreatedOfficer.getAddress())
+                .stateOfResidence(newlyCreatedOfficer.getStateOfResidence().name())
+                .stateOfOrigin(newlyCreatedOfficer.getStateOfOrigin().name())
+                .lga(newlyCreatedOfficer.getLga())
+                .citizenCode(newlyCreatedOfficer.getCitizenCode())
+                .userRole(newlyCreatedOfficer.getRole().name())
+                .specialty(newlyCreatedOfficer.getSpecialty())
+                .token(token)
+                .message("Field Officer registered successfully")
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
     }
 }
 

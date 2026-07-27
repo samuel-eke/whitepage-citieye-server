@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface AdminUserRepository extends JpaRepository<AdminUser, Long> {
     Optional<AdminUser> findFirstByCitizenCode(String citizenCode);
+    Optional<AdminUser> findFirstByEmail(String email);
 }

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.context.ApplicationEventPublisher;
 import com.goldbyte.citieye_server.userauth.FetchUserAuthoritiesEvent;
+import com.goldbyte.citieye_server.userauth.ProgressiveQuestionsQueryEvent;
 
 /**
  * Service handling citizen login logic.
@@ -80,7 +81,6 @@ public class CitizenLoginService {
                 p.place_of_employment_business AS place_of_employment_business, 
                 p.name_of_employer_business AS name_of_employer_business, 
                 p.nature_of_business_job AS nature_of_business_job, 
-                p.desired_support AS desired_support,
                 c.name AS cohort_name, 
                 c.description AS cohort_description, 
                 cp.age_at_registration AS age_at_registration
@@ -116,6 +116,15 @@ public class CitizenLoginService {
         FetchUserAuthoritiesEvent event = new FetchUserAuthoritiesEvent(response.getRole(), response.getCitizenCode());
         eventPublisher.publishEvent(event);
         response.setPermissions(event.getAuthorities());
+
+        // Publish event to citizen_profile module to resolve pending progressive profile questions
+        // for the citizen's current age cohort. Returns only fields that are still null on their profile.
+        if (response.getAge() != null) {
+            ProgressiveQuestionsQueryEvent questionsEvent =
+                    new ProgressiveQuestionsQueryEvent(response.getCitizenCode(), response.getAge());
+            eventPublisher.publishEvent(questionsEvent);
+            response.setPendingQuestions(questionsEvent.getQuestions());
+        }
 
         // Generate JWT Token
         java.util.List<String> tokenAuthorities = new java.util.ArrayList<>();
@@ -185,7 +194,6 @@ public class CitizenLoginService {
         String placeOfEmploymentBusiness = tuple.get("place_of_employment_business", String.class);
         String nameOfEmployerBusiness = tuple.get("name_of_employer_business", String.class);
         String natureOfBusinessJob = tuple.get("nature_of_business_job", String.class);
-        String desiredSupport = tuple.get("desired_support") != null ? String.valueOf(tuple.get("desired_support")) : null;
 
         // Cohort Placement
         String cohortName = tuple.get("cohort_name", String.class);
@@ -226,7 +234,6 @@ public class CitizenLoginService {
                 .placeOfEmploymentBusiness(placeOfEmploymentBusiness)
                 .nameOfEmployerBusiness(nameOfEmployerBusiness)
                 .natureOfBusinessJob(natureOfBusinessJob)
-                .desiredSupport(desiredSupport)
                 .cohortName(cohortName)
                 .cohortDescription(cohortDescription)
                 .ageAtRegistration(ageAtRegistration)

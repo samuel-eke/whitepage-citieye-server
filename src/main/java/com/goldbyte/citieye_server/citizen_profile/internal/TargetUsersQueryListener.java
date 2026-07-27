@@ -37,10 +37,6 @@ public class TargetUsersQueryListener {
         if (event.getStateOrigin() != null) {
             sql.append("AND u.state_of_origin = :stateOrigin::auth.nigerian_state ");
         }
-        if (event.getDesiredSupport() != null) {
-            sql.append("AND p.desired_support = :desiredSupport::citizen_profile.desired_support_type ");
-        }
-
         Query query = entityManager.createNativeQuery(sql.toString());
 
         if (event.getCohortId() != null) {
@@ -53,9 +49,6 @@ public class TargetUsersQueryListener {
         if (event.getStateOrigin() != null) {
             String dbStateOrig = event.getStateOrigin().replace('_', ' ');
             query.setParameter("stateOrigin", dbStateOrig);
-        }
-        if (event.getDesiredSupport() != null) {
-            query.setParameter("desiredSupport", event.getDesiredSupport());
         }
 
         List<String> results = query.getResultList();

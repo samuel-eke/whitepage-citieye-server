@@ -9,16 +9,14 @@ import java.time.LocalDate;
 public class CitizenRegisteredEvent {
     private final String citizenCode;
     private final LocalDate dateOfBirth;
-    private final String desiredSupport;
     private final String gender;
 
     // Mutated by the cohort placement listener to return cohort name back to userauth
     private String cohortName;
 
-    public CitizenRegisteredEvent(String citizenCode, LocalDate dateOfBirth, String desiredSupport, String gender) {
+    public CitizenRegisteredEvent(String citizenCode, LocalDate dateOfBirth, String gender) {
         this.citizenCode = citizenCode;
         this.dateOfBirth = dateOfBirth;
-        this.desiredSupport = desiredSupport;
         this.gender = gender;
     }
 
@@ -28,10 +26,6 @@ public class CitizenRegisteredEvent {
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
-    }
-
-    public String getDesiredSupport() {
-        return desiredSupport;
     }
 
     public String getGender() {

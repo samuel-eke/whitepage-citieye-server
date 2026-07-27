@@ -11,14 +11,12 @@ public class QueryTargetUsersEvent {
     private final Integer cohortId;
     private final String stateResidence;
     private final String stateOrigin;
-    private final String desiredSupport;
     private final List<String> targetCitizenCodes = new ArrayList<>();
 
-    public QueryTargetUsersEvent(Integer cohortId, String stateResidence, String stateOrigin, String desiredSupport) {
+    public QueryTargetUsersEvent(Integer cohortId, String stateResidence, String stateOrigin) {
         this.cohortId = cohortId;
         this.stateResidence = stateResidence;
         this.stateOrigin = stateOrigin;
-        this.desiredSupport = desiredSupport;
     }
 
     public Integer getCohortId() {
@@ -31,10 +29,6 @@ public class QueryTargetUsersEvent {
 
     public String getStateOrigin() {
         return stateOrigin;
-    }
-
-    public String getDesiredSupport() {
-        return desiredSupport;
     }
 
     public List<String> getTargetCitizenCodes() {

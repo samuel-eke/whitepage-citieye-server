@@ -18,12 +18,11 @@ public class PostPublishedEvent {
     private final Integer targetCohortId;
     private final String targetStateResidence;
     private final String targetStateOrigin;
-    private final String targetDesiredSupport;
 
     public PostPublishedEvent(UUID postId, String title, String content, String author, 
                                 String contentCategory, OffsetDateTime datePublished, String pictureUrl,
                                 Integer targetCohortId, String targetStateResidence, 
-                                String targetStateOrigin, String targetDesiredSupport) {
+                                String targetStateOrigin) {
         this.postId = postId;
         this.title = title;
         this.content = content;
@@ -34,7 +33,6 @@ public class PostPublishedEvent {
         this.targetCohortId = targetCohortId;
         this.targetStateResidence = targetStateResidence;
         this.targetStateOrigin = targetStateOrigin;
-        this.targetDesiredSupport = targetDesiredSupport;
     }
 
     public UUID getPostId() {
@@ -75,9 +73,5 @@ public class PostPublishedEvent {
 
     public String getTargetStateOrigin() {
         return targetStateOrigin;
-    }
-
-    public String getTargetDesiredSupport() {
-        return targetDesiredSupport;
     }
 }

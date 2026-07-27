@@ -23,12 +23,11 @@ public class PostDto {
     private final Integer targetCohortId;
     private final String targetStateResidence;
     private final String targetStateOrigin;
-    private final String targetDesiredSupport;
 
     public PostDto(UUID id, String title, String content, String author,
                    String contentCategory, OffsetDateTime datePublished, String pictureUrl,
                    Integer targetCohortId, String targetStateResidence,
-                   String targetStateOrigin, String targetDesiredSupport) {
+                   String targetStateOrigin) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -39,7 +38,6 @@ public class PostDto {
         this.targetCohortId = targetCohortId;
         this.targetStateResidence = targetStateResidence;
         this.targetStateOrigin = targetStateOrigin;
-        this.targetDesiredSupport = targetDesiredSupport;
     }
 
     public UUID getId() {
@@ -80,9 +78,5 @@ public class PostDto {
 
     public String getTargetStateOrigin() {
         return targetStateOrigin;
-    }
-
-    public String getTargetDesiredSupport() {
-        return targetDesiredSupport;
     }
 }

@@ -39,13 +39,11 @@ public class CitizenAuthEntity {
     private String lastName;
 
     @Size(max = 11)
-    @NotNull
-    @Column(name = "phone_number", nullable = false, length = 11)
+    @Column(name = "phone_number", length = 11)
     private String phoneNumber;
 
     @Size(max = 255)
-    @NotNull
-    @Column(name = "email", nullable = false)
+    @Column(name = "email")
     private String email;
 
     @NotNull
@@ -58,9 +56,17 @@ public class CitizenAuthEntity {
     private String password;
 
     @Size(max = 11)
-    @NotNull
-    @Column(name = "nin", nullable = false, length = 11)
+    @Column(name = "nin", length = 11)
     private String nin;
+
+    @Size(max = 11)
+    @Column(name = "parent_nin", length = 11)
+    private String parentNin;
+
+    @Size(max = 100)
+    @Column(name = "lga", length = 100)
+    private String lga;
+
     @Size(max = 30)
     @Column(name = "citizen_code", length = 30)
     private String citizenCode;

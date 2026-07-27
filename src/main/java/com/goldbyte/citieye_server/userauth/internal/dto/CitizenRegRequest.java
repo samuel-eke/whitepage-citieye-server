@@ -23,12 +23,10 @@ public class CitizenRegRequest {
     @Size(max = 255, message = "Last name cannot exceed 255 characters")
     private String lastName;
 
-    @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     @Size(max = 255, message = "Email cannot exceed 255 characters")
     private String email;
 
-    @NotBlank(message = "Phone number is required")
     @Size(max = 20, message = "Phone number cannot exceed 20 characters")
     private String phoneNumber;
 
@@ -36,9 +34,15 @@ public class CitizenRegRequest {
     @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
     private String password;
 
-    @NotBlank(message = "NIN is required")
     @Size(min = 11, max = 11, message = "NIN must be exactly 11 characters")
     private String nin;
+
+    @Size(min = 11, max = 11, message = "Parent's NIN must be exactly 11 characters")
+    private String parentNin;
+
+    @NotBlank(message = "LGA is required")
+    @Size(max = 100, message = "LGA cannot exceed 100 characters")
+    private String lga;
 
     @Size(max = 7, message = "Gender cannot exceed 7 characters")
     private String gender;
@@ -54,7 +58,4 @@ public class CitizenRegRequest {
 
     @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
-
-    @NotBlank(message = "Desired support is required")
-    private String desiredSupport;
 }

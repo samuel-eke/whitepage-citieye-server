@@ -10,11 +10,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import com.goldbyte.citieye_server.citizen_profile.internal.repo.ProfileRepository;
+
 @Service
 public class CitizenProfilePublicServiceImpl implements CitizenProfilePublicService {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    private ProfileRepository profileRepository;
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean profileExists(String citizenCode) {
+        if (citizenCode == null) {
+            return false;
+        }
+        return profileRepository.existsById(citizenCode);
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -24,7 +39,6 @@ public class CitizenProfilePublicServiceImpl implements CitizenProfilePublicServ
             SELECT 
                 u.state_of_residence AS state_residence,
                 u.state_of_origin AS state_origin,
-                p.desired_support AS desired_support,
                 cp.cohort_id AS cohort_id
             FROM auth.users_auth u
             LEFT JOIN citizen_profile.profiles p ON u.citizen_code = p.citizen_code
@@ -37,15 +51,14 @@ public class CitizenProfilePublicServiceImpl implements CitizenProfilePublicServ
                 .getResultList();
 
         if (results.isEmpty()) {
-            return new CitizenTargetingParams(null, null, null, null);
+            return new CitizenTargetingParams(null, null, null);
         }
 
         Tuple tuple = results.get(0);
         String stateResidence = tuple.get("state_residence") != null ? String.valueOf(tuple.get("state_residence")) : null;
         String stateOrigin = tuple.get("state_origin") != null ? String.valueOf(tuple.get("state_origin")) : null;
-        String desiredSupport = tuple.get("desired_support") != null ? String.valueOf(tuple.get("desired_support")) : null;
         Integer cohortId = tuple.get("cohort_id") != null ? ((Number) tuple.get("cohort_id")).intValue() : null;
-
-        return new CitizenTargetingParams(cohortId, stateResidence, stateOrigin, desiredSupport);
+        
+        return new CitizenTargetingParams(cohortId, stateResidence, stateOrigin);
     }
 }

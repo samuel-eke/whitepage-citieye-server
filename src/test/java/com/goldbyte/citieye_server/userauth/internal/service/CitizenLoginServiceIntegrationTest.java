@@ -60,6 +60,7 @@ public class CitizenLoginServiceIntegrationTest {
         citizenUser.setStateOfResidence(NigerianState.Lagos);
         citizenUser.setStateOfOrigin(NigerianState.Lagos);
         citizenUser.setGender(GenderType.female);
+        citizenUser.setLga("Ikeja");
         citizenUser.setRole(UserRole.citizen);
         citizenUser.setCreatedAt(OffsetDateTime.now());
 
@@ -70,7 +71,6 @@ public class CitizenLoginServiceIntegrationTest {
         CitizenRegisteredEvent event = new CitizenRegisteredEvent(
                 citizenUser.getCitizenCode(),
                 citizenUser.getDateOfBirth(),
-                "skill_acquisition",
                 citizenUser.getGender().name()
         );
         eventPublisher.publishEvent(event);
@@ -113,7 +113,6 @@ public class CitizenLoginServiceIntegrationTest {
         
         // Assert profile properties fetched
         assertNotNull(response.getAge());
-        assertEquals("skill_acquisition", response.getDesiredSupport());
         
         // Assert cohort placement details fetched
         assertNotNull(response.getCohortName());

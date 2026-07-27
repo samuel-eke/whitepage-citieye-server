@@ -100,4 +100,15 @@ public class AdminUser {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, columnDefinition = "user_role")
     private UserRole role;
+
+    @Size(max = 100)
+    @Column(name = "lga", length = 100)
+    private String lga;
+
+    @Column(name = "date_of_birth")
+    private java.time.LocalDate dateOfBirth;
+
+    @Size(max = 50)
+    @Column(name = "specialty", length = 50)
+    private String specialty;
 }

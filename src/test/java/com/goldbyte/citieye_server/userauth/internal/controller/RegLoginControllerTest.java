@@ -89,7 +89,7 @@ class RegLoginControllerTest {
         request.setPassword("password123");
         request.setNin("12345678901");
         request.setDateOfBirth(LocalDate.of(2000, 1, 1));
-        request.setDesiredSupport("skill_acquisition");
+        request.setLga("Aba North");
 
         Set<ConstraintViolation<CitizenRegRequest>> violations = validator.validate(request);
         assertTrue(violations.isEmpty(), "Valid request should have no validation violations");
@@ -107,18 +107,15 @@ class RegLoginControllerTest {
                 .anyMatch(v -> v.getPropertyPath().toString().equals("firstName"));
         boolean hasLastNameViolation = violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("lastName"));
-        boolean hasEmailViolation = violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("email"));
         boolean hasDateOfBirthViolation = violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("dateOfBirth"));
-        boolean hasDesiredSupportViolation = violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("desiredSupport"));
+        boolean hasLgaViolation = violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("lga"));
 
         assertTrue(hasFirstNameViolation, "Should violate first name constraint");
         assertTrue(hasLastNameViolation, "Should violate last name constraint");
-        assertTrue(hasEmailViolation, "Should violate email constraint");
         assertTrue(hasDateOfBirthViolation, "Should violate dateOfBirth constraint");
-        assertTrue(hasDesiredSupportViolation, "Should violate desiredSupport constraint");
+        assertTrue(hasLgaViolation, "Should violate lga constraint");
     }
 
     @Test
@@ -131,7 +128,7 @@ class RegLoginControllerTest {
         request.setPassword("password123");
         request.setNin("123"); // should be exactly 11 characters
         request.setDateOfBirth(LocalDate.of(2000, 1, 1));
-        request.setDesiredSupport("skill_acquisition");
+        request.setLga("Aba North");
 
         Set<ConstraintViolation<CitizenRegRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty());
@@ -155,7 +152,7 @@ class RegLoginControllerTest {
         request.setPassword("password123");
         request.setNin("12345678901");
         request.setDateOfBirth(LocalDate.of(1995, 5, 10));
-        request.setDesiredSupport("skill_acquisition");
+        request.setLga("Aba North");
         request.setGender("male");
         request.setStateOfResidence("Lagos");
         request.setStateOfOrigin("Lagos");
@@ -168,6 +165,7 @@ class RegLoginControllerTest {
         savedModel.setPhoneNumber("08012345678");
         savedModel.setPassword("hashed_password");
         savedModel.setNin("12345678901");
+        savedModel.setLga("Aba North");
         savedModel.setCitizenCode("CIT123");
         savedModel.setDateOfBirth(LocalDate.of(1995, 5, 10));
         savedModel.setGender(GenderType.male);

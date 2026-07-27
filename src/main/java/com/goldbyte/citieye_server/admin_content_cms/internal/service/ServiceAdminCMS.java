@@ -32,8 +32,7 @@ public class ServiceAdminCMS implements CMSPublicService {
         ValidateTargetingEvent valEvent = new ValidateTargetingEvent(
                 cmsContent.getTargetCohortId(),
                 cmsContent.getTargetStateResidence(),
-                cmsContent.getTargetStateOrigin(),
-                cmsContent.getTargetDesiredSupport()
+                cmsContent.getTargetStateOrigin()
         );
         eventPublisher.publishEvent(valEvent);
 
@@ -42,7 +41,6 @@ public class ServiceAdminCMS implements CMSPublicService {
             if (!valEvent.isCohortValid()) errorMsg.append("Cohort does not exist. ");
             if (!valEvent.isStateResidenceValid()) errorMsg.append("Invalid State of Residence. ");
             if (!valEvent.isStateOriginValid()) errorMsg.append("Invalid State of Origin. ");
-            if (!valEvent.isDesiredSupportValid()) errorMsg.append("Invalid Desired Support. ");
             throw new IllegalArgumentException(errorMsg.toString().trim());
         }
 
@@ -78,8 +76,7 @@ public class ServiceAdminCMS implements CMSPublicService {
                 savedPost.getPictureUrl(),
                 savedPost.getTargetCohortId(),
                 savedPost.getTargetStateResidence(),
-                savedPost.getTargetStateOrigin(),
-                savedPost.getTargetDesiredSupport()
+                savedPost.getTargetStateOrigin()
         ));
 
         return savedPost;
@@ -90,14 +87,14 @@ public class ServiceAdminCMS implements CMSPublicService {
     }
 
     public List<AdminCMSContentEntity> viewTargetedPosts(Integer cohortId, String stateResidence, 
-                                                         String stateOrigin, String desiredSupport) {
-        return adminCMSContentEntityRepository.findTargetedPosts(cohortId, stateResidence, stateOrigin, desiredSupport);
+                                                         String stateOrigin) {
+        return adminCMSContentEntityRepository.findTargetedPosts(cohortId, stateResidence, stateOrigin);
     }
 
     @Override
     public List<PostDto> getTargetedPosts(Integer cohortId, String stateResidence, 
-                                         String stateOrigin, String desiredSupport) {
-        return viewTargetedPosts(cohortId, stateResidence, stateOrigin, desiredSupport)
+                                         String stateOrigin) {
+        return viewTargetedPosts(cohortId, stateResidence, stateOrigin)
                 .stream()
                 .map(entity -> new PostDto(
                         entity.getId(),
@@ -109,8 +106,7 @@ public class ServiceAdminCMS implements CMSPublicService {
                         entity.getPictureUrl(),
                         entity.getTargetCohortId(),
                         entity.getTargetStateResidence(),
-                        entity.getTargetStateOrigin(),
-                        entity.getTargetDesiredSupport()
+                        entity.getTargetStateOrigin()
                 ))
                 .collect(Collectors.toList());
     }

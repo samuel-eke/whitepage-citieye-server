@@ -45,6 +45,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
+-- Helper function to map a State Enum to its standard abbreviation (in auth schema)
+CREATE OR REPLACE FUNCTION auth.get_state_abbreviation(state_val auth.nigerian_state)
+RETURNS TEXT AS $$
+BEGIN
+    RETURN CASE state_val
+        WHEN 'Abia' THEN 'AB' WHEN 'Adamawa' THEN 'AD' WHEN 'Akwa Ibom' THEN 'AK' WHEN 'Anambra' THEN 'AN'
+        WHEN 'Bauchi' THEN 'BA' WHEN 'Bayelsa' THEN 'BY' WHEN 'Benue' THEN 'BE' WHEN 'Borno' THEN 'BO'
+        WHEN 'Cross River' THEN 'CR' WHEN 'Delta' THEN 'DE' WHEN 'Ebonyi' THEN 'EB' WHEN 'Edo' THEN 'ED'
+        WHEN 'Ekiti' THEN 'EK' WHEN 'Enugu' THEN 'EN' WHEN 'Gombe' THEN 'GO' WHEN 'Imo' THEN 'IM'
+        WHEN 'Jigawa' THEN 'JI' WHEN 'Kaduna' THEN 'KD' WHEN 'Kano' THEN 'KN' WHEN 'Katsina' THEN 'KT'
+        WHEN 'Kebbi' THEN 'KE' WHEN 'Kogi' THEN 'KO' WHEN 'Kwara' THEN 'KW' WHEN 'Lagos' THEN 'LA'
+        WHEN 'Nasarawa' THEN 'NA' WHEN 'Niger' THEN 'NI' WHEN 'Ogun' THEN 'OG' WHEN 'Ondo' THEN 'ON'
+        WHEN 'Osun' THEN 'OS' WHEN 'Oyo' THEN 'OY' WHEN 'Plateau' THEN 'PL' WHEN 'Rivers' THEN 'RI'
+        WHEN 'Sokoto' THEN 'SO' WHEN 'Taraba' THEN 'TA' WHEN 'Yobe' THEN 'YO' WHEN 'Zamfara' THEN 'ZA'
+        WHEN 'FCT' THEN 'FC'
+    END;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
 -- Helper function to generate random alphanumeric or purely numeric strings (in auth schema)
 CREATE OR REPLACE FUNCTION auth.generate_random_suffix(suffix_length INT, numeric_only BOOLEAN DEFAULT FALSE)
 RETURNS TEXT AS $$
@@ -64,6 +83,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql VOLATILE;
 
+-- Sequence for custom citizen code serial generation
+CREATE SEQUENCE IF NOT EXISTS auth.citizen_code_serial_seq START WITH 1 INCREMENT BY 1;
+
 -- =========================================================================
 -- 3. TABLES DEFINITION (1:1 Relationship via citizen_code)
 -- =========================================================================
@@ -75,17 +97,24 @@ CREATE TABLE auth.users_auth (
     middle_name VARCHAR(100),
     last_name VARCHAR(100) NOT NULL,
 
-    -- Enforces exactly 11 digits starting with 0
-    phone_number VARCHAR(11) UNIQUE NOT NULL CHECK (phone_number ~ '^0[0-9]{10}$'),
+    -- Optional phone number
+    phone_number VARCHAR(11) UNIQUE,
 
-    email VARCHAR(255) UNIQUE NOT NULL CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$'),
+    -- Optional email
+    email VARCHAR(255) UNIQUE,
     date_of_birth DATE NOT NULL,
     state_of_residence auth.nigerian_state NOT NULL,
     state_of_origin auth.nigerian_state NOT NULL,
+    
+    -- LGA is required for citizens (used for custom citizen_code generation)
+    lga VARCHAR(100),
     gender auth.gender_type NOT NULL,
 
-    -- Enforces exactly 11 digits as requested
-    nin VARCHAR(10) UNIQUE NOT NULL CHECK (nin ~ '^[0-9]{11}$'),
+    -- Optional NIN (but constrained by age check below)
+    nin VARCHAR(11) UNIQUE,
+    
+    -- Optional Parent's NIN for minors
+    parent_nin VARCHAR(11),
 
     address TEXT NOT NULL,
     role auth.user_role NOT NULL,
@@ -96,7 +125,20 @@ CREATE TABLE auth.users_auth (
     -- The citizen_code will be automatically generated and made unique
     citizen_code VARCHAR(30) UNIQUE,
 
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+    CONSTRAINT chk_phone_number CHECK (phone_number IS NULL OR phone_number ~ '^0[0-9]{10}$'),
+    CONSTRAINT chk_email CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$'),
+    CONSTRAINT chk_nin CHECK (nin IS NULL OR nin ~ '^[0-9]{11}$'),
+    CONSTRAINT chk_parent_nin CHECK (parent_nin IS NULL OR parent_nin ~ '^[0-9]{11}$'),
+    CONSTRAINT chk_citizen_lga CHECK (role != 'citizen' OR lga IS NOT NULL),
+    
+    -- Constraint enforcing NIN rules: Adults (age >= 18) must have own NIN, minors must have own or parent's NIN.
+    CONSTRAINT chk_citizen_nin_by_age CHECK (
+        role != 'citizen' OR
+        (date_of_birth <= (created_at::date - INTERVAL '18 years') AND nin IS NOT NULL) OR
+        (date_of_birth > (created_at::date - INTERVAL '18 years') AND (nin IS NOT NULL OR parent_nin IS NOT NULL))
+    )
 );
 
 -- =========================================================================
@@ -106,13 +148,21 @@ CREATE TABLE auth.users_auth (
 CREATE OR REPLACE FUNCTION auth.compute_user_citizen_code()
 RETURNS TRIGGER AS $$
 DECLARE
+    state_abbr TEXT;
+    lga_prefix TEXT;
+    serial_num TEXT;
     state_num TEXT;
 BEGIN
     CASE NEW.role
-        -- CITIZEN format: cit-[state_of_origin_numeric]-[6 alphanumeric]
+        -- CITIZEN format: CTI-[STATE(abbrv)]-[LGA(first three letters)]-[6-DIGIT-SERIAL]
         WHEN 'citizen' THEN
-            state_num := auth.get_state_numeric_code(NEW.state_of_origin);
-            NEW.citizen_code := 'cit-' || state_num || '-' || auth.generate_random_suffix(6, FALSE);
+            state_abbr := auth.get_state_abbreviation(NEW.state_of_origin);
+            lga_prefix := UPPER(SUBSTRING(REGEXP_REPLACE(NEW.lga, '[^a-zA-Z]', '', 'g'), 1, 3));
+            IF LENGTH(lga_prefix) < 3 THEN
+                lga_prefix := RPAD(lga_prefix, 3, 'X');
+            END IF;
+            serial_num := LPAD(nextval('auth.citizen_code_serial_seq')::text, 6, '0');
+            NEW.citizen_code := 'CTI-' || state_abbr || '-' || lga_prefix || '-' || serial_num;
 
         -- FIELD OFFICER format: cit-fo-[state_of_residence_numeric]-[6 alphanumeric]
         WHEN 'field_officer' THEN
@@ -163,20 +213,6 @@ CREATE TYPE citizen_profile.employment_status_type AS ENUM (
     'business_owner'
     );
 
--- Define Desired Support Enum in the citizen_profile schema
-CREATE TYPE citizen_profile.desired_support_type AS ENUM (
-    'scholarship',
-    'medical_aid_treatment',
-    'business_capital',
-    'investor_funding',
-    'job_opportunity',
-    'visa_sponsorship',
-    'skill_acquisition',
-    'legal_aid',
-    'dispute_resolution',
-    'emergency services'
-    );
-
 -- =========================================================================
 -- 2. TABLE DEFINITION (1:1 Relationship with auth.users_auth)
 -- =========================================================================
@@ -210,9 +246,6 @@ CREATE TABLE citizen_profile.profiles (
                                           place_of_employment_business VARCHAR(255),
                                           name_of_employer_business VARCHAR(255),
                                           nature_of_business_job VARCHAR(255),
-
-    -- Required field
-                                          desired_support citizen_profile.desired_support_type NOT NULL,
 
                                           updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -253,7 +286,6 @@ EXECUTE FUNCTION citizen_profile.sync_profile_age();
 -- 4. PERFORMANCE INDEXES
 -- =========================================================================
 CREATE INDEX idx_profiles_employment ON citizen_profile.profiles (current_employment_status);
-CREATE INDEX idx_profiles_support ON citizen_profile.profiles (desired_support);
 
 COMMIT;
 

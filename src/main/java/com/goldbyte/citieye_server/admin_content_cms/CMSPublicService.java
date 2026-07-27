@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface CMSPublicService {
     List<PostDto> getTargetedPosts(Integer cohortId, String stateResidence, 
-                                   String stateOrigin, String desiredSupport);
+                                   String stateOrigin);
 }

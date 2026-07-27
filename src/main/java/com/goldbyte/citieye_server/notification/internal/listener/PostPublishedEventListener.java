@@ -53,8 +53,7 @@ public class PostPublishedEventListener {
         QueryTargetUsersEvent queryEvent = new QueryTargetUsersEvent(
                 event.getTargetCohortId(),
                 event.getTargetStateResidence(),
-                event.getTargetStateOrigin(),
-                event.getTargetDesiredSupport()
+                event.getTargetStateOrigin()
         );
         eventPublisher.publishEvent(queryEvent);
         List<String> targetCitizenCodes = queryEvent.getTargetCitizenCodes();
@@ -77,7 +76,6 @@ public class PostPublishedEventListener {
         payloadMap.put("targetCohortId", event.getTargetCohortId());
         payloadMap.put("targetStateResidence", event.getTargetStateResidence());
         payloadMap.put("targetStateOrigin", event.getTargetStateOrigin());
-        payloadMap.put("targetDesiredSupport", event.getTargetDesiredSupport());
 
         String jsonPayload;
         try {

@@ -32,11 +32,9 @@ CREATE TABLE IF NOT EXISTS notification.web_push_subscriptions (
 ALTER TABLE admins.cms_content 
     ADD COLUMN target_cohort_id INT REFERENCES cohort_placement.cohorts(id) ON DELETE SET NULL,
     ADD COLUMN target_state_residence auth.nigerian_state,
-    ADD COLUMN target_state_origin auth.nigerian_state,
-    ADD COLUMN target_desired_support citizen_profile.desired_support_type;
+    ADD COLUMN target_state_origin auth.nigerian_state;
 
 -- Create indexes for performance when filtering targeted content for users
 CREATE INDEX IF NOT EXISTS idx_cms_content_target_cohort ON admins.cms_content (target_cohort_id);
 CREATE INDEX IF NOT EXISTS idx_cms_content_target_state_res ON admins.cms_content (target_state_residence);
 CREATE INDEX IF NOT EXISTS idx_cms_content_target_state_orig ON admins.cms_content (target_state_origin);
-CREATE INDEX IF NOT EXISTS idx_cms_content_target_support ON admins.cms_content (target_desired_support);

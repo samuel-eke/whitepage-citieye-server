@@ -13,11 +13,9 @@ public interface AdminCMSContentEntityRepository extends JpaRepository<AdminCMSC
         @Query("SELECT c FROM AdminCMSContentEntity c WHERE " +
                         "(c.targetCohortId IS NULL OR c.targetCohortId = :cohortId) AND " +
                         "(c.targetStateResidence IS NULL OR c.targetStateResidence = :stateResidence) AND " +
-                        "(c.targetStateOrigin IS NULL OR c.targetStateOrigin = :stateOrigin) AND " +
-                        "(c.targetDesiredSupport IS NULL OR c.targetDesiredSupport = :desiredSupport) " +
+                        "(c.targetStateOrigin IS NULL OR c.targetStateOrigin = :stateOrigin) " +
                         "ORDER BY c.datePublished DESC")
         List<AdminCMSContentEntity> findTargetedPosts(@Param("cohortId") Integer cohortId,
                         @Param("stateResidence") String stateResidence,
-                        @Param("stateOrigin") String stateOrigin,
-                        @Param("desiredSupport") String desiredSupport);
+                        @Param("stateOrigin") String stateOrigin);
 }

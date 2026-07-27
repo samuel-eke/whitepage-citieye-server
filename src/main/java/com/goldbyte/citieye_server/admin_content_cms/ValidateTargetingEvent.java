@@ -8,18 +8,15 @@ public class ValidateTargetingEvent {
     private final Integer cohortId;
     private final String stateResidence;
     private final String stateOrigin;
-    private final String desiredSupport;
     
     private boolean cohortValid = true;
     private boolean stateResidenceValid = true;
     private boolean stateOriginValid = true;
-    private boolean desiredSupportValid = true;
 
-    public ValidateTargetingEvent(Integer cohortId, String stateResidence, String stateOrigin, String desiredSupport) {
+    public ValidateTargetingEvent(Integer cohortId, String stateResidence, String stateOrigin) {
         this.cohortId = cohortId;
         this.stateResidence = stateResidence;
         this.stateOrigin = stateOrigin;
-        this.desiredSupport = desiredSupport;
     }
 
     public Integer getCohortId() {
@@ -32,10 +29,6 @@ public class ValidateTargetingEvent {
 
     public String getStateOrigin() {
         return stateOrigin;
-    }
-
-    public String getDesiredSupport() {
-        return desiredSupport;
     }
 
     public boolean isCohortValid() {
@@ -62,15 +55,7 @@ public class ValidateTargetingEvent {
         this.stateOriginValid = stateOriginValid;
     }
 
-    public boolean isDesiredSupportValid() {
-        return desiredSupportValid;
-    }
-
-    public void setDesiredSupportValid(boolean desiredSupportValid) {
-        this.desiredSupportValid = desiredSupportValid;
-    }
-
     public boolean isValid() {
-        return cohortValid && stateResidenceValid && stateOriginValid && desiredSupportValid;
+        return cohortValid && stateResidenceValid && stateOriginValid;
     }
 }

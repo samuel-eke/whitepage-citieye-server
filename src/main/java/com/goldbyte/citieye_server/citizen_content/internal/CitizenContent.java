@@ -40,8 +40,7 @@ class CitizenContent {
         List<PostDto> feed = cmsPublicService.getTargetedPosts(
                 params.getCohortId(),
                 params.getStateResidence(),
-                params.getStateOrigin(),
-                params.getDesiredSupport()
+                params.getStateOrigin()
         );
 
         return ResponseEntity.ok(feed);

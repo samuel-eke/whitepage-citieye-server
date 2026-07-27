@@ -63,7 +63,11 @@ public class SecurityConfig {
                                 "/api/auth/admin/login", // Admin login endpoint doesn't require CSRF tokens
                                 "/api/auth/refresh",
                                 "/api/auth/logout",
-                                "/api/admin/content/**")
+                                "/api/admin/content/**",
+                                "/api/field-officers/health/**",
+                                "/api/field-officers/education/**",
+                                "/api/profile/**",
+                                "/api/analytics/**")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(csrfHandler)) // Enable CSRF protection with cookie-based token
                                                                // repository
@@ -84,6 +88,17 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/admin/content", "/api/admin/content/**")
                         .hasAnyRole("agency_admin", "super_admin")
+                        .requestMatchers("/api/field-officers/health/**")
+                        .hasAnyRole("field_officer_health", "agency_admin", "super_admin")
+                        .requestMatchers("/api/field-officers/education/**")
+                        .hasAnyRole("field_officer_education", "agency_admin", "super_admin")
+                        // Analytics dashboard — agency_admin and super_admin only
+                        .requestMatchers("/api/analytics/summary", "/api/analytics/citizens",
+                                "/api/analytics/citizens/**")
+                        .hasAnyRole("agency_admin", "super_admin")
+                        // Manual view refresh — super_admin only
+                        .requestMatchers("/api/analytics/refresh")
+                        .hasRole("super_admin")
                         .requestMatchers("/read")
                         .hasAnyAuthority("agency_admin", "super_admin")
                         .anyRequest().authenticated())
@@ -96,7 +111,11 @@ public class SecurityConfig {
     public RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.fromHierarchy("super_admin > agency_admin\n" +
                 "agency_admin > field_officer\n" +
-                "field_officer > citizen");
+                "agency_admin > field_officer_health\n" +
+                "agency_admin > field_officer_education\n" +
+                "field_officer > citizen\n" +
+                "field_officer_health > citizen\n" +
+                "field_officer_education > citizen");
     }
 
     @Bean

@@ -1,12 +1,14 @@
 package com.goldbyte.citieye_server.userauth.internal.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.goldbyte.citieye_server.userauth.ProgressiveQuestion;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 /**
  * Comprehensive login response DTO containing auth data, citizen profile,
@@ -56,7 +58,6 @@ public class CitizenLoginResponse {
     private String placeOfEmploymentBusiness;
     private String nameOfEmployerBusiness;
     private String natureOfBusinessJob;
-    private String desiredSupport;
 
     // === Cohort Placement Data ===
     private String cohortName;
@@ -67,6 +68,14 @@ public class CitizenLoginResponse {
     private String message;
     // this is for jwt and other tokens
     private String data;
-    private java.util.List<String> permissions;
+    private List<String> permissions;
+
+    // === Progressive Profiling ===
+    /**
+     * Ordered list of data-collection questions the citizen should answer
+     * for their current age cohort. Only contains fields that are still NULL
+     * in their profile. Empty list means profile is complete for this cohort.
+     */
+    private List<ProgressiveQuestion> pendingQuestions;
 }
 
