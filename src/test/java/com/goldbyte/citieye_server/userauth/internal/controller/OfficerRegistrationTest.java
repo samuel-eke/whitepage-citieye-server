@@ -45,6 +45,7 @@ public class OfficerRegistrationTest {
                     "gender": "male",
                     "address": "12 Hospital Road, Benin",
                     "stateOfResidence": "Edo",
+                    "residenceLga": "Oredo",
                     "stateOfOrigin": "Edo",
                     "dateOfBirth": "1990-06-15",
                     "specialty": "medical"
@@ -91,6 +92,7 @@ public class OfficerRegistrationTest {
                     "gender": "female",
                     "address": "45 School Lane, Abuja",
                     "stateOfResidence": "FCT",
+                    "residenceLga": "Wuse",
                     "stateOfOrigin": "FCT",
                     "dateOfBirth": "1988-10-20",
                     "specialty": "education"

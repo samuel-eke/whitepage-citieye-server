@@ -44,6 +44,10 @@ public class OfficerRegRequest {
     @Size(max = 100, message = "LGA cannot exceed 100 characters")
     private String lga;
 
+    @NotBlank(message = "Residence LGA is required")
+    @Size(max = 100, message = "Residence LGA cannot exceed 100 characters")
+    private String residenceLga;
+
     @NotBlank(message = "Gender is required")
     @Size(max = 7, message = "Gender cannot exceed 7 characters")
     private String gender;

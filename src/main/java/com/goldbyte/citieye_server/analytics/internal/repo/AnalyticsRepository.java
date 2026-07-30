@@ -37,47 +37,73 @@ public class AnalyticsRepository {
      * Returns the total number of registered citizens directly from {@code auth.users_auth}.
      * This bypasses the materialized view for accuracy immediately after a new registration.
      */
-    public long countTotalCitizens() {
-        return ((Number) em
-                .createNativeQuery("SELECT COUNT(*) FROM auth.users_auth WHERE role = 'citizen'")
-                .getSingleResult()).longValue();
+    public long countTotalCitizens(String state) {
+        String sql = "SELECT COUNT(*) FROM auth.users_auth WHERE role = 'citizen'";
+        if (state != null) {
+            sql += " AND state_of_residence::text = :state";
+        }
+        Query q = em.createNativeQuery(sql);
+        if (state != null) {
+            q.setParameter("state", state);
+        }
+        return ((Number) q.getSingleResult()).longValue();
     }
 
-    public long countCitizensRegisteredInLastDays(int days) {
-        return ((Number) em
-                .createNativeQuery(
-                        "SELECT COUNT(*) FROM auth.users_auth " +
-                        "WHERE role = 'citizen' AND created_at >= NOW() - CAST(:interval AS INTERVAL)")
-                .setParameter("interval", days + " days")
-                .getSingleResult()).longValue();
+    public long countCitizensRegisteredInLastDays(int days, String state) {
+        String sql = "SELECT COUNT(*) FROM auth.users_auth WHERE role = 'citizen' AND created_at >= NOW() - CAST(:interval AS INTERVAL)";
+        if (state != null) {
+            sql += " AND state_of_residence::text = :state";
+        }
+        Query q = em.createNativeQuery(sql).setParameter("interval", days + " days");
+        if (state != null) {
+            q.setParameter("state", state);
+        }
+        return ((Number) q.getSingleResult()).longValue();
     }
 
-    public long countMaleCitizens() {
-        return ((Number) em
-                .createNativeQuery(
-                        "SELECT COUNT(*) FROM auth.users_auth WHERE role = 'citizen' AND gender::text = 'male'")
-                .getSingleResult()).longValue();
+    public long countMaleCitizens(String state) {
+        String sql = "SELECT COUNT(*) FROM auth.users_auth WHERE role = 'citizen' AND gender::text = 'male'";
+        if (state != null) {
+            sql += " AND state_of_residence::text = :state";
+        }
+        Query q = em.createNativeQuery(sql);
+        if (state != null) {
+            q.setParameter("state", state);
+        }
+        return ((Number) q.getSingleResult()).longValue();
     }
 
-    public long countFemaleCitizens() {
-        return ((Number) em
-                .createNativeQuery(
-                        "SELECT COUNT(*) FROM auth.users_auth WHERE role = 'citizen' AND gender::text = 'female'")
-                .getSingleResult()).longValue();
+    public long countFemaleCitizens(String state) {
+        String sql = "SELECT COUNT(*) FROM auth.users_auth WHERE role = 'citizen' AND gender::text = 'female'";
+        if (state != null) {
+            sql += " AND state_of_residence::text = :state";
+        }
+        Query q = em.createNativeQuery(sql);
+        if (state != null) {
+            q.setParameter("state", state);
+        }
+        return ((Number) q.getSingleResult()).longValue();
     }
 
     // ── State + LGA Breakdown ──────────────────────────────────────────────
 
     @SuppressWarnings("unchecked")
-    public List<StateBreakdownDto> findStateAndLgaBreakdown() {
-        List<Object[]> rows = em.createNativeQuery(
-                "SELECT state_of_origin, state_of_residence, lga, " +
+    public List<StateBreakdownDto> findStateAndLgaBreakdown(String state) {
+        String sql = "SELECT state_of_origin, state_of_residence, lga, " +
                 "       total_citizens, male_count, female_count, " +
                 "       registered_last_7_days, registered_last_30_days " +
-                "FROM analytics.citizen_stats_by_state_lga " +
-                "ORDER BY total_citizens DESC"
-        ).getResultList();
+                "FROM analytics.citizen_stats_by_state_lga ";
+        if (state != null) {
+            sql += "WHERE state_of_residence = :state ";
+        }
+        sql += "ORDER BY total_citizens DESC";
 
+        Query q = em.createNativeQuery(sql);
+        if (state != null) {
+            q.setParameter("state", state);
+        }
+
+        List<Object[]> rows = q.getResultList();
         List<StateBreakdownDto> result = new ArrayList<>();
         for (Object[] row : rows) {
             result.add(new StateBreakdownDto(
@@ -97,13 +123,34 @@ public class AnalyticsRepository {
     // ── Cohort Breakdown ───────────────────────────────────────────────────
 
     @SuppressWarnings("unchecked")
-    public List<CohortBreakdownDto> findCohortBreakdown() {
-        List<Object[]> rows = em.createNativeQuery(
-                "SELECT cohort_id, cohort_name, min_age, max_age, " +
-                "       total_citizens, citizens_with_any_milestone_completed, avg_age_at_registration " +
-                "FROM analytics.cohort_population " +
-                "ORDER BY min_age ASC"
-        ).getResultList();
+    public List<CohortBreakdownDto> findCohortBreakdown(String state) {
+        List<Object[]> rows;
+        if (state == null) {
+            rows = em.createNativeQuery(
+                    "SELECT cohort_id, cohort_name, min_age, max_age, " +
+                    "       total_citizens, citizens_with_any_milestone_completed, avg_age_at_registration " +
+                    "FROM analytics.cohort_population " +
+                    "ORDER BY min_age ASC"
+            ).getResultList();
+        } else {
+            rows = em.createNativeQuery(
+                    "SELECT c.id AS cohort_id, c.name AS cohort_name, c.min_age, c.max_age, " +
+                    "       COUNT(cp.citizen_code) AS total_citizens, " +
+                    "       COUNT(cp.citizen_code) FILTER ( " +
+                    "           WHERE EXISTS ( " +
+                    "               SELECT 1 FROM cohort_placement.citizen_milestones cm " +
+                    "               WHERE cm.citizen_code = cp.citizen_code AND cm.status = 'completed' " +
+                    "           ) " +
+                    "       ) AS citizens_with_any_milestone_completed, " +
+                    "       AVG(cp.age_at_registration) AS avg_age_at_registration " +
+                    "FROM cohort_placement.cohorts c " +
+                    "LEFT JOIN cohort_placement.placements cp ON cp.cohort_id = c.id " +
+                    "LEFT JOIN auth.users_auth u ON u.citizen_code = cp.citizen_code " +
+                    "WHERE u.state_of_residence::text = :state " +
+                    "GROUP BY c.id, c.name, c.min_age, c.max_age " +
+                    "ORDER BY min_age ASC"
+            ).setParameter("state", state).getResultList();
+        }
 
         List<CohortBreakdownDto> result = new ArrayList<>();
         for (Object[] row : rows) {
@@ -123,14 +170,39 @@ public class AnalyticsRepository {
     // ── Employment Snapshot ────────────────────────────────────────────────
 
     @SuppressWarnings("unchecked")
-    public List<EmploymentBreakdownDto> findEmploymentBreakdown() {
-        List<Object[]> rows = em.createNativeQuery(
-                "SELECT employment_status, monthly_income_range, industry_sector, " +
-                "       highest_academic_qualification, state_of_origin, lga, citizen_count " +
-                "FROM analytics.employment_snapshot " +
-                "ORDER BY citizen_count DESC " +
-                "LIMIT 200"
-        ).getResultList();
+    public List<EmploymentBreakdownDto> findEmploymentBreakdown(String state) {
+        List<Object[]> rows;
+        if (state == null) {
+            rows = em.createNativeQuery(
+                    "SELECT employment_status, monthly_income_range, industry_sector, " +
+                    "       highest_academic_qualification, state_of_origin, lga, citizen_count " +
+                    "FROM analytics.employment_snapshot " +
+                    "ORDER BY citizen_count DESC " +
+                    "LIMIT 200"
+            ).getResultList();
+        } else {
+            rows = em.createNativeQuery(
+                    "SELECT p.current_employment_status::text AS employment_status, " +
+                    "       p.monthly_income_range, " +
+                    "       p.industry_sector, " +
+                    "       p.highest_academic_qualification, " +
+                    "       u.state_of_origin::text AS state_of_origin, " +
+                    "       u.lga, " +
+                    "       COUNT(*) AS citizen_count " +
+                    "FROM auth.users_auth u " +
+                    "JOIN citizen_profile.profiles p ON p.citizen_code = u.citizen_code " +
+                    "WHERE u.role = 'citizen' " +
+                    "  AND p.current_employment_status IS NOT NULL " +
+                    "  AND u.state_of_residence::text = :state " +
+                    "GROUP BY u.state_of_origin, u.lga, " +
+                    "         p.current_employment_status, " +
+                    "         p.monthly_income_range, " +
+                    "         p.industry_sector, " +
+                    "         p.highest_academic_qualification " +
+                    "ORDER BY citizen_count DESC " +
+                    "LIMIT 200"
+            ).setParameter("state", state).getResultList();
+        }
 
         List<EmploymentBreakdownDto> result = new ArrayList<>();
         for (Object[] row : rows) {
@@ -149,20 +221,40 @@ public class AnalyticsRepository {
 
     // ── Health Snapshot ────────────────────────────────────────────────────
 
-    public HealthIndicatorsSummaryDto findHealthIndicatorsSummary() {
-        Object[] row = (Object[]) em.createNativeQuery(
-                "SELECT " +
-                "  SUM(total_citizens_profiled), " +
-                "  SUM(vaccination_complete), " +
-                "  SUM(pregnant_count), " +
-                "  SUM(expectant_parents), " +
-                "  SUM(hypertension_diabetes_count), " +
-                "  SUM(nhis_enrolled_count), " +
-                "  SUM(nhis_senior_plan_count), " +
-                "  SUM(blood_group_recorded), " +
-                "  SUM(chronic_illness_count) " +
-                "FROM analytics.health_snapshot"
-        ).getSingleResult();
+    public HealthIndicatorsSummaryDto findHealthIndicatorsSummary(String state) {
+        Object[] row;
+        if (state == null) {
+            row = (Object[]) em.createNativeQuery(
+                    "SELECT " +
+                    "  SUM(total_citizens_profiled), " +
+                    "  SUM(vaccination_complete), " +
+                    "  SUM(pregnant_count), " +
+                    "  SUM(expectant_parents), " +
+                    "  SUM(hypertension_diabetes_count), " +
+                    "  SUM(nhis_enrolled_count), " +
+                    "  SUM(nhis_senior_plan_count), " +
+                    "  SUM(blood_group_recorded), " +
+                    "  SUM(chronic_illness_count) " +
+                    "FROM analytics.health_snapshot"
+            ).getSingleResult();
+        } else {
+            row = (Object[]) em.createNativeQuery(
+                    "SELECT " +
+                    "  COUNT(*), " +
+                    "  COUNT(*) FILTER (WHERE p.vaccination_record_completed = true), " +
+                    "  COUNT(*) FILTER (WHERE p.is_pregnant = true), " +
+                    "  COUNT(*) FILTER (WHERE p.is_expectant_parent = true), " +
+                    "  COUNT(*) FILTER (WHERE p.hypertension_diabetes_flag = true), " +
+                    "  COUNT(*) FILTER (WHERE p.nhis_enrolled = true), " +
+                    "  COUNT(*) FILTER (WHERE p.nhis_senior_plan = true), " +
+                    "  COUNT(*) FILTER (WHERE p.blood_group IS NOT NULL), " +
+                    "  COUNT(*) FILTER (WHERE p.chronic_illness_diagnoses IS NOT NULL) " +
+                    "FROM auth.users_auth u " +
+                    "JOIN citizen_profile.profiles p ON p.citizen_code = u.citizen_code " +
+                    "WHERE u.role = 'citizen' " +
+                    "  AND u.state_of_residence::text = :state"
+            ).setParameter("state", state).getSingleResult();
+        }
 
         return new HealthIndicatorsSummaryDto(
                 toLong(row[0]),
@@ -180,25 +272,28 @@ public class AnalyticsRepository {
     // ── Citizen List (Paginated) ───────────────────────────────────────────
 
     @SuppressWarnings("unchecked")
-    public List<CitizenListItemDto> searchCitizens(String stateOfOrigin, String lga,
+    public List<CitizenListItemDto> searchCitizens(String stateOfOrigin, String stateOfResidence, String lga,
                                                    String gender, String cohortName,
                                                    int page, int size) {
         StringBuilder sql = new StringBuilder(
                 "SELECT citizen_code, first_name, middle_name, last_name, " +
-                "       state_of_origin, state_of_residence, lga, gender, age, cohort_name, registered_at " +
+                "       state_of_origin, state_of_residence, lga, residence_lga, gender, age, cohort_name, registered_at " +
                 "FROM analytics.citizen_summary WHERE 1=1 "
         );
 
         if (stateOfOrigin != null && !stateOfOrigin.isBlank()) {
             sql.append("AND state_of_origin = :stateOfOrigin ");
         }
-        if (lga != null && !lga.isBlank()) {
+        if (stateOfResidence != null && !stateOfResidence.isBlank()) {
+            sql.append("AND state_of_residence = :stateOfResidence ");
+        }
+        if (lga            != null && !lga.isBlank()) {
             sql.append("AND lga ILIKE :lga ");
         }
-        if (gender != null && !gender.isBlank()) {
+        if (gender         != null && !gender.isBlank()) {
             sql.append("AND gender = :gender ");
         }
-        if (cohortName != null && !cohortName.isBlank()) {
+        if (cohortName     != null && !cohortName.isBlank()) {
             sql.append("AND cohort_name ILIKE :cohortName ");
         }
 
@@ -206,6 +301,7 @@ public class AnalyticsRepository {
 
         Query query = em.createNativeQuery(sql.toString());
         if (stateOfOrigin != null && !stateOfOrigin.isBlank()) query.setParameter("stateOfOrigin", stateOfOrigin);
+        if (stateOfResidence != null && !stateOfResidence.isBlank()) query.setParameter("stateOfResidence", stateOfResidence);
         if (lga            != null && !lga.isBlank())           query.setParameter("lga", "%" + lga + "%");
         if (gender         != null && !gender.isBlank())        query.setParameter("gender", gender);
         if (cohortName     != null && !cohortName.isBlank())    query.setParameter("cohortName", "%" + cohortName + "%");
@@ -223,25 +319,28 @@ public class AnalyticsRepository {
                     (String)       row[5],
                     (String)       row[6],
                     (String)       row[7],
-                    row[8] != null ? toInt(row[8]) : null,
-                    (String)       row[9],
-                    toOffsetDateTime(row[10])
+                    (String)       row[8],
+                    row[9] != null ? toInt(row[9]) : null,
+                    (String)       row[10],
+                    toOffsetDateTime(row[11])
             ));
         }
         return result;
     }
 
-    public long countSearchCitizens(String stateOfOrigin, String lga, String gender, String cohortName) {
+    public long countSearchCitizens(String stateOfOrigin, String stateOfResidence, String lga, String gender, String cohortName) {
         StringBuilder sql = new StringBuilder(
                 "SELECT COUNT(*) FROM analytics.citizen_summary WHERE 1=1 "
         );
         if (stateOfOrigin != null && !stateOfOrigin.isBlank()) sql.append("AND state_of_origin = :stateOfOrigin ");
+        if (stateOfResidence != null && !stateOfResidence.isBlank()) sql.append("AND state_of_residence = :stateOfResidence ");
         if (lga            != null && !lga.isBlank())           sql.append("AND lga ILIKE :lga ");
         if (gender         != null && !gender.isBlank())        sql.append("AND gender = :gender ");
         if (cohortName     != null && !cohortName.isBlank())    sql.append("AND cohort_name ILIKE :cohortName ");
 
         Query query = em.createNativeQuery(sql.toString());
         if (stateOfOrigin != null && !stateOfOrigin.isBlank()) query.setParameter("stateOfOrigin", stateOfOrigin);
+        if (stateOfResidence != null && !stateOfResidence.isBlank()) query.setParameter("stateOfResidence", stateOfResidence);
         if (lga            != null && !lga.isBlank())           query.setParameter("lga", "%" + lga + "%");
         if (gender         != null && !gender.isBlank())        query.setParameter("gender", gender);
         if (cohortName     != null && !cohortName.isBlank())    query.setParameter("cohortName", "%" + cohortName + "%");
@@ -303,7 +402,7 @@ public class AnalyticsRepository {
                 "elderly_living_arrangement, adl_assistance_level, chronic_illness_diagnoses, " +
                 "clean_water_electricity, nassp_welfare_registered, " +
                 // Timestamps (cols 130)
-                "profile_last_updated " +
+                "profile_last_updated, residence_lga " +
                 "FROM analytics.citizen_summary WHERE citizen_code = :code"
         ).setParameter("code", citizenCode).getResultList();
 
@@ -316,6 +415,7 @@ public class AnalyticsRepository {
                 toLocalDate(r[6]),
                 r[7] != null ? toInt(r[7]) : null,
                 (String)  r[8],  (String)  r[9],  (String)  r[10], (String)  r[11],
+                (String)  r[131],
                 (String)  r[12], toOffsetDateTime(r[13]),
                 (String)  r[14],
                 r[15] != null ? toInt(r[15]) : null,

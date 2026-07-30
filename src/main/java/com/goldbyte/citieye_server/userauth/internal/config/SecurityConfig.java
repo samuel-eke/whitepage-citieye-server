@@ -66,6 +66,8 @@ public class SecurityConfig {
                                 "/api/admin/content/**",
                                 "/api/field-officers/health/**",
                                 "/api/field-officers/education/**",
+                                "/api/field-officers/opportunities/**",
+                                "/api/citizen/**",
                                 "/api/profile/**",
                                 "/api/analytics/**")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())

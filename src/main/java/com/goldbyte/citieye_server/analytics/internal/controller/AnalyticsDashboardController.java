@@ -2,12 +2,17 @@ package com.goldbyte.citieye_server.analytics.internal.controller;
 
 import com.goldbyte.citieye_server.analytics.internal.dto.*;
 import com.goldbyte.citieye_server.analytics.internal.service.AnalyticsService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * REST controller exposing analytics dashboard endpoints.
@@ -25,17 +30,46 @@ import java.util.Map;
 @RequestMapping("/api/analytics")
 public class AnalyticsDashboardController {
 
+    @PersistenceContext
+    private EntityManager em;
+
     @Autowired
     private AnalyticsService analyticsService;
+
+    private record AdminStateInfo(String role, String stateOfResidence) {}
+
+    private AdminStateInfo resolveAdminInfo(String adminCode) {
+        if (adminCode == null || "anonymousUser".equalsIgnoreCase(adminCode)) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = em.createNativeQuery(
+                "SELECT role::text, state_of_residence::text FROM auth.admin_user WHERE citizen_code = :code"
+        ).setParameter("code", adminCode).getResultList();
+        if (rows.isEmpty()) return null;
+        Object[] row = rows.get(0);
+        return new AdminStateInfo((String) row[0], (String) row[1]);
+    }
 
     /**
      * Returns the full analytics summary — totals, state/LGA breakdown, cohort breakdown,
      * employment snapshot, and health indicators.
      */
     @GetMapping("/summary")
-    public ResponseEntity<AnalyticsSummaryDto> getSummary() {
+    public ResponseEntity<?> getSummary() {
         try {
-            return ResponseEntity.ok(analyticsService.getSummary());
+            String adminCode = SecurityContextHolder.getContext().getAuthentication().getName();
+            AdminStateInfo adminInfo = resolveAdminInfo(adminCode);
+            if (adminInfo == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "Could not resolve administrator details."));
+            }
+
+            if ("super_admin".equalsIgnoreCase(adminInfo.role())) {
+                return ResponseEntity.ok(analyticsService.getSummary(null));
+            } else {
+                return ResponseEntity.ok(analyticsService.getSummary(adminInfo.stateOfResidence()));
+            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -52,7 +86,7 @@ public class AnalyticsDashboardController {
      * @param size          page size (default 20)
      */
     @GetMapping("/citizens")
-    public ResponseEntity<PagedResult<CitizenListItemDto>> listCitizens(
+    public ResponseEntity<?> listCitizens(
             @RequestParam(required = false) String stateOfOrigin,
             @RequestParam(required = false) String lga,
             @RequestParam(required = false) String gender,
@@ -63,8 +97,20 @@ public class AnalyticsDashboardController {
         if (size > 100) size = 100; // cap maximum page size
 
         try {
+            String adminCode = SecurityContextHolder.getContext().getAuthentication().getName();
+            AdminStateInfo adminInfo = resolveAdminInfo(adminCode);
+            if (adminInfo == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "Could not resolve administrator details."));
+            }
+
+            String stateResidenceFilter = null;
+            if (!"super_admin".equalsIgnoreCase(adminInfo.role())) {
+                stateResidenceFilter = adminInfo.stateOfResidence();
+            }
+
             PagedResult<CitizenListItemDto> result =
-                    analyticsService.listCitizens(stateOfOrigin, lga, gender, cohortName, page, size);
+                    analyticsService.listCitizens(stateOfOrigin, stateResidenceFilter, lga, gender, cohortName, page, size);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -84,10 +130,27 @@ public class AnalyticsDashboardController {
                     .body(Map.of("message", "Citizen code must not be blank."));
         }
 
-        return analyticsService.getCitizenProfileDetail(citizenCode)
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("message", "No citizen found with code: " + citizenCode)));
+        String adminCode = SecurityContextHolder.getContext().getAuthentication().getName();
+        AdminStateInfo adminInfo = resolveAdminInfo(adminCode);
+        if (adminInfo == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Could not resolve administrator details."));
+        }
+
+        Optional<CitizenProfileAnalyticsDto> profileOpt = analyticsService.getCitizenProfileDetail(citizenCode);
+        if (profileOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "No citizen found with code: " + citizenCode));
+        }
+
+        CitizenProfileAnalyticsDto profile = profileOpt.get();
+        boolean isSuperAdmin = "super_admin".equalsIgnoreCase(adminInfo.role());
+        if (!isSuperAdmin && !adminInfo.stateOfResidence().equalsIgnoreCase(profile.stateOfResidence())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Forbidden. You only have access to citizens in " + adminInfo.stateOfResidence()));
+        }
+
+        return ResponseEntity.ok(profile);
     }
 
     /**

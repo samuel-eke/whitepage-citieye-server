@@ -59,6 +59,7 @@ public class CitizenLoginService {
                 u.address AS address, 
                 u.state_of_residence AS state_of_residence, 
                 u.state_of_origin AS state_of_origin, 
+                u.residence_lga AS residence_lga,
                 u.role AS role, 
                 u.date_of_birth AS date_of_birth, 
                 u.created_at AS created_at, 
@@ -153,6 +154,7 @@ public class CitizenLoginService {
         String address = tuple.get("address", String.class);
         String stateOfResidence = tuple.get("state_of_residence") != null ? String.valueOf(tuple.get("state_of_residence")) : null;
         String stateOfOrigin = tuple.get("state_of_origin") != null ? String.valueOf(tuple.get("state_of_origin")) : null;
+        String residenceLga = tuple.get("residence_lga", String.class);
         String role = tuple.get("role") != null ? String.valueOf(tuple.get("role")) : null;
 
         // Safe Date Mapping
@@ -218,6 +220,7 @@ public class CitizenLoginService {
                 .createdAt(createdAt)
                 .age(age)
                 .lga(lga)
+                .residenceLga(residenceLga)
                 .hometown(hometown)
                 .currentEducationalLevel(currentEducationalLevel)
                 .highestEducationalQualification(highestEducationalQualification)

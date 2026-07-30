@@ -19,6 +19,9 @@ public class AdminUserLoginResp {
     private String citizenCode;
     /** The admin's role: agency_admin or super_admin */
     private String role;
+    private String stateOfResidence;
+    private String lga;
+    private String residenceLga;
     /** Granular permissions granted to this admin via RBAC */
     private List<String> permissions;
     private String message;

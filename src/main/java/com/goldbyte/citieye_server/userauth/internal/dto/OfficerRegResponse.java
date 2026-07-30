@@ -20,6 +20,7 @@ public class OfficerRegResponse {
     private String stateOfResidence;
     private String stateOfOrigin;
     private String lga;
+    private String residenceLga;
     private String citizenCode;
     private String userRole;
     private String specialty;

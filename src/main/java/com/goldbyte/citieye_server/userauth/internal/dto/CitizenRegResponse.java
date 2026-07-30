@@ -18,6 +18,8 @@ public class CitizenRegResponse {
     private String gender;
     private String address;
     private String stateOfResidence;
+    private String lga;
+    private String residenceLga;
     private String citizenCode;
     private String userRole;
     private String cohortPlacement;

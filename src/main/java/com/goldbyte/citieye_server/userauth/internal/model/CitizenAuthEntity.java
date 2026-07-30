@@ -67,6 +67,10 @@ public class CitizenAuthEntity {
     @Column(name = "lga", length = 100)
     private String lga;
 
+    @Size(max = 100)
+    @Column(name = "residence_lga", length = 100)
+    private String residenceLga;
+
     @Size(max = 30)
     @Column(name = "citizen_code", length = 30)
     private String citizenCode;

@@ -61,6 +61,7 @@ public class CitizenLoginServiceIntegrationTest {
         citizenUser.setStateOfOrigin(NigerianState.Lagos);
         citizenUser.setGender(GenderType.female);
         citizenUser.setLga("Ikeja");
+        citizenUser.setResidenceLga("Ikeja");
         citizenUser.setRole(UserRole.citizen);
         citizenUser.setCreatedAt(OffsetDateTime.now());
 
@@ -89,6 +90,8 @@ public class CitizenLoginServiceIntegrationTest {
         officerUser.setStateOfResidence(NigerianState.Lagos);
         officerUser.setStateOfOrigin(NigerianState.Lagos);
         officerUser.setGender(GenderType.male);
+        officerUser.setLga("Ikeja");
+        officerUser.setResidenceLga("Ikeja");
         officerUser.setRole(UserRole.field_officer);
         officerUser.setCreatedAt(OffsetDateTime.now());
 

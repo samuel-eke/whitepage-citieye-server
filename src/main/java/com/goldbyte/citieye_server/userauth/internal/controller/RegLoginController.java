@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.Period;
 import java.util.Map;
+import java.util.Optional;
 import com.goldbyte.citieye_server.userauth.internal.service.RefreshTokenService;
 import com.goldbyte.citieye_server.userauth.internal.model.RefreshToken;
 import com.goldbyte.citieye_server.userauth.internal.repo.RefreshTokenRepository;
@@ -94,16 +95,16 @@ public class RegLoginController {
     @Transactional
     public ResponseEntity<CitizenRegResponse> reg(@Valid @RequestBody CitizenRegRequest request) {
         int age = Period.between(request.getDateOfBirth(), LocalDate.now()).getYears();
-        if (age >= 18) {
-            if (request.getNin() == null || request.getNin().isBlank()) {
+        String nin = request.getNin();
+        if (nin != null && nin.isBlank()) {
+            nin = null;
+        }
+
+        if (nin != null) {
+            Optional<CitizenAuthEntity> existing = citizenRegRepo.findFirstByNin(nin.trim());
+            if (existing.isPresent()) {
                 return ResponseEntity.badRequest().body(
-                    CitizenRegResponse.builder().message("NIN is required for adults").build()
-                );
-            }
-        } else {
-            if ((request.getNin() == null || request.getNin().isBlank()) && (request.getParentNin() == null || request.getParentNin().isBlank())) {
-                return ResponseEntity.badRequest().body(
-                    CitizenRegResponse.builder().message("NIN or Parent's NIN is required for minors").build()
+                    CitizenRegResponse.builder().message("NIN already registered").build()
                 );
             }
         }
@@ -117,11 +118,17 @@ public class RegLoginController {
         citizenAuthEntity.setDateOfBirth(request.getDateOfBirth());
         citizenAuthEntity.setAddress(request.getAddress());
         citizenAuthEntity.setLga(request.getLga());
-        citizenAuthEntity.setParentNin(request.getParentNin());
+        citizenAuthEntity.setResidenceLga(request.getResidenceLga());
+
+        String parentNin = request.getParentNin();
+        if (parentNin != null && parentNin.isBlank()) {
+            parentNin = null;
+        }
+        citizenAuthEntity.setParentNin(parentNin);
 
         String citizenHashPassword = passwordEncoder.encode(request.getPassword());
         citizenAuthEntity.setPassword(citizenHashPassword);
-        citizenAuthEntity.setNin(request.getNin());
+        citizenAuthEntity.setNin(nin);
         citizenAuthEntity.setCreatedAt(OffsetDateTime.now());
 
         // Map stateOfResidence (String to Enum)
@@ -187,6 +194,8 @@ public class RegLoginController {
                 .gender(newlyCreatedCitizen.getGender().name())
                 .address(newlyCreatedCitizen.getAddress())
                 .stateOfResidence(newlyCreatedCitizen.getStateOfResidence().name())
+                .lga(newlyCreatedCitizen.getLga())
+                .residenceLga(newlyCreatedCitizen.getResidenceLga())
                 .citizenCode(newlyCreatedCitizen.getCitizenCode())
                 .userRole(newlyCreatedCitizen.getRole().name())
                 .cohortPlacement(registrationEvent.getCohortName())
@@ -374,6 +383,7 @@ public class RegLoginController {
         admin.setNin(request.getNin().trim());
         admin.setAddress(request.getAddress().trim());
         admin.setLga(request.getLga().trim());
+        admin.setResidenceLga(request.getResidenceLga().trim());
         admin.setDateOfBirth(request.getDateOfBirth());
         admin.setSpecialty(specialtyStr);
         admin.setCreatedAt(OffsetDateTime.now());
@@ -419,6 +429,7 @@ public class RegLoginController {
                 .stateOfResidence(newlyCreatedOfficer.getStateOfResidence().name())
                 .stateOfOrigin(newlyCreatedOfficer.getStateOfOrigin().name())
                 .lga(newlyCreatedOfficer.getLga())
+                .residenceLga(newlyCreatedOfficer.getResidenceLga())
                 .citizenCode(newlyCreatedOfficer.getCitizenCode())
                 .userRole(newlyCreatedOfficer.getRole().name())
                 .specialty(newlyCreatedOfficer.getSpecialty())

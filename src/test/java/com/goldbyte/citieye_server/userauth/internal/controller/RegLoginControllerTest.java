@@ -90,6 +90,7 @@ class RegLoginControllerTest {
         request.setNin("12345678901");
         request.setDateOfBirth(LocalDate.of(2000, 1, 1));
         request.setLga("Aba North");
+        request.setResidenceLga("Aba North");
 
         Set<ConstraintViolation<CitizenRegRequest>> violations = validator.validate(request);
         assertTrue(violations.isEmpty(), "Valid request should have no validation violations");
@@ -111,11 +112,14 @@ class RegLoginControllerTest {
                 .anyMatch(v -> v.getPropertyPath().toString().equals("dateOfBirth"));
         boolean hasLgaViolation = violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("lga"));
+        boolean hasResidenceLgaViolation = violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("residenceLga"));
 
         assertTrue(hasFirstNameViolation, "Should violate first name constraint");
         assertTrue(hasLastNameViolation, "Should violate last name constraint");
         assertTrue(hasDateOfBirthViolation, "Should violate dateOfBirth constraint");
         assertTrue(hasLgaViolation, "Should violate lga constraint");
+        assertTrue(hasResidenceLgaViolation, "Should violate residenceLga constraint");
     }
 
     @Test
@@ -129,6 +133,7 @@ class RegLoginControllerTest {
         request.setNin("123"); // should be exactly 11 characters
         request.setDateOfBirth(LocalDate.of(2000, 1, 1));
         request.setLga("Aba North");
+        request.setResidenceLga("Aba North");
 
         Set<ConstraintViolation<CitizenRegRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty());
@@ -153,6 +158,7 @@ class RegLoginControllerTest {
         request.setNin("12345678901");
         request.setDateOfBirth(LocalDate.of(1995, 5, 10));
         request.setLga("Aba North");
+        request.setResidenceLga("Aba North");
         request.setGender("male");
         request.setStateOfResidence("Lagos");
         request.setStateOfOrigin("Lagos");
@@ -166,6 +172,7 @@ class RegLoginControllerTest {
         savedModel.setPassword("hashed_password");
         savedModel.setNin("12345678901");
         savedModel.setLga("Aba North");
+        savedModel.setResidenceLga("Aba North");
         savedModel.setCitizenCode("CIT123");
         savedModel.setDateOfBirth(LocalDate.of(1995, 5, 10));
         savedModel.setGender(GenderType.male);

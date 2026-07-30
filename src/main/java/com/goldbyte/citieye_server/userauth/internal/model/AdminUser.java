@@ -105,6 +105,10 @@ public class AdminUser {
     @Column(name = "lga", length = 100)
     private String lga;
 
+    @Size(max = 100)
+    @Column(name = "residence_lga", length = 100)
+    private String residenceLga;
+
     @Column(name = "date_of_birth")
     private java.time.LocalDate dateOfBirth;
 

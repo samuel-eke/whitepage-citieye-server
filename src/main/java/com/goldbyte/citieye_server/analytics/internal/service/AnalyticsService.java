@@ -30,17 +30,17 @@ public class AnalyticsService {
      * headline metrics, state/LGA breakdown, cohort breakdown, employment and health snapshots.
      */
     @Transactional(readOnly = true)
-    public AnalyticsSummaryDto getSummary() {
-        long totalCitizens          = analyticsRepository.countTotalCitizens();
-        long last7Days              = analyticsRepository.countCitizensRegisteredInLastDays(7);
-        long last30Days             = analyticsRepository.countCitizensRegisteredInLastDays(30);
-        long maleCitizens           = analyticsRepository.countMaleCitizens();
-        long femaleCitizens         = analyticsRepository.countFemaleCitizens();
+    public AnalyticsSummaryDto getSummary(String state) {
+        long totalCitizens          = analyticsRepository.countTotalCitizens(state);
+        long last7Days              = analyticsRepository.countCitizensRegisteredInLastDays(7, state);
+        long last30Days             = analyticsRepository.countCitizensRegisteredInLastDays(30, state);
+        long maleCitizens           = analyticsRepository.countMaleCitizens(state);
+        long femaleCitizens         = analyticsRepository.countFemaleCitizens(state);
 
-        List<StateBreakdownDto>      byStateAndLga      = analyticsRepository.findStateAndLgaBreakdown();
-        List<CohortBreakdownDto>     byCohort           = analyticsRepository.findCohortBreakdown();
-        List<EmploymentBreakdownDto> byEmploymentStatus  = analyticsRepository.findEmploymentBreakdown();
-        HealthIndicatorsSummaryDto   healthIndicators    = analyticsRepository.findHealthIndicatorsSummary();
+        List<StateBreakdownDto>      byStateAndLga      = analyticsRepository.findStateAndLgaBreakdown(state);
+        List<CohortBreakdownDto>     byCohort           = analyticsRepository.findCohortBreakdown(state);
+        List<EmploymentBreakdownDto> byEmploymentStatus  = analyticsRepository.findEmploymentBreakdown(state);
+        HealthIndicatorsSummaryDto   healthIndicators    = analyticsRepository.findHealthIndicatorsSummary(state);
 
         return new AnalyticsSummaryDto(
                 totalCitizens,
@@ -58,23 +58,24 @@ public class AnalyticsService {
     /**
      * Returns a paginated list of citizens filtered by optional state, LGA, gender, and cohort.
      *
-     * @param stateOfOrigin optional filter by state of origin
-     * @param lga           optional partial-match filter by LGA
-     * @param gender        optional filter by gender ('male' or 'female')
-     * @param cohortName    optional partial-match filter by cohort name
-     * @param page          zero-based page index
-     * @param size          number of results per page (defaults to 20 if null or zero)
+     * @param stateOfOrigin    optional filter by state of origin
+     * @param stateOfResidence optional filter by state of residence
+     * @param lga              optional partial-match filter by LGA
+     * @param gender           optional filter by gender ('male' or 'female')
+     * @param cohortName       optional partial-match filter by cohort name
+     * @param page             zero-based page index
+     * @param size             number of results per page (defaults to 20 if null or zero)
      */
     @Transactional(readOnly = true)
-    public PagedResult<CitizenListItemDto> listCitizens(String stateOfOrigin, String lga,
+    public PagedResult<CitizenListItemDto> listCitizens(String stateOfOrigin, String stateOfResidence, String lga,
                                                         String gender, String cohortName,
                                                         Integer page, Integer size) {
         int pageNum  = (page != null && page >= 0) ? page : 0;
         int pageSize = (size != null && size > 0)  ? size : DEFAULT_PAGE_SIZE;
 
         List<CitizenListItemDto> content = analyticsRepository.searchCitizens(
-                stateOfOrigin, lga, gender, cohortName, pageNum, pageSize);
-        long total = analyticsRepository.countSearchCitizens(stateOfOrigin, lga, gender, cohortName);
+                stateOfOrigin, stateOfResidence, lga, gender, cohortName, pageNum, pageSize);
+        long total = analyticsRepository.countSearchCitizens(stateOfOrigin, stateOfResidence, lga, gender, cohortName);
 
         return PagedResult.of(content, pageNum, pageSize, total);
     }

@@ -11,6 +11,7 @@ public record CitizenListItemDto(
         String stateOfOrigin,
         String stateOfResidence,
         String lga,
+        String residenceLga,
         String gender,
         Integer age,
         String cohortName,

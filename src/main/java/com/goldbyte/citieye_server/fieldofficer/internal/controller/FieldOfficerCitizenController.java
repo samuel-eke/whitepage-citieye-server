@@ -36,6 +36,7 @@ public class FieldOfficerCitizenController {
             @RequestParam(required = false) String gender,
             @RequestParam(required = false) String cohortName,
             @RequestParam(required = false) String query,
+            @RequestParam(required = false) String lga,
             @RequestParam(defaultValue = "0")  int page,
             @RequestParam(defaultValue = "20") int size) {
 
@@ -47,15 +48,27 @@ public class FieldOfficerCitizenController {
                     .body(Map.of("message", "Unauthorized. Please log in."));
         }
 
+        OfficerDomainInfo officerInfo = resolveOfficerInfo(officerCode);
+        if (officerInfo == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Could not resolve officer details."));
+        }
+
+        boolean isSuperAdmin = officerInfo.role().contains("super");
+
         StringBuilder sql = new StringBuilder(
                 "SELECT citizen_code, first_name, middle_name, last_name, " +
-                "       state_of_origin, state_of_residence, lga, gender, age, cohort_name, registered_at " +
+                "       state_of_origin, state_of_residence, lga, residence_lga, gender, age, cohort_name, registered_at " +
                 "FROM analytics.citizen_summary WHERE 1=1 "
         );
         StringBuilder countSql = new StringBuilder(
                 "SELECT COUNT(*) FROM analytics.citizen_summary WHERE 1=1 "
         );
 
+        if (!isSuperAdmin) {
+            sql.append("AND state_of_residence = :officerState ");
+            countSql.append("AND state_of_residence = :officerState ");
+        }
         if (gender != null && !gender.isBlank()) {
             sql.append("AND gender = :gender ");
             countSql.append("AND gender = :gender ");
@@ -63,6 +76,10 @@ public class FieldOfficerCitizenController {
         if (cohortName != null && !cohortName.isBlank()) {
             sql.append("AND cohort_name ILIKE :cohortName ");
             countSql.append("AND cohort_name ILIKE :cohortName ");
+        }
+        if (lga != null && !lga.isBlank()) {
+            sql.append("AND lga ILIKE :lga ");
+            countSql.append("AND lga ILIKE :lga ");
         }
         if (query != null && !query.isBlank()) {
             sql.append("AND (first_name ILIKE :query OR last_name ILIKE :query OR citizen_code ILIKE :query) ");
@@ -73,6 +90,10 @@ public class FieldOfficerCitizenController {
         jakarta.persistence.Query listQuery = em.createNativeQuery(sql.toString());
         jakarta.persistence.Query countQuery = em.createNativeQuery(countSql.toString());
 
+        if (!isSuperAdmin) {
+            listQuery.setParameter("officerState", officerInfo.stateOfResidence());
+            countQuery.setParameter("officerState", officerInfo.stateOfResidence());
+        }
         if (gender != null && !gender.isBlank()) {
             listQuery.setParameter("gender", gender);
             countQuery.setParameter("gender", gender);
@@ -80,6 +101,10 @@ public class FieldOfficerCitizenController {
         if (cohortName != null && !cohortName.isBlank()) {
             listQuery.setParameter("cohortName", "%" + cohortName + "%");
             countQuery.setParameter("cohortName", "%" + cohortName + "%");
+        }
+        if (lga != null && !lga.isBlank()) {
+            listQuery.setParameter("lga", "%" + lga.trim() + "%");
+            countQuery.setParameter("lga", "%" + lga.trim() + "%");
         }
         if (query != null && !query.isBlank()) {
             String likeParam = "%" + query.trim() + "%";
@@ -104,10 +129,11 @@ public class FieldOfficerCitizenController {
             map.put("stateOfOrigin",    r[4] != null ? r[4] : "");
             map.put("stateOfResidence", r[5] != null ? r[5] : "");
             map.put("lga",              r[6] != null ? r[6] : "");
-            map.put("gender",           r[7] != null ? r[7] : "");
-            map.put("age",              r[8] != null ? r[8] : 0);
-            map.put("cohortName",       r[9] != null ? r[9] : "");
-            map.put("registeredAt",     r[10] != null ? r[10].toString() : "");
+            map.put("residenceLga",     r[7] != null ? r[7] : "");
+            map.put("gender",           r[8] != null ? r[8] : "");
+            map.put("age",              r[9] != null ? r[9] : 0);
+            map.put("cohortName",       r[10] != null ? r[10] : "");
+            map.put("registeredAt",     r[11] != null ? r[11].toString() : "");
             return map;
         }).toList();
 
@@ -164,7 +190,7 @@ public class FieldOfficerCitizenController {
                 "nysc_callup_number, nysc_posting_state, nysc_ppa_address, vocational_licensing, extracurricular_activities, " +
                 "exploitation_abuse_reported, " +
                 // General Profile fields (cols 68 - 72)
-                "current_employment_status, place_of_employment_business, nature_of_business_job, name_of_employer_business, household_size " +
+                "current_employment_status, place_of_employment_business, nature_of_business_job, name_of_employer_business, household_size, residence_lga " +
                 "FROM analytics.citizen_summary WHERE citizen_code = :code"
         ).setParameter("code", citizenCode.trim()).getResultList();
 
@@ -174,6 +200,15 @@ public class FieldOfficerCitizenController {
         }
 
         Object[] r = rows.get(0);
+
+        // Geographically scoped access check
+        String citizenState = safeStr(r[10]);
+        boolean isSuperAdmin = officerInfo.role().contains("super");
+        if (!isSuperAdmin && !officerInfo.stateOfResidence().equalsIgnoreCase(citizenState)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Forbidden. You can only view citizens in your state of residence: " + officerInfo.stateOfResidence()));
+        }
+
         Map<String, Object> responseMap = new HashMap<>();
 
         // 1. Add Basic Identity (All officers get this)
@@ -189,6 +224,7 @@ public class FieldOfficerCitizenController {
         responseMap.put("stateOfOrigin",           safeStr(r[9]));
         responseMap.put("stateOfResidence",        safeStr(r[10]));
         responseMap.put("lga",                     safeStr(r[11]));
+        responseMap.put("residenceLga",             safeStr(r[73]));
         responseMap.put("address",                 safeStr(r[12]));
         responseMap.put("registeredAt",            r[13] != null ? r[13].toString() : "");
         responseMap.put("cohortName",              safeStr(r[14]));
@@ -288,7 +324,7 @@ public class FieldOfficerCitizenController {
     private OfficerDomainInfo resolveOfficerInfo(String officerCode) {
         @SuppressWarnings("unchecked")
         List<Object[]> rows = em.createNativeQuery(
-                "SELECT specialty, role::text " +
+                "SELECT specialty, role::text, state_of_residence::text " +
                 "FROM auth.admin_user WHERE citizen_code = :code"
         ).setParameter("code", officerCode).getResultList();
 
@@ -296,7 +332,8 @@ public class FieldOfficerCitizenController {
         Object[] row = rows.get(0);
         return new OfficerDomainInfo(
                 row[0] != null ? (String) row[0] : "",
-                row[1] != null ? (String) row[1] : ""
+                row[1] != null ? (String) row[1] : "",
+                row[2] != null ? (String) row[2] : ""
         );
     }
 
@@ -312,5 +349,5 @@ public class FieldOfficerCitizenController {
         return sb.toString().trim();
     }
 
-    private record OfficerDomainInfo(String specialty, String role) {}
+    private record OfficerDomainInfo(String specialty, String role, String stateOfResidence) {}
 }

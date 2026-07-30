@@ -3,6 +3,8 @@ package com.goldbyte.citieye_server.admin_content_cms.internal.service;
 import com.goldbyte.citieye_server.admin_content_cms.PostDto;
 import com.goldbyte.citieye_server.admin_content_cms.internal.entity.AdminCMSContentEntity;
 import com.goldbyte.citieye_server.admin_content_cms.internal.repo.AdminCMSContentEntityRepository;
+import com.goldbyte.citieye_server.admin_content_cms.internal.repo.OpportunityRepository;
+import com.goldbyte.citieye_server.admin_content_cms.internal.repo.OpportunityApplicationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,11 +28,17 @@ class ServiceAdminCMSTest {
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
+    @Mock
+    private OpportunityRepository opportunityRepository;
+
+    @Mock
+    private OpportunityApplicationRepository opportunityApplicationRepository;
+
     private ServiceAdminCMS serviceAdminCMS;
 
     @BeforeEach
     void setUp() {
-        serviceAdminCMS = new ServiceAdminCMS(repository, eventPublisher);
+        serviceAdminCMS = new ServiceAdminCMS(repository, eventPublisher, opportunityRepository, opportunityApplicationRepository);
     }
 
     @Test

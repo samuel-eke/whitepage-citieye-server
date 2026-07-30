@@ -39,6 +39,7 @@ public class CitizenProfilePublicServiceImpl implements CitizenProfilePublicServ
             SELECT 
                 u.state_of_residence AS state_residence,
                 u.state_of_origin AS state_origin,
+                u.date_of_birth AS date_of_birth,
                 cp.cohort_id AS cohort_id
             FROM auth.users_auth u
             LEFT JOIN citizen_profile.profiles p ON u.citizen_code = p.citizen_code
@@ -51,14 +52,15 @@ public class CitizenProfilePublicServiceImpl implements CitizenProfilePublicServ
                 .getResultList();
 
         if (results.isEmpty()) {
-            return new CitizenTargetingParams(null, null, null);
+            return new CitizenTargetingParams(null, null, null, null);
         }
 
         Tuple tuple = results.get(0);
         String stateResidence = tuple.get("state_residence") != null ? String.valueOf(tuple.get("state_residence")) : null;
         String stateOrigin = tuple.get("state_origin") != null ? String.valueOf(tuple.get("state_origin")) : null;
         Integer cohortId = tuple.get("cohort_id") != null ? ((Number) tuple.get("cohort_id")).intValue() : null;
+        java.time.LocalDate dateOfBirth = tuple.get("date_of_birth") != null ? tuple.get("date_of_birth", java.time.LocalDate.class) : null;
         
-        return new CitizenTargetingParams(cohortId, stateResidence, stateOrigin);
+        return new CitizenTargetingParams(cohortId, stateResidence, stateOrigin, dateOfBirth);
     }
 }

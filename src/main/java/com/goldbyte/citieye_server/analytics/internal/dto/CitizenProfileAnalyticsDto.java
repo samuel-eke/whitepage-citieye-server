@@ -24,6 +24,7 @@ public record CitizenProfileAnalyticsDto(
         String stateOfOrigin,
         String stateOfResidence,
         String lga,
+        String residenceLga,
         String address,
         OffsetDateTime registeredAt,
 

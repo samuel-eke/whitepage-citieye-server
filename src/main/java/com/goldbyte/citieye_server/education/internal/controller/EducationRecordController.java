@@ -1,9 +1,12 @@
 package com.goldbyte.citieye_server.education.internal.controller;
 
 import com.goldbyte.citieye_server.citizen_profile.CitizenProfilePublicService;
+import com.goldbyte.citieye_server.citizen_profile.CitizenTargetingParams;
 import com.goldbyte.citieye_server.education.internal.model.EducationRecord;
 import com.goldbyte.citieye_server.education.internal.repo.EducationRecordRepository;
 import com.goldbyte.citieye_server.education.internal.service.EducationQuestionRegistry;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -23,6 +26,9 @@ import java.util.Map;
 @RequestMapping("/api/field-officers/education")
 public class EducationRecordController {
 
+    @PersistenceContext
+    private EntityManager em;
+
     private final EducationRecordRepository educationRecordRepository;
     private final CitizenProfilePublicService citizenProfilePublicService;
     private final EducationQuestionRegistry educationQuestionRegistry;
@@ -33,6 +39,18 @@ public class EducationRecordController {
         this.educationRecordRepository = educationRecordRepository;
         this.citizenProfilePublicService = citizenProfilePublicService;
         this.educationQuestionRegistry = educationQuestionRegistry;
+    }
+
+    private record OfficerStateInfo(String role, String stateOfResidence) {}
+
+    private OfficerStateInfo resolveOfficerInfo(String officerCode) {
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = em.createNativeQuery(
+                "SELECT role::text, state_of_residence::text FROM auth.admin_user WHERE citizen_code = :code"
+        ).setParameter("code", officerCode).getResultList();
+        if (rows.isEmpty()) return null;
+        Object[] row = rows.get(0);
+        return new OfficerStateInfo((String) row[0], (String) row[1]);
     }
 
     @GetMapping("/questions")
@@ -48,6 +66,30 @@ public class EducationRecordController {
     public ResponseEntity<?> getEducationRecords(@PathVariable String citizenCode) {
         if (citizenCode == null || citizenCode.isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("message", "Citizen code is required."));
+        }
+
+        String officerCode = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (officerCode == null || "anonymousUser".equalsIgnoreCase(officerCode)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Unauthorized. Please log in."));
+        }
+
+        OfficerStateInfo officerInfo = resolveOfficerInfo(officerCode);
+        if (officerInfo == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Could not resolve officer details."));
+        }
+
+        CitizenTargetingParams citizenParams = citizenProfilePublicService.getTargetingParams(citizenCode);
+        if (citizenParams.getStateResidence() == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Citizen profile not found."));
+        }
+
+        boolean isSuperAdmin = officerInfo.role().contains("super");
+        if (!isSuperAdmin && !officerInfo.stateOfResidence().equalsIgnoreCase(citizenParams.getStateResidence())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Forbidden. You can only access records for citizens in your state of residence: " + officerInfo.stateOfResidence()));
         }
 
         List<EducationRecord> records = educationRecordRepository.findAllByCitizenCode(citizenCode.trim());
@@ -67,6 +109,19 @@ public class EducationRecordController {
         if (!citizenProfilePublicService.profileExists(request.getCitizenCode())) {
             return ResponseEntity.badRequest()
                     .body(Map.of("message", "Invalid citizen code. Citizen profile not found."));
+        }
+
+        OfficerStateInfo officerInfo = resolveOfficerInfo(officerCode);
+        if (officerInfo == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Could not resolve officer details."));
+        }
+
+        CitizenTargetingParams citizenParams = citizenProfilePublicService.getTargetingParams(request.getCitizenCode());
+        boolean isSuperAdmin = officerInfo.role().contains("super");
+        if (!isSuperAdmin && !officerInfo.stateOfResidence().equalsIgnoreCase(citizenParams.getStateResidence())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Forbidden. You can only log records for citizens in your state of residence: " + officerInfo.stateOfResidence()));
         }
 
         // Create and save education record

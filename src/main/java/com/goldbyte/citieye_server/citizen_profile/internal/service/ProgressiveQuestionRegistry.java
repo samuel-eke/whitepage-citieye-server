@@ -27,9 +27,11 @@ import java.util.Map;
 public class ProgressiveQuestionRegistry {
 
     private final Map<AgeCohort, List<ProgressiveQuestion>> registry = new EnumMap<>(AgeCohort.class);
+    private final List<ProgressiveQuestion> commonQuestions = new java.util.ArrayList<>();
 
     @PostConstruct
     public void init() {
+        initializeCommonQuestions();
 
         // =====================================================================
         // Cohort 1: 0–5 (Early Childhood Development)
@@ -379,14 +381,7 @@ public class ProgressiveQuestionRegistry {
                         .options(List.of("EMPLOYED", "SELF_EMPLOYED", "UNDEREMPLOYED", "UNEMPLOYED"))
                         .piiSensitive(false)
                         .build(),
-                ProgressiveQuestion.builder()
-                        .fieldName("highest_academic_qualification")
-                        .dataType("SELECT")
-                        .label("What is your highest academic qualification?")
-                        .category("Education")
-                        .options(List.of("NONE", "FSLC", "SSCE_WAEC", "SSCE_NECO", "OND", "HND", "BSC", "MSC", "PHD", "PROFESSIONAL_CERT"))
-                        .piiSensitive(false)
-                        .build(),
+
                 ProgressiveQuestion.builder()
                         .fieldName("tin_number")
                         .dataType("TEXT")
@@ -818,6 +813,26 @@ public class ProgressiveQuestionRegistry {
         ));
     }
 
+    private void initializeCommonQuestions() {
+        commonQuestions.add(ProgressiveQuestion.builder()
+                .fieldName("current_educational_level")
+                .dataType("SELECT")
+                .label("What is your current educational level?")
+                .category("Education")
+                .options(List.of("PRE_PRIMARY", "PRIMARY", "SECONDARY", "TERTIARY", "NONE"))
+                .piiSensitive(false)
+                .build());
+
+        commonQuestions.add(ProgressiveQuestion.builder()
+                .fieldName("highest_academic_qualification")
+                .dataType("SELECT")
+                .label("What is your highest academic qualification?")
+                .category("Education")
+                .options(List.of("NONE", "FSLC", "SSCE_WAEC", "SSCE_NECO", "OND", "HND", "BSC", "MSC", "PHD", "PROFESSIONAL_CERT"))
+                .piiSensitive(false)
+                .build());
+    }
+
     /**
      * Returns the full list of defined questions for a given age cohort.
      *
@@ -826,6 +841,9 @@ public class ProgressiveQuestionRegistry {
      *         or an empty list if no questions are defined for that cohort
      */
     public List<ProgressiveQuestion> getQuestionsForCohort(AgeCohort cohort) {
-        return registry.getOrDefault(cohort, List.of());
+        List<ProgressiveQuestion> cohortSpecific = registry.getOrDefault(cohort, List.of());
+        List<ProgressiveQuestion> combined = new java.util.ArrayList<>(commonQuestions);
+        combined.addAll(cohortSpecific);
+        return combined;
     }
 }

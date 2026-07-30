@@ -42,6 +42,7 @@ public class CitizenLoginResponse {
     // === Profile Data ===
     private Integer age;
     private String lga;
+    private String residenceLga;
     private String hometown;
     private String currentEducationalLevel;
     private String highestEducationalQualification;
