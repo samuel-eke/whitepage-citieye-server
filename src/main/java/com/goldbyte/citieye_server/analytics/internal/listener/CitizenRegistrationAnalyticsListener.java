@@ -11,12 +11,16 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
- * Analytics module listener that reacts to application events (citizen registrations,
+ * Analytics module listener that reacts to application events (citizen
+ * registrations,
  * logged health records) to refresh materialized views.
  *
- * <p>The refresh is performed asynchronously so it does not block or delay
- * the citizen registration or health record API response. Spring Modulith boundary rules
- * are respected — only the public event classes are imported.</p>
+ * <p>
+ * The refresh is performed asynchronously so it does not block or delay
+ * the citizen registration or health record API response. Spring Modulith
+ * boundary rules
+ * are respected — only the public event classes are imported.
+ * </p>
  */
 @Component
 public class CitizenRegistrationAnalyticsListener {
@@ -35,7 +39,8 @@ public class CitizenRegistrationAnalyticsListener {
     public void onCitizenRegistered(CitizenRegisteredEvent event) {
         log.info("CitizenRegistrationAnalyticsListener: new citizen [{}] registered — refreshing analytics views.",
                 event.getCitizenCode());
-        refreshViews(event.getCitizenCode(), "Failed to refresh analytics materialized views after citizen registration");
+        refreshViews(event.getCitizenCode(),
+                "Failed to refresh analytics materialized views after citizen registration");
     }
 
     /**
@@ -45,9 +50,11 @@ public class CitizenRegistrationAnalyticsListener {
     @Async
     @EventListener
     public void onHealthRecordLogged(HealthRecordLoggedEvent event) {
-        log.info("CitizenRegistrationAnalyticsListener: new health record [{}] logged for citizen [{}] — refreshing analytics views.",
+        log.info(
+                "CitizenRegistrationAnalyticsListener: new health record [{}] logged for citizen [{}] — refreshing analytics views.",
                 event.getRecordId(), event.getCitizenCode());
-        refreshViews(event.getCitizenCode(), "Failed to refresh analytics materialized views after health record logging");
+        refreshViews(event.getCitizenCode(),
+                "Failed to refresh analytics materialized views after health record logging");
     }
 
     private void refreshViews(String contextCode, String errorMsgPrefix) {

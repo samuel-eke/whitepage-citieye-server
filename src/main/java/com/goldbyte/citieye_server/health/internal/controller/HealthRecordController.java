@@ -2,6 +2,7 @@ package com.goldbyte.citieye_server.health.internal.controller;
 
 import com.goldbyte.citieye_server.citizen_profile.CitizenProfilePublicService;
 import com.goldbyte.citieye_server.citizen_profile.CitizenTargetingParams;
+import com.goldbyte.citieye_server.health.internal.model.HealthQuestion;
 import com.goldbyte.citieye_server.health.internal.model.HealthRecord;
 import com.goldbyte.citieye_server.health.internal.repo.HealthRecordRepository;
 import com.goldbyte.citieye_server.health.internal.service.HealthQuestionRegistry;
@@ -69,6 +70,25 @@ public class HealthRecordController {
         return null;
     }
 
+    public record HealthQuestionResponse(
+            String fieldName,
+            String questionText,
+            String dataType,
+            List<String> choices,
+            boolean ndprSensitive,
+            Object previousValue
+    ) {}
+
+    private Object getFieldValue(HealthRecord record, String fieldName) {
+        try {
+            java.lang.reflect.Field field = HealthRecord.class.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(record);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return null;
+        }
+    }
+
     @GetMapping("/questions")
     public ResponseEntity<?> getQuestions(@RequestParam("citizenCode") String citizenCode) {
         if (citizenCode == null || citizenCode.isBlank()) {
@@ -87,11 +107,34 @@ public class HealthRecordController {
         }
 
         String type = resolveAgeGroup(dob);
-        if (type == null) {
-            return ResponseEntity.ok(healthQuestionRegistry.getQuestionsForType("all"));
-        }
+        List<HealthQuestion> questions = (type == null)
+                ? healthQuestionRegistry.getQuestionsForType("all")
+                : healthQuestionRegistry.getQuestionsForType(type);
 
-        return ResponseEntity.ok(healthQuestionRegistry.getQuestionsForType(type));
+        List<HealthRecord> records = healthRecordRepository.findAllByCitizenCode(citizenCode.trim());
+        // Sort records descending by loggedAt/id (latest first) to find the most recent inputs
+        records.sort((a, b) -> b.getLoggedAt().compareTo(a.getLoggedAt()));
+
+        List<HealthQuestionResponse> response = questions.stream().map(q -> {
+            Object previousValue = null;
+            for (HealthRecord rec : records) {
+                Object val = getFieldValue(rec, q.getFieldName());
+                if (val != null) {
+                    previousValue = val;
+                    break;
+                }
+            }
+            return new HealthQuestionResponse(
+                    q.getFieldName(),
+                    q.getQuestionText(),
+                    q.getDataType(),
+                    q.getChoices(),
+                    q.isNdprSensitive(),
+                    previousValue
+            );
+        }).toList();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/records/{citizenCode}")
@@ -191,6 +234,18 @@ public class HealthRecordController {
         mapQuestionnaireFields(request, record);
 
         HealthRecord saved = healthRecordRepository.save(record);
+
+        // Update citizen's progressive profile with common health questionnaire answers
+        citizenProfilePublicService.updateCommonHealthFields(
+                saved.getCitizenCode(),
+                saved.getCommonBloodGroup(),
+                saved.getCommonBloodGenotype(),
+                saved.getCommonIsExpectantParent(),
+                saved.getCommonIsPregnant(),
+                saved.getCommonHistoryOfDiabetes(),
+                saved.getCommonNhisEnrolled(),
+                saved.getCommonNhisSeniorPlanActive()
+        );
 
         eventPublisher.publishEvent(new HealthRecordLoggedEvent(
                 saved.getId(),

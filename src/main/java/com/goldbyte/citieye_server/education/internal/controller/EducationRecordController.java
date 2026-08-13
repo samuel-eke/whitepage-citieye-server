@@ -34,21 +34,23 @@ public class EducationRecordController {
     private final EducationQuestionRegistry educationQuestionRegistry;
 
     public EducationRecordController(EducationRecordRepository educationRecordRepository,
-                                     CitizenProfilePublicService citizenProfilePublicService,
-                                     EducationQuestionRegistry educationQuestionRegistry) {
+            CitizenProfilePublicService citizenProfilePublicService,
+            EducationQuestionRegistry educationQuestionRegistry) {
         this.educationRecordRepository = educationRecordRepository;
         this.citizenProfilePublicService = citizenProfilePublicService;
         this.educationQuestionRegistry = educationQuestionRegistry;
     }
 
-    private record OfficerStateInfo(String role, String stateOfResidence) {}
+    private record OfficerStateInfo(String role, String stateOfResidence) {
+    }
 
     private OfficerStateInfo resolveOfficerInfo(String officerCode) {
         @SuppressWarnings("unchecked")
         List<Object[]> rows = em.createNativeQuery(
-                "SELECT role::text, state_of_residence::text FROM auth.admin_user WHERE citizen_code = :code"
-        ).setParameter("code", officerCode).getResultList();
-        if (rows.isEmpty()) return null;
+                "SELECT role::text, state_of_residence::text FROM auth.admin_user WHERE citizen_code = :code")
+                .setParameter("code", officerCode).getResultList();
+        if (rows.isEmpty())
+            return null;
         Object[] row = rows.get(0);
         return new OfficerStateInfo((String) row[0], (String) row[1]);
     }
@@ -89,7 +91,9 @@ public class EducationRecordController {
         boolean isSuperAdmin = officerInfo.role().contains("super");
         if (!isSuperAdmin && !officerInfo.stateOfResidence().equalsIgnoreCase(citizenParams.getStateResidence())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("message", "Forbidden. You can only access records for citizens in your state of residence: " + officerInfo.stateOfResidence()));
+                    .body(Map.of("message",
+                            "Forbidden. You can only access records for citizens in your state of residence: "
+                                    + officerInfo.stateOfResidence()));
         }
 
         List<EducationRecord> records = educationRecordRepository.findAllByCitizenCode(citizenCode.trim());
@@ -121,7 +125,9 @@ public class EducationRecordController {
         boolean isSuperAdmin = officerInfo.role().contains("super");
         if (!isSuperAdmin && !officerInfo.stateOfResidence().equalsIgnoreCase(citizenParams.getStateResidence())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("message", "Forbidden. You can only log records for citizens in your state of residence: " + officerInfo.stateOfResidence()));
+                    .body(Map.of("message",
+                            "Forbidden. You can only log records for citizens in your state of residence: "
+                                    + officerInfo.stateOfResidence()));
         }
 
         // Create and save education record
@@ -178,16 +184,17 @@ public class EducationRecordController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                 "message", "Education record logged successfully.",
-                "recordId", saved.getId()
-        ));
+                "recordId", saved.getId()));
     }
 
     @PutMapping("/records/{recordId}")
-    public ResponseEntity<?> updateEducationRecord(@PathVariable Long recordId, @Valid @RequestBody EducationRecordRequest request) {
+    public ResponseEntity<?> updateEducationRecord(@PathVariable Long recordId,
+            @Valid @RequestBody EducationRecordRequest request) {
         // Enforce admin privileges
         boolean hasEditPrivilege = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                 .stream()
-                .anyMatch(a -> a.getAuthority().equals("super_admin") || a.getAuthority().equals("agency_admin") || a.getAuthority().equals("EDIT_EDUCATION_RECORD"));
+                .anyMatch(a -> a.getAuthority().equals("super_admin") || a.getAuthority().equals("agency_admin")
+                        || a.getAuthority().equals("EDIT_EDUCATION_RECORD"));
 
         if (!hasEditPrivilege) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -253,7 +260,8 @@ public class EducationRecordController {
         // Enforce super admin privileges
         boolean isSuperAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                 .stream()
-                .anyMatch(a -> a.getAuthority().equals("super_admin") || a.getAuthority().equals("DELETE_EDUCATION_RECORD"));
+                .anyMatch(a -> a.getAuthority().equals("super_admin")
+                        || a.getAuthority().equals("DELETE_EDUCATION_RECORD"));
 
         if (!isSuperAdmin) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
