@@ -1,0 +1,1153 @@
+{
+  "domain": "health",
+  "audience": "All Citizens (Ages 0-70+)",
+  "ageGroups": [
+    {
+      "ageRange": "0-5",
+      "label": "EARLY_CHILDHOOD_HEALTH",
+      "sections": [
+        {
+          "sectionId": "infant_immunization",
+          "sectionName": "Immunization & Vaccination Status",
+          "questions": [
+            {
+              "id": "h0_001",
+              "fieldName": "has_received_vaccines",
+              "question": "Has the child received any vaccines?",
+              "respondent": "Mother/guardian + health record",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Immunization program baseline, catch-up vaccination trigger",
+              "sensitiveData": false
+            },
+            {
+              "id": "h0_002",
+              "fieldName": "bcg_vaccination_completed",
+              "question": "BCG vaccination completed?",
+              "respondent": "Mother/guardian + vaccination card",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Vaccine uptake tracking, booster scheduling",
+              "sensitiveData": false
+            },
+            {
+              "id": "h0_003",
+              "fieldName": "polio_vaccination_series",
+              "question": "Polio vaccination series (doses received)",
+              "respondent": "Mother/guardian + vaccination card",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Polio eradication program monitoring",
+              "sensitiveData": false,
+              "properties": {
+                "dosesReceived": "integer (0-4)",
+                "isCompleted": "boolean"
+              }
+            },
+            {
+              "id": "h0_004",
+              "fieldName": "dpt_pentavalent_series",
+              "question": "DPT/Pentavalent series (doses received)",
+              "respondent": "Mother/guardian + vaccination card",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Vaccination series completion, catch-up scheduling",
+              "sensitiveData": false,
+              "properties": {
+                "dosesReceived": "integer (0-3)",
+                "isCompleted": "boolean"
+              }
+            },
+            {
+              "id": "h0_005",
+              "fieldName": "measles_mmr_vaccination",
+              "question": "Measles/MMR vaccination",
+              "respondent": "Mother/guardian + vaccination card",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Measles elimination initiative tracking",
+              "sensitiveData": false,
+              "properties": {
+                "isVaccinated": "boolean",
+                "ageAtVaccination": "integer (months)"
+              }
+            },
+            {
+              "id": "h0_006",
+              "fieldName": "yellow_fever_vaccination",
+              "question": "Yellow fever vaccination",
+              "respondent": "Mother/guardian + vaccination card",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Yellow fever risk area targeting, vaccination priority",
+              "sensitiveData": false,
+              "properties": {
+                "isVaccinated": "boolean",
+                "reason": "string (if not vaccinated)"
+              }
+            },
+            {
+              "id": "h0_007",
+              "fieldName": "all_vaccines_uptodate",
+              "question": "Up-to-date with all scheduled vaccines for age?",
+              "respondent": "Mother/guardian + vaccination card verification",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Age-appropriate vaccination completion, defaulter tracking",
+              "sensitiveData": false,
+              "properties": {
+                "isUptodate": "boolean",
+                "missingVaccines": "array of strings"
+              }
+            },
+            {
+              "id": "h0_008",
+              "fieldName": "vaccination_card_available",
+              "question": "Vaccination card/record available for verification?",
+              "respondent": "Field officer observation",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Data quality assurance, record digitization priority",
+              "sensitiveData": false
+            }
+          ]
+        },
+        {
+          "sectionId": "infant_nutrition",
+          "sectionName": "Nutrition & Feeding",
+          "questions": [
+            {
+              "id": "h0_009",
+              "fieldName": "exclusively_breastfed_6months",
+              "question": "Exclusively breastfed for first 6 months?",
+              "respondent": "Mother",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Breastfeeding promotion program evaluation, nutrition support",
+              "sensitiveData": false
+            },
+            {
+              "id": "h0_010",
+              "fieldName": "currently_breastfeeding",
+              "question": "Currently breastfeeding?",
+              "respondent": "Mother",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Continued breastfeeding support, weaning counseling",
+              "sensitiveData": false,
+              "properties": {
+                "isBreastfeeding": "boolean",
+                "monthsBreastfeeding": "integer"
+              }
+            },
+            {
+              "id": "h0_011",
+              "fieldName": "receiving_supplementary_foods",
+              "question": "Receiving fortified/supplementary foods?",
+              "respondent": "Mother/guardian",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Nutrition supplementation program eligibility",
+              "sensitiveData": false
+            },
+            {
+              "id": "h0_012",
+              "fieldName": "birth_weight",
+              "question": "Child's weight at birth",
+              "respondent": "Mother",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Birth weight tracking, low-birth-weight intervention",
+              "sensitiveData": true,
+              "sensitivityReason": "Health indicator",
+              "complianceNote": "Requires consent, minimal retention, triggers early intervention if <2.5kg",
+              "properties": {
+                "weightKg": "number",
+                "unknown": "boolean"
+              }
+            },
+            {
+              "id": "h0_013",
+              "fieldName": "current_weight_height",
+              "question": "Current weight and height",
+              "respondent": "Field officer or mother",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Malnutrition screening (stunting, wasting), nutrition intervention",
+              "sensitiveData": true,
+              "sensitivityReason": "Health indicator",
+              "complianceNote": "Measurement or estimation, triggers MUAC (mid-upper arm circumference) if <-2 SD",
+              "properties": {
+                "weightKg": "number",
+                "heightCm": "number",
+                "isMeasured": "boolean",
+                "isEstimated": "boolean"
+              }
+            },
+            {
+              "id": "h0_014",
+              "fieldName": "severe_malnutrition_signs",
+              "question": "Signs of severe malnutrition",
+              "respondent": "Field officer observation",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Severe malnutrition referral, emergency nutrition support",
+              "sensitiveData": true,
+              "sensitivityReason": "Health indicator",
+              "complianceNote": "If present, immediate referral to nutrition center",
+              "properties": {
+                "hasSwelling": "boolean",
+                "skinChanges": "boolean",
+                "hairColorChange": "boolean",
+                "anySignPresent": "boolean"
+              }
+            },
+            {
+              "id": "h0_015",
+              "fieldName": "receives_supplementary_nutrition_program",
+              "question": "Receives supplementary nutrition from government program (e.g., WINNE)?",
+              "respondent": "Mother/guardian",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Nutrition support program reach, targeting effectiveness",
+              "sensitiveData": false
+            }
+          ]
+        },
+        {
+          "sectionId": "infant_health_status",
+          "sectionName": "Health Status & Vulnerabilities",
+          "questions": [
+            {
+              "id": "h0_016",
+              "fieldName": "ever_hospitalized",
+              "question": "Ever hospitalized?",
+              "respondent": "Mother",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Health vulnerability tracking, chronic condition identification",
+              "sensitiveData": true,
+              "sensitivityReason": "Health history",
+              "complianceNote": "Requires consent, triggers early intervention if serious condition",
+              "properties": {
+                "hasBeenHospitalized": "boolean",
+                "reason": "string",
+                "ageAtAdmission": "integer (months)"
+              }
+            },
+            {
+              "id": "h0_017",
+              "fieldName": "current_health_condition",
+              "question": "Current health condition",
+              "respondent": "Field officer observation or mother report",
+              "dataType": "enum",
+              "required": true,
+              "governmentServiceMapped": "Acute illness tracking, outbreak monitoring",
+              "sensitiveData": true,
+              "sensitivityReason": "Health status",
+              "complianceNote": "Minimal retention, referral if severe",
+              "validationRules": {
+                "enum": ["Healthy", "Cough/Cold", "Fever", "Diarrhea", "Rash", "Other"]
+              }
+            },
+            {
+              "id": "h0_018",
+              "fieldName": "malaria_treatment_3months",
+              "question": "Received treatment for malaria in past 3 months?",
+              "respondent": "Mother",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Malaria intervention effectiveness, treatment access",
+              "sensitiveData": true,
+              "sensitivityReason": "Health history",
+              "complianceNote": "Triggers vector control program if positive"
+            },
+            {
+              "id": "h0_019",
+              "fieldName": "diarrheal_disease_treatment_3months",
+              "question": "Received treatment for diarrheal disease in past 3 months?",
+              "respondent": "Mother",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Diarrheal disease management, ORS/zinc access",
+              "sensitiveData": true,
+              "sensitivityReason": "Health history",
+              "complianceNote": "Triggers water/sanitation intervention if recurrent"
+            },
+            {
+              "id": "h0_020",
+              "fieldName": "congenital_chronic_condition",
+              "question": "Any congenital/chronic health condition diagnosed?",
+              "respondent": "Mother/health record",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Chronic disease registry, specialized care routing",
+              "sensitiveData": true,
+              "sensitivityReason": "Health diagnosis",
+              "complianceNote": "Requires consent, triggers specialist referral",
+              "properties": {
+                "hasCondition": "boolean",
+                "condition": "string"
+              }
+            }
+          ]
+        },
+        {
+          "sectionId": "maternal_health_context",
+          "sectionName": "Maternal Health Context",
+          "questions": [
+            {
+              "id": "h0_021",
+              "fieldName": "mother_age_at_birth",
+              "question": "Mother's age at child's birth",
+              "respondent": "Mother",
+              "dataType": "integer",
+              "required": true,
+              "governmentServiceMapped": "Adolescent pregnancy flagging, high-risk maternal health targeting",
+              "sensitiveData": true,
+              "sensitivityReason": "Health/age context",
+              "complianceNote": "Flags if <18; triggers adolescent maternal health program"
+            },
+            {
+              "id": "h0_022",
+              "fieldName": "mother_received_anc",
+              "question": "Mother received antenatal care (ANC)?",
+              "respondent": "Mother",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Antenatal care quality assessment, prenatal intervention",
+              "sensitiveData": true,
+              "sensitivityReason": "Maternal health",
+              "complianceNote": "Minimal retention, aggregate for program evaluation",
+              "properties": {
+                "receivedANC": "boolean",
+                "visitCount": "integer"
+              }
+            },
+            {
+              "id": "h0_023",
+              "fieldName": "delivery_setting",
+              "question": "Mother had facility delivery or home delivery?",
+              "respondent": "Mother",
+              "dataType": "enum",
+              "required": true,
+              "governmentServiceMapped": "Delivery setting tracking, safe motherhood program",
+              "sensitiveData": true,
+              "sensitivityReason": "Maternal health",
+              "complianceNote": "Triggers facility strengthening if home delivery",
+              "validationRules": {
+                "enum": ["Hospital/Clinic", "Home", "Traditional Birth Attendant", "Other"]
+              }
+            },
+            {
+              "id": "h0_024",
+              "fieldName": "mother_received_pnc",
+              "question": "Mother received postnatal care (PNC)?",
+              "respondent": "Mother",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Postpartum care quality, maternal mortality reduction",
+              "sensitiveData": true,
+              "sensitivityReason": "Maternal health",
+              "complianceNote": "Minimal retention, triggers community health worker follow-up if no PNC",
+              "properties": {
+                "receivedPNC": "boolean",
+                "visitCount": "integer (first week)"
+              }
+            }
+          ]
+        },
+        {
+          "sectionId": "developmental_milestones",
+          "sectionName": "Developmental Milestones",
+          "questions": [
+            {
+              "id": "h0_025",
+              "fieldName": "developmental_milestones_met",
+              "question": "Age-appropriate developmental milestones met?",
+              "respondent": "Mother or field officer observation",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Developmental delay screening, early intervention referral",
+              "sensitiveData": true,
+              "sensitivityReason": "Developmental status",
+              "complianceNote": "Triggers early childhood development assessment if delays noted",
+              "properties": {
+                "isSmiling": "boolean",
+                "isSitting": "boolean",
+                "isCrawling": "boolean",
+                "isSpeakingWords": "boolean"
+              }
+            },
+            {
+              "id": "h0_026",
+              "fieldName": "developmental_concerns",
+              "question": "Any concerns about child's development?",
+              "respondent": "Mother or field officer",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Disability screening, specialist referral, early intervention program",
+              "sensitiveData": true,
+              "sensitivityReason": "Developmental/disability status",
+              "complianceNote": "If yes, triggers immediate referral to pediatric specialist",
+              "properties": {
+                "hasConcerns": "boolean",
+                "concernTypes": {
+                  "dataType": "array",
+                  "enum": ["Hearing", "Vision", "Speech", "Movement", "Other"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ageRange": "6-11",
+      "label": "SCHOOL_AGE_CHILD_HEALTH",
+      "focus": "Preventive care, school health, growth monitoring, parasitic disease, nutrition, basic health awareness",
+      "fieldOfficerRole": "School health nurse, community health worker",
+      "respondent": "Child (primary) + parent/teacher (for verification)",
+      "estimatedCollectionTime": "15-20 minutes per child",
+      "sections": [
+        {
+          "sectionId": "school_immunization",
+          "sectionName": "Immunization Status & Boosters",
+          "questions": [
+            {
+              "id": "h6_001",
+              "fieldName": "dpt_td_booster",
+              "question": "Received DPT/Td booster?",
+              "respondent": "Child + health record",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Booster tracking, catch-up immunization scheduling",
+              "sensitiveData": false,
+              "properties": {
+                "isVaccinated": "boolean",
+                "when": "string (date or approximate)"
+              }
+            },
+            {
+              "id": "h6_002",
+              "fieldName": "measles_yf_booster",
+              "question": "Received measles/yellow fever booster?",
+              "respondent": "Child + health record",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Booster completion monitoring",
+              "sensitiveData": false,
+              "properties": {
+                "isVaccinated": "boolean",
+                "when": "string (date or approximate)"
+              }
+            },
+            {
+              "id": "h6_003",
+              "fieldName": "vaccination_card_available",
+              "question": "Vaccination card still available?",
+              "respondent": "Child/parent",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Record verification, digitization priority",
+              "sensitiveData": false
+            }
+          ]
+        },
+        {
+          "sectionId": "school_growth_nutrition",
+          "sectionName": "Growth & Nutrition",
+          "questions": [
+            {
+              "id": "h6_004",
+              "fieldName": "current_height_weight",
+              "question": "Current height and weight",
+              "respondent": "Field officer or school nurse",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Growth monitoring, stunting/wasting assessment",
+              "sensitiveData": true,
+              "sensitivityReason": "Health indicator",
+              "complianceNote": "Measured or estimated, triggers nutrition intervention if <-2 SD",
+              "properties": {
+                "heightCm": "number",
+                "weightKg": "number",
+                "isMeasured": "boolean"
+              }
+            },
+            {
+              "id": "h6_005",
+              "fieldName": "malnutrition_signs",
+              "question": "Signs of malnutrition",
+              "respondent": "Field officer observation",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Malnutrition intervention, nutrition counseling",
+              "sensitiveData": true,
+              "sensitivityReason": "Health status",
+              "complianceNote": "If present, triggers referral to nutrition center",
+              "properties": {
+                "paleSkin": "boolean",
+                "swelling": "boolean",
+                "poorHairCondition": "boolean",
+                "anySignPresent": "boolean"
+              }
+            },
+            {
+              "id": "h6_006",
+              "fieldName": "receives_school_meals",
+              "question": "Receives school meals?",
+              "respondent": "Child + school record",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "School feeding program reach, nutrition support",
+              "sensitiveData": false
+            },
+            {
+              "id": "h6_007",
+              "fieldName": "dietary_restrictions_allergies",
+              "question": "Any dietary restrictions or allergies?",
+              "respondent": "Child/parent",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "School health accommodation, allergy emergency preparedness",
+              "sensitiveData": true,
+              "sensitivityReason": "Health information",
+              "complianceNote": "Shared with school nurse for emergency protocols",
+              "properties": {
+                "hasRestrictions": "boolean",
+                "allergies": "array of strings"
+              }
+            }
+          ]
+        },
+        {
+          "sectionId": "school_preventive_health",
+          "sectionName": "Preventive Health & Common Conditions",
+          "questions": [
+            {
+              "id": "h6_008",
+              "fieldName": "current_symptoms",
+              "question": "Currently has symptoms?",
+              "respondent": "Child or field officer",
+              "dataType": "enum",
+              "required": true,
+              "governmentServiceMapped": "Acute illness tracking, outbreak response",
+              "sensitiveData": true,
+              "sensitivityReason": "Health status",
+              "complianceNote": "Minimal retention, referral if severe",
+              "validationRules": {
+                "enum": ["None", "Cough", "Fever", "Rash", "Diarrhea", "Other"]
+              }
+            },
+            {
+              "id": "h6_009",
+              "fieldName": "parasitic_infection_treatment",
+              "question": "Treated for parasitic infection (worms, schistosomiasis) in past year?",
+              "respondent": "Child/parent",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Deworming program effectiveness, parasitic disease control",
+              "sensitiveData": true,
+              "sensitivityReason": "Health history",
+              "complianceNote": "Aggregate for deworming program evaluation"
+            },
+            {
+              "id": "h6_010",
+              "fieldName": "malaria_dengue_past_year",
+              "question": "Had malaria/dengue fever in past year?",
+              "respondent": "Child/parent",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Vector-borne disease surveillance, treatment access",
+              "sensitiveData": true,
+              "sensitivityReason": "Health history",
+              "complianceNote": "Triggers vector control program if positive",
+              "properties": {
+                "hasHadDisease": "boolean",
+                "treatedWhere": "string"
+              }
+            },
+            {
+              "id": "h6_011",
+              "fieldName": "permanent_health_condition",
+              "question": "Has permanent health condition?",
+              "respondent": "Child/parent + health record",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Chronic disease registry, school health plan",
+              "sensitiveData": true,
+              "sensitivityReason": "Health diagnosis",
+              "complianceNote": "Triggers specialist referral and school accommodation plan",
+              "properties": {
+                "hasCondition": "boolean",
+                "conditionTypes": {
+                  "dataType": "array",
+                  "enum": ["Asthma", "Diabetes", "Sickle Cell", "Epilepsy", "Other"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "sectionId": "school_environment",
+          "sectionName": "School Health & Safety",
+          "questions": [
+            {
+              "id": "h6_012",
+              "fieldName": "illness_absences_past_term",
+              "question": "Any school absences due to illness in past term?",
+              "respondent": "Child/teacher",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Health-related school absence tracking, intervention need",
+              "sensitiveData": true,
+              "sensitivityReason": "Health impact",
+              "complianceNote": "Triggers investigation if excessive",
+              "properties": {
+                "hasAbsences": "boolean",
+                "numberOfDays": "integer"
+              }
+            },
+            {
+              "id": "h6_013",
+              "fieldName": "feels_safe_healthy_at_school",
+              "question": "Feels safe and healthy at school?",
+              "respondent": "Child",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "School health environment assessment, safety program",
+              "sensitiveData": true,
+              "sensitivityReason": "Health concern",
+              "complianceNote": "If no, triggers safety audit and counselor referral",
+              "properties": {
+                "feelsSafe": "boolean",
+                "reason": "string (if no)"
+              }
+            },
+            {
+              "id": "h6_014",
+              "fieldName": "water_sanitation_at_school",
+              "question": "Access to water and sanitation at school?",
+              "respondent": "Child + school observation",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "WASH (water, sanitation, hygiene) program effectiveness",
+              "sensitiveData": false
+            }
+          ]
+        },
+        {
+          "sectionId": "school_disability_screening",
+          "sectionName": "Vision & Hearing Screening",
+          "questions": [
+            {
+              "id": "h6_015",
+              "fieldName": "can_see_clearly",
+              "question": "Can see clearly (chalkboard from back of class)?",
+              "respondent": "Child + teacher observation",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Vision screening, eyeglass provision program",
+              "sensitiveData": true,
+              "sensitivityReason": "Disability screening",
+              "complianceNote": "If no, triggers eye care referral and eyeglass provision if needed"
+            },
+            {
+              "id": "h6_016",
+              "fieldName": "can_hear_clearly",
+              "question": "Can hear clearly in conversations/classroom?",
+              "respondent": "Child + teacher observation",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Hearing screening, audiology referral",
+              "sensitiveData": true,
+              "sensitivityReason": "Disability screening",
+              "complianceNote": "If no, triggers audiology referral"
+            }
+          ]
+        },
+        {
+          "sectionId": "school_health_awareness",
+          "sectionName": "Health Awareness & Hygiene",
+          "questions": [
+            {
+              "id": "h6_017",
+              "fieldName": "health_awareness",
+              "question": "Knows about handwashing / food hygiene / disease prevention?",
+              "respondent": "Child self-assessment",
+              "dataType": "enum",
+              "required": true,
+              "governmentServiceMapped": "Health literacy program reach, hygiene education",
+              "sensitiveData": false,
+              "validationRules": {
+                "enum": ["Yes", "Partial", "No"]
+              }
+            },
+            {
+              "id": "h6_018",
+              "fieldName": "knows_when_to_seek_health_services",
+              "question": "Aware of when to seek health services?",
+              "respondent": "Child self-assessment",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Health awareness, health-seeking behavior",
+              "sensitiveData": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ageRange": "12-18",
+      "label": "ADOLESCENT_HEALTH",
+      "focus": "Reproductive health, mental health, lifestyle, emerging chronic disease risk, sexual health, substance awareness",
+      "fieldOfficerRole": "Adolescent health counselor, school health officer",
+      "respondent": "Adolescent (primary) with parent consent for sensitive topics",
+      "estimatedCollectionTime": "25-35 minutes per adolescent",
+      "sections": [
+        {
+          "sectionId": "adolescent_sexual_health",
+          "sectionName": "Immunization & Sexual Health (Age-Appropriate)",
+          "questions": [
+            {
+              "id": "h12_001",
+              "fieldName": "hpv_cervical_cancer_vaccine",
+              "question": "Received HPV/cervical cancer vaccine?",
+              "respondent": "Adolescent + health record",
+              "dataType": "boolean",
+              "required": false,
+              "governmentServiceMapped": "Cervical cancer prevention program targeting",
+              "sensitiveData": true,
+              "sensitivityReason": "Sexual health",
+              "complianceNote": "For females age 12+; requires parental consent"
+            },
+            {
+              "id": "h12_002",
+              "fieldName": "menstruation_started",
+              "question": "Menstruation started?",
+              "respondent": "Adolescent (if female)",
+              "dataType": "object",
+              "required": false,
+              "governmentServiceMapped": "Menstrual health program, reproductive health services",
+              "sensitiveData": true,
+              "sensitivityReason": "Sexual/reproductive health",
+              "complianceNote": "Confidential; triggers menstrual hygiene education if needed",
+              "properties": {
+                "hasStarted": "boolean",
+                "ageAtMenarche": "integer (years)"
+              }
+            },
+            {
+              "id": "h12_003",
+              "fieldName": "menstrual_cycle_regular",
+              "question": "Menstrual cycle regular?",
+              "respondent": "Adolescent (if applicable)",
+              "dataType": "boolean",
+              "required": false,
+              "governmentServiceMapped": "Reproductive health assessment, gynecology referral",
+              "sensitiveData": true,
+              "sensitivityReason": "Reproductive health",
+              "complianceNote": "If irregular, triggers gynecology referral"
+            }
+          ]
+        },
+        {
+          "sectionId": "adolescent_reproductive_health",
+          "sectionName": "Sexual & Reproductive Health",
+          "questions": [
+            {
+              "id": "h12_004",
+              "fieldName": "received_sex_education",
+              "question": "Ever received sex education/reproductive health information?",
+              "respondent": "Adolescent",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Sexual health education program reach",
+              "sensitiveData": false
+            },
+            {
+              "id": "h12_005",
+              "fieldName": "aware_contraception_safe_sex",
+              "question": "Aware of contraception and safe sex practices?",
+              "respondent": "Adolescent",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Reproductive health literacy",
+              "sensitiveData": false
+            },
+            {
+              "id": "h12_006",
+              "fieldName": "sexually_active",
+              "question": "Sexually active?",
+              "respondent": "Adolescent",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Reproductive health service eligibility, STI screening",
+              "sensitiveData": true,
+              "sensitivityReason": "Sexual health",
+              "complianceNote": "Confidential; triggers STI screening and contraception counseling if yes"
+            },
+            {
+              "id": "h12_007",
+              "fieldName": "contraception_use",
+              "question": "If sexually active: using contraception?",
+              "respondent": "Adolescent",
+              "dataType": "object",
+              "required": false,
+              "governmentServiceMapped": "Family planning/contraception access, unintended pregnancy prevention",
+              "sensitiveData": true,
+              "sensitivityReason": "Sexual health, contraception use",
+              "complianceNote": "If not using, triggers contraception counseling",
+              "properties": {
+                "isUsing": "boolean",
+                "method": "string"
+              }
+            },
+            {
+              "id": "h12_008",
+              "fieldName": "ever_pregnant_fathered",
+              "question": "Ever pregnant or fathered a child?",
+              "respondent": "Adolescent",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Adolescent pregnancy/parenthood program, social support",
+              "sensitiveData": true,
+              "sensitivityReason": "Reproductive health, child protection",
+              "complianceNote": "If yes, triggers immediate referral to antenatal/childcare services and social support",
+              "properties": {
+                "hasExperienced": "boolean",
+                "ageAtFirstPregnancy": "integer (years)"
+              }
+            },
+            {
+              "id": "h12_009",
+              "fieldName": "sti_history",
+              "question": "Any history of sexually transmitted infection (STI)?",
+              "respondent": "Adolescent",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "STI surveillance, treatment access, sexual health counseling",
+              "sensitiveData": true,
+              "sensitivityReason": "Sexual health history",
+              "complianceNote": "If yes, triggers STI screening/treatment and partner notification",
+              "properties": {
+                "hasHistory": "boolean",
+                "treated": "boolean"
+              }
+            }
+          ]
+        },
+        {
+          "sectionId": "adolescent_mental_health",
+          "sectionName": "Mental Health & Emotional Well-being",
+          "questions": [
+            {
+              "id": "h12_010",
+              "fieldName": "depression_anxiety_worry",
+              "question": "Feels sad, anxious, or worried most of the time?",
+              "respondent": "Adolescent",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Mental health screening, depression/anxiety intervention",
+              "sensitiveData": true,
+              "sensitivityReason": "Mental health",
+              "complianceNote": "If yes, triggers PHQ-9 screening and counselor referral",
+              "properties": {
+                "hasSymptoms": "boolean",
+                "frequency": "enum (rarely/sometimes/often)"
+              }
+            },
+            {
+              "id": "h12_011",
+              "fieldName": "self_harm_suicidal_thoughts",
+              "question": "Ever had thoughts of self-harm or suicide?",
+              "respondent": "Adolescent",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Suicide prevention program, crisis intervention",
+              "sensitiveData": true,
+              "sensitivityReason": "Mental health crisis",
+              "complianceNote": "If yes, immediate crisis assessment and 24/7 hotline referral"
+            },
+            {
+              "id": "h12_012",
+              "fieldName": "trauma_abuse_experience",
+              "question": "Experienced trauma or abuse?",
+              "respondent": "Adolescent",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Child protection services, trauma counseling referral",
+              "sensitiveData": true,
+              "sensitivityReason": "Child protection/trauma",
+              "complianceNote": "If yes, immediate referral to child protection authorities",
+              "properties": {
+                "hasExperienced": "boolean",
+                "reportedToAuthorities": "boolean"
+              }
+            },
+            {
+              "id": "h12_013",
+              "fieldName": "access_mental_health_support",
+              "question": "Has access to mental health counselor/support?",
+              "respondent": "Adolescent",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Mental health service availability assessment",
+              "sensitiveData": false
+            },
+            {
+              "id": "h12_014",
+              "fieldName": "feels_supported",
+              "question": "Feels supported by family/friends?",
+              "respondent": "Adolescent",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Psychosocial support environment",
+              "sensitiveData": false
+            }
+          ]
+        },
+        {
+          "sectionId": "adolescent_substance",
+          "sectionName": "Substance & Behavioral Health",
+          "questions": [
+            {
+              "id": "h12_015",
+              "fieldName": "tobacco_cigarette_use",
+              "question": "Ever used tobacco/cigarettes?",
+              "respondent": "Adolescent",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Tobacco control program, youth smoking cessation",
+              "sensitiveData": true,
+              "sensitivityReason": "Substance use",
+              "complianceNote": "If yes, triggers smoking cessation counseling",
+              "properties": {
+                "hasUsed": "boolean",
+                "frequency": "enum (occasional/regular)"
+              }
+            },
+            {
+              "id": "h12_016",
+              "fieldName": "alcohol_use",
+              "question": "Ever used alcohol?",
+              "respondent": "Adolescent",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Alcohol harm reduction program, adolescent substance use intervention",
+              "sensitiveData": true,
+              "sensitivityReason": "Substance use",
+              "complianceNote": "If yes, triggers counseling and risk assessment",
+              "properties": {
+                "hasUsed": "boolean",
+                "frequency": "enum (occasional/regular)",
+                "ageWhenStarted": "integer (years)"
+              }
+            },
+            {
+              "id": "h12_017",
+              "fieldName": "drug_use",
+              "question": "Ever used drugs?",
+              "respondent": "Adolescent",
+              "dataType": "boolean",
+              "required": true,
+              "governmentServiceMapped": "Substance abuse prevention/treatment, addiction referral",
+              "sensitiveData": true,
+              "sensitivityReason": "Substance use/addiction",
+              "complianceNote": "If yes, immediate referral to substance abuse treatment program"
+            },
+            {
+              "id": "h12_018",
+              "fieldName": "screen_time_internet_usage",
+              "question": "Screen time/internet usage hours per day?",
+              "respondent": "Adolescent",
+              "dataType": "number",
+              "required": true,
+              "governmentServiceMapped": "Digital wellness program, internet safety awareness",
+              "sensitiveData": false
+            }
+          ]
+        },
+        {
+          "sectionId": "adolescent_chronic_disease",
+          "sectionName": "Chronic Disease Risk & Lifestyle",
+          "questions": [
+            {
+              "id": "h12_019",
+              "fieldName": "current_height_weight",
+              "question": "Height and weight",
+              "respondent": "Field officer",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Overweight/obesity screening, lifestyle intervention",
+              "sensitiveData": true,
+              "sensitivityReason": "Health indicator",
+              "complianceNote": "If BMI >25, triggers nutrition counseling",
+              "properties": {
+                "heightCm": "number",
+                "weightKg": "number"
+              }
+            },
+            {
+              "id": "h12_020",
+              "fieldName": "family_history_chronic_disease",
+              "question": "Any family history of chronic disease?",
+              "respondent": "Adolescent",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Genetic risk stratification, preventive health counseling",
+              "sensitiveData": true,
+              "sensitivityReason": "Family health history",
+              "complianceNote": "Triggers preventive screening and lifestyle counseling",
+              "properties": {
+                "hasHistory": "boolean",
+                "diseaseTypes": {
+                  "dataType": "array",
+                  "enum": ["Diabetes", "Hypertension", "Cancer", "Heart Disease", "Other"]
+                }
+              }
+            },
+            {
+              "id": "h12_021",
+              "fieldName": "physical_activity_hours",
+              "question": "Physical activity: how many hours of exercise per week?",
+              "respondent": "Adolescent",
+              "dataType": "number",
+              "required": true,
+              "governmentServiceMapped": "Fitness/active lifestyle program design",
+              "sensitiveData": false
+            },
+            {
+              "id": "h12_022",
+              "fieldName": "dietary_habits",
+              "question": "Dietary habits",
+              "respondent": "Adolescent",
+              "dataType": "enum",
+              "required": true,
+              "governmentServiceMapped": "Nutrition counseling, lifestyle intervention",
+              "sensitiveData": false,
+              "validationRules": {
+                "enum": ["Mostly Healthy", "Mixed", "Mostly Unhealthy"]
+              }
+            }
+          ]
+        },
+        {
+          "sectionId": "adolescent_disability",
+          "sectionName": "Disability & Chronic Conditions",
+          "questions": [
+            {
+              "id": "h12_023",
+              "fieldName": "chronic_health_condition",
+              "question": "Any chronic health condition?",
+              "respondent": "Adolescent + health record",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Chronic disease management program, specialist care",
+              "sensitiveData": true,
+              "sensitivityReason": "Health diagnosis",
+              "complianceNote": "Triggers specialist referral and school accommodation plan",
+              "properties": {
+                "hasCondition": "boolean",
+                "conditionTypes": {
+                  "dataType": "array",
+                  "enum": ["Sickle Cell", "Asthma", "Diabetes", "Epilepsy", "Other"]
+                }
+              }
+            },
+            {
+              "id": "h12_024",
+              "fieldName": "disability",
+              "question": "Any disability?",
+              "respondent": "Adolescent + observation",
+              "dataType": "object",
+              "required": true,
+              "governmentServiceMapped": "Disability inclusion program, assistive device provision",
+              "sensitiveData": true,
+              "sensitivityReason": "Disability status",
+              "complianceNote": "Triggers assistive device assessment and school accommodation",
+              "properties": {
+                "hasDisability": "boolean",
+                "type": "enum (physical/sensory/cognitive)",
+                "supportNeeded": "string"
+              }
+            },
+            {
+              "id": "h12_025",
+              "fieldName": "disability_support_at_school",
+              "question": "If disabled, receiving appropriate support at school/home?",
+              "respondent": "Adolescent",
+              "dataType": "boolean",
+              "required": false,
+              "governmentServiceMapped": "Disability accommodation effectiveness",
+              "sensitiveData": true,
+              "sensitivityReason": "Disability/support",
+              "complianceNote": "If no, triggers intervention to improve accommodation"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "complianceGuide": {
+    "NDPR": "Nigerian Data Protection Regulation",
+    "sensitiveDataHandling": {
+      "consentRequired": true,
+      "minimalRetention": "12 months maximum for sensitive fields (health diagnosis, mental health, substance use, reproductive health, abuse history)",
+      "restrictedAccess": "Only assigned health officers + health facility staff; never shared with education, HR, or other domains without explicit consent",
+      "purposeUse": "Data used only for health interventions and service delivery; no surveillance, profiling, or commercial use",
+      "studentBriefing": "Transparently explain why data is collected (e.g., 'helps us match you with mental health support if you need it')"
+    },
+    "mandatoryReporting": {
+      "childAbuse": "Immediate referral to Federal Ministry of Women Affairs & Community Development (FMWAC)",
+      "trafficking": "Immediate referral to FMWAC + police",
+      "childLabor": "Referral to labor inspection + social services",
+      "suicidalIdeation": "Immediate crisis assessment + 24/7 hotline",
+      "domesticViolence": "Referral to victim support services + legal authorities",
+      "maternalComplications": "Urgent obstetric referral"
+    }
+  },
+  "interventionTriggers": {
+    "malnutrition": {
+      "trigger": "h0_014.anySignPresent = true OR (h0_013.weightKg < -2 SD for age)",
+      "service": "Emergency nutrition support, caregiver education, growth monitoring"
+    },
+    "lowBirthWeight": {
+      "trigger": "h0_012.weightKg < 2.5",
+      "service": "Early intervention program, developmental monitoring, specialist referral if needed"
+    },
+    "vaccineGap": {
+      "trigger": "h0_007.isUptodate = false OR h6_003 = false",
+      "service": "Catch-up immunization program, defaulter tracking"
+    },
+    "developmentalDelay": {
+      "trigger": "h0_025.isMet = false OR h0_026.hasConcerns = true",
+      "service": "Early childhood development assessment, specialist referral"
+    },
+    "depressionAnxiety": {
+      "trigger": "h12_010.hasSymptoms = true",
+      "service": "PHQ-9 screening, mental health counseling, NMHP program enrollment"
+    },
+    "suicidalCrisis": {
+      "trigger": "h12_011 = true",
+      "service": "Immediate crisis assessment, 24/7 hotline, hospitalization if needed"
+    },
+    "adolescentPregnancy": {
+      "trigger": "h12_008.hasExperienced = true",
+      "service": "Antenatal care enrollment, social support, schooling continuation support, child protection assessment"
+    },
+    "childLabor": {
+      "trigger": "socioeconomic context + working hours excessive",
+      "service": "Labor inspection, income support for family, education continuation support"
+    },
+    "chronicDisease": {
+      "trigger": "h12_023.hasCondition = true OR h6_011.hasCondition = true",
+      "service": "Chronic disease registry, specialist referral, disease management program"
+    },
+    "disabilityScreening": {
+      "trigger": "h6_015 = false OR h6_016 = false OR h12_024.hasDisability = true",
+      "service": "Assistive device provision, specialist referral, school accommodation plan"
+    }
+  }
+}

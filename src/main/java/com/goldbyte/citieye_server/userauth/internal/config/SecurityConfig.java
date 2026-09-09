@@ -46,12 +46,18 @@ public class SecurityConfig {
                     @Override
                     public @Nullable CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration configuration = new CorsConfiguration();
-                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000",
-                                "https://citieyecommunitygovernance.vercel.app"));
-                        configuration.setAllowedMethods(Collections.singletonList("*"));
+                        configuration.setAllowedOriginPatterns(Arrays.asList(
+                                "http://localhost:*",
+                                "http://127.0.0.1:*",
+                                "http://10.0.2.2:*",
+                                "https://*.vercel.app",
+                                "https://*.citieye.gov.ng",
+                                "*"
+                        ));
+                        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
-                        configuration.setExposedHeaders(List.of("Authorization"));
+                        configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
                         configuration.setMaxAge(86400L);
                         return configuration;
                     }

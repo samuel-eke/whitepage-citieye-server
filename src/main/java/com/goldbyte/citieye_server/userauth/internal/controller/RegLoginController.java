@@ -260,8 +260,14 @@ public class RegLoginController {
         }
     }
 
-    @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+        return refreshToken(request, null);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(
+            HttpServletRequest request,
+            @RequestBody(required = false) Map<String, String> body) {
         String refreshTokenStr = null;
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
@@ -273,7 +279,15 @@ public class RegLoginController {
         }
 
         if (refreshTokenStr == null || refreshTokenStr.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Refresh Token Cookie is missing"));
+            if (body != null && body.containsKey("refreshToken")) {
+                refreshTokenStr = body.get("refreshToken");
+            } else if (request.getHeader("X-Refresh-Token") != null) {
+                refreshTokenStr = request.getHeader("X-Refresh-Token");
+            }
+        }
+
+        if (refreshTokenStr == null || refreshTokenStr.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Refresh Token Cookie or Body is missing"));
         }
 
         final String tokenVal = refreshTokenStr;
