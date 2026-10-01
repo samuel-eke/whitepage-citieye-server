@@ -1,0 +1,5247 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "API Documentation",
+    "version" : "1.0"
+  },
+  "paths" : {
+    "/api/admin/content/new" : {
+      "post" : {
+        "summary" : "createContent",
+        "description" : "createContent",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "author", "cmsContent", "contentCategory", "datePublished", "title" ],
+                "type" : "object",
+                "properties" : {
+                  "id" : {
+                    "type" : "object",
+                    "properties" : {
+                      "mostSigBits" : {
+                        "type" : "integer",
+                        "description" : "",
+                        "format" : "int64"
+                      },
+                      "leastSigBits" : {
+                        "type" : "integer",
+                        "description" : "",
+                        "format" : "int64"
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "title" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "cmsContent" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "author" : {
+                    "maxLength" : 100,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "contentCategory" : {
+                    "maxLength" : 100,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "datePublished" : {
+                    "type" : "object",
+                    "properties" : {
+                      "dateTime" : {
+                        "type" : "string",
+                        "description" : "The local date-time."
+                      },
+                      "offset" : {
+                        "type" : "object",
+                        "properties" : {
+                          "totalSeconds" : {
+                            "type" : "integer",
+                            "description" : "The total offset in seconds."
+                          }
+                        },
+                        "description" : "The offset from UTC/Greenwich."
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "pictureUrl" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "targetCohortId" : {
+                    "type" : "integer",
+                    "description" : ""
+                  },
+                  "targetStateResidence" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "targetStateOrigin" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "required" : [ "author", "cmsContent", "contentCategory", "datePublished", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "id" : {
+                      "type" : "object",
+                      "properties" : {
+                        "mostSigBits" : {
+                          "type" : "integer",
+                          "description" : "",
+                          "format" : "int64"
+                        },
+                        "leastSigBits" : {
+                          "type" : "integer",
+                          "description" : "",
+                          "format" : "int64"
+                        }
+                      },
+                      "description" : ""
+                    },
+                    "title" : {
+                      "maxLength" : 255,
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "cmsContent" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "author" : {
+                      "maxLength" : 100,
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "contentCategory" : {
+                      "maxLength" : 100,
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "datePublished" : {
+                      "type" : "object",
+                      "properties" : {
+                        "dateTime" : {
+                          "type" : "string",
+                          "description" : "The local date-time."
+                        },
+                        "offset" : {
+                          "type" : "object",
+                          "properties" : {
+                            "totalSeconds" : {
+                              "type" : "integer",
+                              "description" : "The total offset in seconds."
+                            }
+                          },
+                          "description" : "The offset from UTC/Greenwich."
+                        }
+                      },
+                      "description" : ""
+                    },
+                    "pictureUrl" : {
+                      "maxLength" : 255,
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "targetCohortId" : {
+                      "type" : "integer",
+                      "description" : ""
+                    },
+                    "targetStateResidence" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "targetStateOrigin" : {
+                      "type" : "string",
+                      "description" : ""
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/content" : {
+      "get" : {
+        "summary" : "getAllPosts",
+        "description" : "getAllPosts",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "required" : [ "author", "cmsContent", "contentCategory", "datePublished", "title" ],
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "object",
+                        "properties" : {
+                          "mostSigBits" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "leastSigBits" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          }
+                        },
+                        "description" : ""
+                      },
+                      "title" : {
+                        "maxLength" : 255,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "cmsContent" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "author" : {
+                        "maxLength" : 100,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "contentCategory" : {
+                        "maxLength" : 100,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "datePublished" : {
+                        "type" : "object",
+                        "properties" : {
+                          "dateTime" : {
+                            "type" : "string",
+                            "description" : "The local date-time."
+                          },
+                          "offset" : {
+                            "type" : "object",
+                            "properties" : {
+                              "totalSeconds" : {
+                                "type" : "integer",
+                                "description" : "The total offset in seconds."
+                              }
+                            },
+                            "description" : "The offset from UTC/Greenwich."
+                          }
+                        },
+                        "description" : ""
+                      },
+                      "pictureUrl" : {
+                        "maxLength" : 255,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "targetCohortId" : {
+                        "type" : "integer",
+                        "description" : ""
+                      },
+                      "targetStateResidence" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "targetStateOrigin" : {
+                        "type" : "string",
+                        "description" : ""
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/content/opportunities/new" : {
+      "post" : {
+        "summary" : "createOpportunity",
+        "description" : "createOpportunity",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "actionLabel", "brief", "fullDescription", "opportunityType", "status", "title" ],
+                "type" : "object",
+                "properties" : {
+                  "id" : {
+                    "type" : "object",
+                    "properties" : {
+                      "mostSigBits" : {
+                        "type" : "integer",
+                        "description" : "",
+                        "format" : "int64"
+                      },
+                      "leastSigBits" : {
+                        "type" : "integer",
+                        "description" : "",
+                        "format" : "int64"
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "title" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "opportunityType" : {
+                    "maxLength" : 100,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "status" : {
+                    "maxLength" : 50,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "brief" : {
+                    "maxLength" : 500,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "fullDescription" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "requiredDocuments" : {
+                    "type" : "array",
+                    "description" : "",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  },
+                  "actionLabel" : {
+                    "maxLength" : 100,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "targetCohortId" : {
+                    "type" : "integer",
+                    "description" : ""
+                  },
+                  "targetStateResidence" : {
+                    "maxLength" : 100,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "targetStateOrigin" : {
+                    "maxLength" : 100,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "createdAt" : {
+                    "type" : "object",
+                    "properties" : {
+                      "dateTime" : {
+                        "type" : "string",
+                        "description" : "The local date-time."
+                      },
+                      "offset" : {
+                        "type" : "object",
+                        "properties" : {
+                          "totalSeconds" : {
+                            "type" : "integer",
+                            "description" : "The total offset in seconds."
+                          }
+                        },
+                        "description" : "The offset from UTC/Greenwich."
+                      }
+                    },
+                    "description" : "",
+                    "default" : "OffsetDateTime.now()"
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "required" : [ "actionLabel", "brief", "fullDescription", "opportunityType", "status", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "id" : {
+                      "type" : "object",
+                      "properties" : {
+                        "mostSigBits" : {
+                          "type" : "integer",
+                          "description" : "",
+                          "format" : "int64"
+                        },
+                        "leastSigBits" : {
+                          "type" : "integer",
+                          "description" : "",
+                          "format" : "int64"
+                        }
+                      },
+                      "description" : ""
+                    },
+                    "title" : {
+                      "maxLength" : 255,
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "opportunityType" : {
+                      "maxLength" : 100,
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "status" : {
+                      "maxLength" : 50,
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "brief" : {
+                      "maxLength" : 500,
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "fullDescription" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "requiredDocuments" : {
+                      "type" : "array",
+                      "description" : "",
+                      "items" : {
+                        "type" : "string"
+                      }
+                    },
+                    "actionLabel" : {
+                      "maxLength" : 100,
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "targetCohortId" : {
+                      "type" : "integer",
+                      "description" : ""
+                    },
+                    "targetStateResidence" : {
+                      "maxLength" : 100,
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "targetStateOrigin" : {
+                      "maxLength" : 100,
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "createdAt" : {
+                      "type" : "object",
+                      "properties" : {
+                        "dateTime" : {
+                          "type" : "string",
+                          "description" : "The local date-time."
+                        },
+                        "offset" : {
+                          "type" : "object",
+                          "properties" : {
+                            "totalSeconds" : {
+                              "type" : "integer",
+                              "description" : "The total offset in seconds."
+                            }
+                          },
+                          "description" : "The offset from UTC/Greenwich."
+                        }
+                      },
+                      "description" : "",
+                      "default" : "OffsetDateTime.now()"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/content/opportunities" : {
+      "get" : {
+        "summary" : "getAllOpportunities",
+        "description" : "getAllOpportunities",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "required" : [ "actionLabel", "brief", "fullDescription", "opportunityType", "status", "title" ],
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "object",
+                        "properties" : {
+                          "mostSigBits" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "leastSigBits" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          }
+                        },
+                        "description" : ""
+                      },
+                      "title" : {
+                        "maxLength" : 255,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "opportunityType" : {
+                        "maxLength" : 100,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "status" : {
+                        "maxLength" : 50,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "brief" : {
+                        "maxLength" : 500,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "fullDescription" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "requiredDocuments" : {
+                        "type" : "array",
+                        "description" : "",
+                        "items" : {
+                          "type" : "string"
+                        }
+                      },
+                      "actionLabel" : {
+                        "maxLength" : 100,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "targetCohortId" : {
+                        "type" : "integer",
+                        "description" : ""
+                      },
+                      "targetStateResidence" : {
+                        "maxLength" : 100,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "targetStateOrigin" : {
+                        "maxLength" : 100,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "createdAt" : {
+                        "type" : "object",
+                        "properties" : {
+                          "dateTime" : {
+                            "type" : "string",
+                            "description" : "The local date-time."
+                          },
+                          "offset" : {
+                            "type" : "object",
+                            "properties" : {
+                              "totalSeconds" : {
+                                "type" : "integer",
+                                "description" : "The total offset in seconds."
+                              }
+                            },
+                            "description" : "The offset from UTC/Greenwich."
+                          }
+                        },
+                        "description" : "",
+                        "default" : "OffsetDateTime.now()"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile/progressive-update" : {
+      "post" : {
+        "summary" : "Endpoint for updating dynamic progressive profiling forms filled by citizens.",
+        "description" : "Endpoint for updating dynamic progressive profiling forms filled by citizens.",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "key" : {
+                    "type" : "object",
+                    "properties" : { }
+                  }
+                },
+                "description" : "a map of progressive profile questions and user responses"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "HTTP status and confirmation message",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { },
+                  "description" : "HTTP status and confirmation message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile/vocational" : {
+      "get" : {
+        "summary" : "GET /api/profile/vocational",
+        "description" : "GET /api/profile/vocational",
+        "parameters" : [ {
+          "name" : "citizenCode",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "summary" : "PUT /api/profile/vocational",
+        "description" : "PUT /api/profile/vocational",
+        "parameters" : [ {
+          "name" : "citizenCode",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "tradeSpecialization" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "acquiredSkills" : {
+                    "type" : "object",
+                    "properties" : { },
+                    "description" : ""
+                  },
+                  "proficiencyLevel" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "careerTrajectories" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "plannedApprenticeships" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "vocationalDevelopmentGoals" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "certifications" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "POST /api/profile/vocational",
+        "description" : "POST /api/profile/vocational",
+        "parameters" : [ {
+          "name" : "citizenCode",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "tradeSpecialization" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "acquiredSkills" : {
+                    "type" : "object",
+                    "properties" : { },
+                    "description" : ""
+                  },
+                  "proficiencyLevel" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "careerTrajectories" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "plannedApprenticeships" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "vocationalDevelopmentGoals" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "certifications" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/citizen/dashboard" : {
+      "get" : {
+        "summary" : "getDashboardFeed",
+        "description" : "getDashboardFeed",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/citizen/opportunities" : {
+      "get" : {
+        "summary" : "getCitizenOpportunities",
+        "description" : "getCitizenOpportunities",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/citizen/opportunities/{id}/apply" : {
+      "post" : {
+        "summary" : "applyForOpportunity",
+        "description" : "applyForOpportunity",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/posts/stream" : {
+      "get" : {
+        "summary" : "streamPosts",
+        "description" : "streamPosts",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "timeout" : {
+                      "type" : "integer",
+                      "description" : "",
+                      "format" : "int64"
+                    },
+                    "handler" : {
+                      "type" : "object",
+                      "properties" : { },
+                      "description" : ""
+                    },
+                    "earlySendAttempts" : {
+                      "type" : "array",
+                      "description" : "Store send data before handler is initialized.",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "data" : {
+                            "type" : "object",
+                            "properties" : { },
+                            "description" : ""
+                          },
+                          "mediaType" : {
+                            "type" : "object",
+                            "properties" : {
+                              "type" : {
+                                "type" : "string",
+                                "description" : ""
+                              },
+                              "subtype" : {
+                                "type" : "string",
+                                "description" : ""
+                              },
+                              "parameters" : {
+                                "type" : "object",
+                                "properties" : {
+                                  "key" : {
+                                    "type" : "string"
+                                  }
+                                },
+                                "description" : ""
+                              },
+                              "toStringValue" : {
+                                "type" : "string",
+                                "description" : ""
+                              }
+                            },
+                            "description" : ""
+                          }
+                        },
+                        "description" : "org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter.DataWithMediaType"
+                      },
+                      "default" : "new LinkedHashSet<>(8)"
+                    },
+                    "complete" : {
+                      "type" : "boolean",
+                      "description" : "Store successful completion before the handler is initialized."
+                    },
+                    "failure" : {
+                      "type" : "object",
+                      "properties" : {
+                        "detailMessage" : {
+                          "type" : "string",
+                          "description" : "Specific details about the Throwable.  For example, for\n{@code FileNotFoundException}, this contains the name of\nthe file that could not be found."
+                        },
+                        "cause" : {
+                          "type" : "object",
+                          "properties" : {
+                            "detailMessage" : {
+                              "type" : "string",
+                              "description" : "Specific details about the Throwable.  For example, for\n{@code FileNotFoundException}, this contains the name of\nthe file that could not be found."
+                            },
+                            "cause" : {
+                              "type" : "object",
+                              "properties" : { },
+                              "description" : "The throwable that caused this throwable to get thrown, or null if this\nthrowable was not caused by another throwable, or if the causative\nthrowable is unknown.  If this field is equal to this throwable itself,\nit indicates that the cause of this throwable has not yet been\ninitialized.",
+                              "default" : "this"
+                            },
+                            "stackTrace" : {
+                              "type" : "array",
+                              "description" : "The stack trace, as returned by{@link #getStackTrace()}.\n\nThe field is initialized to a zero-length array.  A{@code\n    * null} value of this field indicates subsequent calls to{@link\n    * #setStackTrace(StackTraceElement[])} and{@link\n    * #fillInStackTrace()} will be no-ops.",
+                              "items" : {
+                                "type" : "object",
+                                "properties" : {
+                                  "classLoaderName" : {
+                                    "type" : "string",
+                                    "description" : "The name of the class loader."
+                                  },
+                                  "moduleName" : {
+                                    "type" : "string",
+                                    "description" : "The module name."
+                                  },
+                                  "moduleVersion" : {
+                                    "type" : "string",
+                                    "description" : "The module version."
+                                  },
+                                  "declaringClass" : {
+                                    "type" : "string",
+                                    "description" : "The declaring class."
+                                  },
+                                  "methodName" : {
+                                    "type" : "string",
+                                    "description" : "The method name."
+                                  },
+                                  "fileName" : {
+                                    "type" : "string",
+                                    "description" : "The source file name."
+                                  },
+                                  "lineNumber" : {
+                                    "type" : "integer",
+                                    "description" : "The source line number."
+                                  },
+                                  "format" : {
+                                    "maximum" : 128,
+                                    "minimum" : -127,
+                                    "type" : "integer",
+                                    "description" : "Control to show full or partial module, package, and class names.",
+                                    "default" : "0"
+                                  }
+                                }
+                              },
+                              "default" : "new StackTraceElement[0]"
+                            },
+                            "suppressedExceptions" : {
+                              "type" : "array",
+                              "description" : "The list of suppressed exceptions, as returned by{@link\n    * #getSuppressed()}.  The list is initialized to a zero-element\nunmodifiable sentinel list.  When a serialized Throwable is\nread in, if the{@code suppressedExceptions} field points to a\nzero-element list, the field is reset to the sentinel value.",
+                              "items" : {
+                                "type" : "object",
+                                "properties" : { },
+                                "description" : "java.lang.Throwable"
+                              },
+                              "default" : "Collections.emptyList()"
+                            }
+                          },
+                          "description" : "The throwable that caused this throwable to get thrown, or null if this\nthrowable was not caused by another throwable, or if the causative\nthrowable is unknown.  If this field is equal to this throwable itself,\nit indicates that the cause of this throwable has not yet been\ninitialized.",
+                          "default" : "this"
+                        },
+                        "stackTrace" : {
+                          "type" : "array",
+                          "description" : "The stack trace, as returned by{@link #getStackTrace()}.\n\nThe field is initialized to a zero-length array.  A{@code\n    * null} value of this field indicates subsequent calls to{@link\n    * #setStackTrace(StackTraceElement[])} and{@link\n    * #fillInStackTrace()} will be no-ops.",
+                          "items" : {
+                            "type" : "object",
+                            "properties" : {
+                              "classLoaderName" : {
+                                "type" : "string",
+                                "description" : "The name of the class loader."
+                              },
+                              "moduleName" : {
+                                "type" : "string",
+                                "description" : "The module name."
+                              },
+                              "moduleVersion" : {
+                                "type" : "string",
+                                "description" : "The module version."
+                              },
+                              "declaringClass" : {
+                                "type" : "string",
+                                "description" : "The declaring class."
+                              },
+                              "methodName" : {
+                                "type" : "string",
+                                "description" : "The method name."
+                              },
+                              "fileName" : {
+                                "type" : "string",
+                                "description" : "The source file name."
+                              },
+                              "lineNumber" : {
+                                "type" : "integer",
+                                "description" : "The source line number."
+                              },
+                              "format" : {
+                                "maximum" : 128,
+                                "minimum" : -127,
+                                "type" : "integer",
+                                "description" : "Control to show full or partial module, package, and class names.",
+                                "default" : "0"
+                              }
+                            }
+                          },
+                          "default" : "new StackTraceElement[0]"
+                        },
+                        "suppressedExceptions" : {
+                          "type" : "array",
+                          "description" : "The list of suppressed exceptions, as returned by{@link\n    * #getSuppressed()}.  The list is initialized to a zero-element\nunmodifiable sentinel list.  When a serialized Throwable is\nread in, if the{@code suppressedExceptions} field points to a\nzero-element list, the field is reset to the sentinel value.",
+                          "items" : {
+                            "type" : "object",
+                            "properties" : {
+                              "detailMessage" : {
+                                "type" : "string",
+                                "description" : "Specific details about the Throwable.  For example, for\n{@code FileNotFoundException}, this contains the name of\nthe file that could not be found."
+                              },
+                              "cause" : {
+                                "type" : "object",
+                                "properties" : { },
+                                "description" : "The throwable that caused this throwable to get thrown, or null if this\nthrowable was not caused by another throwable, or if the causative\nthrowable is unknown.  If this field is equal to this throwable itself,\nit indicates that the cause of this throwable has not yet been\ninitialized.",
+                                "default" : "this"
+                              },
+                              "stackTrace" : {
+                                "type" : "array",
+                                "description" : "The stack trace, as returned by{@link #getStackTrace()}.\n\nThe field is initialized to a zero-length array.  A{@code\n    * null} value of this field indicates subsequent calls to{@link\n    * #setStackTrace(StackTraceElement[])} and{@link\n    * #fillInStackTrace()} will be no-ops.",
+                                "items" : {
+                                  "type" : "object",
+                                  "properties" : {
+                                    "classLoaderName" : {
+                                      "type" : "string",
+                                      "description" : "The name of the class loader."
+                                    },
+                                    "moduleName" : {
+                                      "type" : "string",
+                                      "description" : "The module name."
+                                    },
+                                    "moduleVersion" : {
+                                      "type" : "string",
+                                      "description" : "The module version."
+                                    },
+                                    "declaringClass" : {
+                                      "type" : "string",
+                                      "description" : "The declaring class."
+                                    },
+                                    "methodName" : {
+                                      "type" : "string",
+                                      "description" : "The method name."
+                                    },
+                                    "fileName" : {
+                                      "type" : "string",
+                                      "description" : "The source file name."
+                                    },
+                                    "lineNumber" : {
+                                      "type" : "integer",
+                                      "description" : "The source line number."
+                                    },
+                                    "format" : {
+                                      "maximum" : 128,
+                                      "minimum" : -127,
+                                      "type" : "integer",
+                                      "description" : "Control to show full or partial module, package, and class names.",
+                                      "default" : "0"
+                                    }
+                                  }
+                                },
+                                "default" : "new StackTraceElement[0]"
+                              },
+                              "suppressedExceptions" : {
+                                "type" : "array",
+                                "description" : "The list of suppressed exceptions, as returned by{@link\n    * #getSuppressed()}.  The list is initialized to a zero-element\nunmodifiable sentinel list.  When a serialized Throwable is\nread in, if the{@code suppressedExceptions} field points to a\nzero-element list, the field is reset to the sentinel value.",
+                                "items" : {
+                                  "type" : "object",
+                                  "properties" : { },
+                                  "description" : "java.lang.Throwable"
+                                },
+                                "default" : "Collections.emptyList()"
+                              }
+                            },
+                            "description" : "java.lang.Throwable"
+                          },
+                          "default" : "Collections.emptyList()"
+                        }
+                      },
+                      "description" : "Store an error before the handler is initialized."
+                    },
+                    "timeoutCallback" : {
+                      "type" : "object",
+                      "properties" : {
+                        "delegates" : {
+                          "type" : "array",
+                          "description" : "",
+                          "items" : {
+                            "type" : "object",
+                            "properties" : { },
+                            "description" : "java.lang.Runnable"
+                          },
+                          "default" : "new ArrayList<>(1)"
+                        }
+                      },
+                      "description" : "",
+                      "default" : "new DefaultCallback()"
+                    },
+                    "errorCallback" : {
+                      "type" : "object",
+                      "properties" : { },
+                      "description" : "",
+                      "default" : "new ErrorCallback()"
+                    },
+                    "completionCallback" : {
+                      "type" : "object",
+                      "properties" : {
+                        "delegates" : {
+                          "type" : "array",
+                          "description" : "",
+                          "items" : {
+                            "type" : "object",
+                            "properties" : { },
+                            "description" : "java.lang.Runnable"
+                          },
+                          "default" : "new ArrayList<>(1)"
+                        }
+                      },
+                      "description" : "",
+                      "default" : "new DefaultCallback()"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/vapid-public-key" : {
+      "get" : {
+        "summary" : "getVapidPublicKey",
+        "description" : "getVapidPublicKey",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "key" : {
+                      "type" : "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/subscribe" : {
+      "post" : {
+        "summary" : "subscribe",
+        "description" : "subscribe",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "endpoint", "keys" ],
+                "type" : "object",
+                "properties" : {
+                  "endpoint" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "keys" : {
+                    "required" : [ "auth", "p256dh" ],
+                    "type" : "object",
+                    "properties" : {
+                      "p256dh" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "auth" : {
+                        "type" : "string",
+                        "description" : ""
+                      }
+                    },
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/citizens" : {
+      "get" : {
+        "summary" : "listAllCitizens",
+        "description" : "listAllCitizens",
+        "parameters" : [ {
+          "name" : "gender",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "cohortName",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "query",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "lga",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false,
+            "default" : "0"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false,
+            "default" : "20"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/citizens/{citizenCode}" : {
+      "get" : {
+        "summary" : "getCitizenDetail",
+        "description" : "getCitizenDetail",
+        "parameters" : [ {
+          "name" : "citizenCode",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/opportunities/applications" : {
+      "get" : {
+        "summary" : "getAssignedApplications",
+        "description" : "getAssignedApplications",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "object",
+                        "properties" : {
+                          "mostSigBits" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "leastSigBits" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          }
+                        },
+                        "description" : ""
+                      },
+                      "citizenCode" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "opportunityId" : {
+                        "type" : "object",
+                        "properties" : {
+                          "mostSigBits" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "leastSigBits" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          }
+                        },
+                        "description" : ""
+                      },
+                      "opportunityTitle" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "applicationStatus" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "assignedOfficerCode" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "officerNotes" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "submittedAt" : {
+                        "type" : "object",
+                        "properties" : {
+                          "dateTime" : {
+                            "type" : "string",
+                            "description" : "The local date-time."
+                          },
+                          "offset" : {
+                            "type" : "object",
+                            "properties" : {
+                              "totalSeconds" : {
+                                "type" : "integer",
+                                "description" : "The total offset in seconds."
+                              }
+                            },
+                            "description" : "The offset from UTC/Greenwich."
+                          }
+                        },
+                        "description" : ""
+                      },
+                      "updatedAt" : {
+                        "type" : "object",
+                        "properties" : {
+                          "dateTime" : {
+                            "type" : "string",
+                            "description" : "The local date-time."
+                          },
+                          "offset" : {
+                            "type" : "object",
+                            "properties" : {
+                              "totalSeconds" : {
+                                "type" : "integer",
+                                "description" : "The total offset in seconds."
+                              }
+                            },
+                            "description" : "The offset from UTC/Greenwich."
+                          }
+                        },
+                        "description" : ""
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/opportunities/applications/{id}" : {
+      "put" : {
+        "summary" : "updateApplication",
+        "description" : "updateApplication",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "key" : {
+                    "type" : "string"
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/education/questions" : {
+      "get" : {
+        "summary" : "getQuestions",
+        "description" : "getQuestions",
+        "parameters" : [ {
+          "name" : "type",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/education/records/{citizenCode}" : {
+      "get" : {
+        "summary" : "getEducationRecords",
+        "description" : "getEducationRecords",
+        "parameters" : [ {
+          "name" : "citizenCode",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/education/records" : {
+      "post" : {
+        "summary" : "logEducationRecord",
+        "description" : "logEducationRecord",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "academicYear", "citizenCode", "institutionName", "recordType" ],
+                "type" : "object",
+                "properties" : {
+                  "citizenCode" : {
+                    "maxLength" : 30,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "recordType" : {
+                    "maxLength" : 50,
+                    "type" : "string",
+                    "description" : "ENROLLMENT, EXAM_RESULT, ATTENDANCE"
+                  },
+                  "institutionName" : {
+                    "maxLength" : 150,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "academicYear" : {
+                    "maxLength" : 15,
+                    "type" : "string",
+                    "description" : "e.g. \"2025/2026\""
+                  },
+                  "classGrade" : {
+                    "maxLength" : 20,
+                    "type" : "string",
+                    "description" : "e.g. \"Primary 6\", \"SSS 3\""
+                  },
+                  "subjectGrades" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "string"
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "attendanceRate" : {
+                    "type" : "number",
+                    "description" : ""
+                  },
+                  "primaryClassGrade" : {
+                    "type" : "string",
+                    "description" : "--- Primary School Fields (Ages 6-11) ---"
+                  },
+                  "primaryAttendanceRateTier" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "primaryEnglishLiteracyPass" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primaryBasicNumeracyPass" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primaryMaterialsAccess" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primaryClassRepeating" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primaryEverDroppedOut" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primarySchoolFeedingRecipient" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primaryAbsentDueToHunger" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primaryCommuteDistance" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "primaryGuardianEducation" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "primaryGuardianHomeworkSupport" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "primarySiblingInSchoolCount" : {
+                    "type" : "integer",
+                    "description" : ""
+                  },
+                  "primarySubjectStrengths" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "primaryVocationalInterest" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secSchoolType" : {
+                    "type" : "string",
+                    "description" : "--- Secondary School Fields (Ages 12-18) ---"
+                  },
+                  "secEnrolled" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secAttendanceRateTier" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secSuspensionHistory" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secClassRepeating" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secExamsRegistered" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secExamTutoringAccess" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secPostSecondaryPlan" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secCareerInterests" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secGuardianEmployment" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secFeesPaidInFull" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secWorkingWhileInSchool" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secDailyChoresBurden" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secAttendanceBarriers" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secCounselorAccess" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secDropoutPressureReasons" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secExtracurricularActivities" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secDigitalLiteracyCheck" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secSpokenLanguages" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/education/records/{recordId}" : {
+      "put" : {
+        "summary" : "updateEducationRecord",
+        "description" : "updateEducationRecord",
+        "parameters" : [ {
+          "name" : "recordId",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "academicYear", "citizenCode", "institutionName", "recordType" ],
+                "type" : "object",
+                "properties" : {
+                  "citizenCode" : {
+                    "maxLength" : 30,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "recordType" : {
+                    "maxLength" : 50,
+                    "type" : "string",
+                    "description" : "ENROLLMENT, EXAM_RESULT, ATTENDANCE"
+                  },
+                  "institutionName" : {
+                    "maxLength" : 150,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "academicYear" : {
+                    "maxLength" : 15,
+                    "type" : "string",
+                    "description" : "e.g. \"2025/2026\""
+                  },
+                  "classGrade" : {
+                    "maxLength" : 20,
+                    "type" : "string",
+                    "description" : "e.g. \"Primary 6\", \"SSS 3\""
+                  },
+                  "subjectGrades" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "string"
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "attendanceRate" : {
+                    "type" : "number",
+                    "description" : ""
+                  },
+                  "primaryClassGrade" : {
+                    "type" : "string",
+                    "description" : "--- Primary School Fields (Ages 6-11) ---"
+                  },
+                  "primaryAttendanceRateTier" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "primaryEnglishLiteracyPass" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primaryBasicNumeracyPass" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primaryMaterialsAccess" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primaryClassRepeating" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primaryEverDroppedOut" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primarySchoolFeedingRecipient" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primaryAbsentDueToHunger" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "primaryCommuteDistance" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "primaryGuardianEducation" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "primaryGuardianHomeworkSupport" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "primarySiblingInSchoolCount" : {
+                    "type" : "integer",
+                    "description" : ""
+                  },
+                  "primarySubjectStrengths" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "primaryVocationalInterest" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secSchoolType" : {
+                    "type" : "string",
+                    "description" : "--- Secondary School Fields (Ages 12-18) ---"
+                  },
+                  "secEnrolled" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secAttendanceRateTier" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secSuspensionHistory" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secClassRepeating" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secExamsRegistered" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secExamTutoringAccess" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secPostSecondaryPlan" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secCareerInterests" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secGuardianEmployment" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secFeesPaidInFull" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secWorkingWhileInSchool" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secDailyChoresBurden" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secAttendanceBarriers" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secCounselorAccess" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secDropoutPressureReasons" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "secExtracurricularActivities" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secDigitalLiteracyCheck" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "secSpokenLanguages" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "deleteEducationRecord",
+        "description" : "deleteEducationRecord",
+        "parameters" : [ {
+          "name" : "recordId",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/education/student/academic-updates" : {
+      "get" : {
+        "summary" : "getMyAcademicUpdates",
+        "description" : "getMyAcademicUpdates",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "R1: Student Annual Academic Result Submission (Multipart with optional result card file)",
+        "description" : "R1: Student Annual Academic Result Submission (Multipart with optional result card file)",
+        "parameters" : [ {
+          "name" : "academicLevel",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "academicYear",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "citizenCode",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "classGrade",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "institutionName",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "subjectGrades",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "notes",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "file" : {
+                    "type" : "string",
+                    "description" : "",
+                    "format" : "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/education/student/academic-updates,/api/education/student/academic-updates/json" : {
+      "post" : {
+        "summary" : "R1: Student Annual Academic Result Submission (JSON payload with dynamic subject-grade mappings)",
+        "description" : "R1: Student Annual Academic Result Submission (JSON payload with dynamic subject-grade mappings)",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "academicLevel", "academicYear" ],
+                "type" : "object",
+                "properties" : {
+                  "citizenCode" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "academicLevel" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "academicYear" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "classGrade" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "institutionName" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "subjectGrades" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "string"
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "notes" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/education/academic-updates/{id}/status" : {
+      "patch" : {
+        "summary" : "R1: Administrative Result Status Transition Endpoint for officers/admins.",
+        "description" : "R1: Administrative Result Status Transition Endpoint for officers/admins.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "status" ],
+                "type" : "object",
+                "properties" : {
+                  "status" : {
+                    "type" : "string",
+                    "description" : "SUBMITTED, VERIFIED, ACTIVE, REJECTED"
+                  },
+                  "remarks" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/education/student/academic-progression/{citizenCode}" : {
+      "get" : {
+        "summary" : "R1: Query Student Academic Progression.",
+        "description" : "R1: Query Student Academic Progression.",
+        "parameters" : [ {
+          "name" : "citizenCode",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/education/student/academic-updates/{id}" : {
+      "get" : {
+        "summary" : "getAcademicUpdateById",
+        "description" : "getAcademicUpdateById",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/education/schools" : {
+      "get" : {
+        "summary" : "getSchools",
+        "description" : "getSchools",
+        "parameters" : [ {
+          "name" : "lga",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "required" : [ "createdAt", "lga", "name", "pupilCount" ],
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "integer",
+                        "description" : "",
+                        "format" : "int64"
+                      },
+                      "name" : {
+                        "maxLength" : 150,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "lga" : {
+                        "maxLength" : 100,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "state" : {
+                        "maxLength" : 50,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "pupilCount" : {
+                        "minimum" : 1,
+                        "type" : "integer",
+                        "description" : ""
+                      },
+                      "schoolType" : {
+                        "maxLength" : 50,
+                        "type" : "string",
+                        "description" : "PRIMARY, SECONDARY"
+                      },
+                      "address" : {
+                        "maxLength" : 255,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "createdAt" : {
+                        "type" : "object",
+                        "properties" : {
+                          "dateTime" : {
+                            "type" : "string",
+                            "description" : "The local date-time."
+                          },
+                          "offset" : {
+                            "type" : "object",
+                            "properties" : {
+                              "totalSeconds" : {
+                                "type" : "integer",
+                                "description" : "The total offset in seconds."
+                              }
+                            },
+                            "description" : "The offset from UTC/Greenwich."
+                          }
+                        },
+                        "description" : ""
+                      },
+                      "updatedAt" : {
+                        "type" : "object",
+                        "properties" : {
+                          "dateTime" : {
+                            "type" : "string",
+                            "description" : "The local date-time."
+                          },
+                          "offset" : {
+                            "type" : "object",
+                            "properties" : {
+                              "totalSeconds" : {
+                                "type" : "integer",
+                                "description" : "The total offset in seconds."
+                              }
+                            },
+                            "description" : "The offset from UTC/Greenwich."
+                          }
+                        },
+                        "description" : ""
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "createSchool",
+        "description" : "createSchool",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "lga", "name", "pupilCount" ],
+                "type" : "object",
+                "properties" : {
+                  "name" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "lga" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "state" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "pupilCount" : {
+                    "minimum" : 1,
+                    "type" : "integer",
+                    "description" : ""
+                  },
+                  "schoolType" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "address" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/education/schools/{id}" : {
+      "get" : {
+        "summary" : "getSchoolById",
+        "description" : "getSchoolById",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/education/students" : {
+      "get" : {
+        "summary" : "getStudentRecords",
+        "description" : "getStudentRecords",
+        "parameters" : [ {
+          "name" : "schoolId",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false
+          }
+        }, {
+          "name" : "lga",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "required" : [ "citizenCode", "createdAt", "lga", "schoolId" ],
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "integer",
+                        "description" : "",
+                        "format" : "int64"
+                      },
+                      "citizenCode" : {
+                        "maxLength" : 30,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "schoolId" : {
+                        "type" : "integer",
+                        "description" : "",
+                        "format" : "int64"
+                      },
+                      "schoolName" : {
+                        "maxLength" : 150,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "lga" : {
+                        "maxLength" : 100,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "studentName" : {
+                        "maxLength" : 100,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "stateOfOrigin" : {
+                        "maxLength" : 50,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "healthConditionsSpecialNeeds" : {
+                        "maxLength" : 500,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "attendanceRate" : {
+                        "maximum" : 100.00,
+                        "minimum" : 0.00,
+                        "type" : "number",
+                        "description" : ""
+                      },
+                      "familyGuardianBackground" : {
+                        "maxLength" : 500,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "academicYear" : {
+                        "maxLength" : 20,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "classGrade" : {
+                        "maxLength" : 30,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "officerCode" : {
+                        "maxLength" : 50,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "createdAt" : {
+                        "type" : "object",
+                        "properties" : {
+                          "dateTime" : {
+                            "type" : "string",
+                            "description" : "The local date-time."
+                          },
+                          "offset" : {
+                            "type" : "object",
+                            "properties" : {
+                              "totalSeconds" : {
+                                "type" : "integer",
+                                "description" : "The total offset in seconds."
+                              }
+                            },
+                            "description" : "The offset from UTC/Greenwich."
+                          }
+                        },
+                        "description" : ""
+                      },
+                      "updatedAt" : {
+                        "type" : "object",
+                        "properties" : {
+                          "dateTime" : {
+                            "type" : "string",
+                            "description" : "The local date-time."
+                          },
+                          "offset" : {
+                            "type" : "object",
+                            "properties" : {
+                              "totalSeconds" : {
+                                "type" : "integer",
+                                "description" : "The total offset in seconds."
+                              }
+                            },
+                            "description" : "The offset from UTC/Greenwich."
+                          }
+                        },
+                        "description" : ""
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "createStudentRecord",
+        "description" : "createStudentRecord",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "citizenCode", "lga", "schoolId" ],
+                "type" : "object",
+                "properties" : {
+                  "citizenCode" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "schoolId" : {
+                    "type" : "integer",
+                    "description" : "",
+                    "format" : "int64"
+                  },
+                  "schoolName" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "lga" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "studentName" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "stateOfOrigin" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "healthConditionsSpecialNeeds" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "attendanceRate" : {
+                    "maximum" : 100.00,
+                    "minimum" : 0.00,
+                    "type" : "number",
+                    "description" : ""
+                  },
+                  "familyGuardianBackground" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "academicYear" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "classGrade" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/education/students/{id}" : {
+      "get" : {
+        "summary" : "getStudentRecordById",
+        "description" : "getStudentRecordById",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "summary" : "updateStudentRecord",
+        "description" : "updateStudentRecord",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "studentName" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "stateOfOrigin" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "healthConditionsSpecialNeeds" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "attendanceRate" : {
+                    "maximum" : 100.00,
+                    "minimum" : 0.00,
+                    "type" : "number",
+                    "description" : ""
+                  },
+                  "familyGuardianBackground" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "academicYear" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "classGrade" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/education/assignments" : {
+      "post" : {
+        "summary" : "assignOfficerToSchool",
+        "description" : "assignOfficerToSchool",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "lga", "officerCode", "schoolId" ],
+                "type" : "object",
+                "properties" : {
+                  "officerCode" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "schoolId" : {
+                    "type" : "integer",
+                    "description" : "",
+                    "format" : "int64"
+                  },
+                  "schoolName" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "lga" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "state" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/education/assignments/my" : {
+      "get" : {
+        "summary" : "getMyAssignments",
+        "description" : "getMyAssignments",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "required" : [ "active", "assignedAt", "lga", "officerCode", "schoolId" ],
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "integer",
+                        "description" : "",
+                        "format" : "int64"
+                      },
+                      "officerCode" : {
+                        "maxLength" : 50,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "schoolId" : {
+                        "type" : "integer",
+                        "description" : "",
+                        "format" : "int64"
+                      },
+                      "schoolName" : {
+                        "maxLength" : 150,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "lga" : {
+                        "maxLength" : 100,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "state" : {
+                        "maxLength" : 50,
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "assignedAt" : {
+                        "type" : "object",
+                        "properties" : {
+                          "dateTime" : {
+                            "type" : "string",
+                            "description" : "The local date-time."
+                          },
+                          "offset" : {
+                            "type" : "object",
+                            "properties" : {
+                              "totalSeconds" : {
+                                "type" : "integer",
+                                "description" : "The total offset in seconds."
+                              }
+                            },
+                            "description" : "The offset from UTC/Greenwich."
+                          }
+                        },
+                        "description" : ""
+                      },
+                      "active" : {
+                        "type" : "boolean",
+                        "description" : "",
+                        "default" : "true"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/summary" : {
+      "get" : {
+        "summary" : "Returns the full analytics summary — totals, state/LGA breakdown, cohort breakdown,",
+        "description" : "Returns the full analytics summary — totals, state/LGA breakdown, cohort breakdown,",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/citizens" : {
+      "get" : {
+        "summary" : "Returns a paginated list of citizens.",
+        "description" : "Returns a paginated list of citizens.",
+        "parameters" : [ {
+          "name" : "stateOfOrigin",
+          "in" : "query",
+          "description" : "optional filter — exact match on state of origin (e.g. \"Lagos\")",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "lga",
+          "in" : "query",
+          "description" : "optional filter — partial match on LGA name",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "gender",
+          "in" : "query",
+          "description" : "optional filter — \"male\" or \"female\"",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "cohortName",
+          "in" : "query",
+          "description" : "optional filter — partial match on cohort name",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "zero-based page index (default 0)",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false,
+            "default" : "0"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "page size (default 20)",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false,
+            "default" : "20"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/citizens/{citizenCode}" : {
+      "get" : {
+        "summary" : "Returns the complete profile analytics detail for a single citizen,",
+        "description" : "Returns the complete profile analytics detail for a single citizen,",
+        "parameters" : [ {
+          "name" : "citizenCode",
+          "in" : "path",
+          "description" : "the citizen's unique code (e.g. CTI-LA-IKE-000042)",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/refresh" : {
+      "post" : {
+        "summary" : "Manually triggers a full refresh of all analytics materialized views.",
+        "description" : "Manually triggers a full refresh of all analytics materialized views.",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "key" : {
+                      "type" : "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/states-lgas" : {
+      "get" : {
+        "summary" : "getStatesAndLgas",
+        "description" : "getStatesAndLgas",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "key" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register/citizen" : {
+      "post" : {
+        "summary" : "reg",
+        "description" : "reg",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "dateOfBirth", "firstName", "lastName", "lga", "password", "residenceLga" ],
+                "type" : "object",
+                "properties" : {
+                  "firstName" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "middleName" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "lastName" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "email" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : "",
+                    "format" : "email"
+                  },
+                  "phoneNumber" : {
+                    "maxLength" : 20,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "password" : {
+                    "maxLength" : 100,
+                    "minLength" : 8,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "nin" : {
+                    "maxLength" : 11,
+                    "minLength" : 11,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "parentNin" : {
+                    "maxLength" : 11,
+                    "minLength" : 11,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "lga" : {
+                    "maxLength" : 100,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "residenceLga" : {
+                    "maxLength" : 100,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "gender" : {
+                    "maxLength" : 7,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "address" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "stateOfResidence" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "stateOfOrigin" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "dateOfBirth" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "id" : {
+                      "type" : "integer",
+                      "description" : "",
+                      "format" : "int64"
+                    },
+                    "email" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "phoneNumber" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "nin" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "firstName" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "middleName" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "lastName" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "gender" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "address" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "stateOfResidence" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "lga" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "residenceLga" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "citizenCode" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "userRole" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "cohortPlacement" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "age" : {
+                      "type" : "integer",
+                      "description" : ""
+                    },
+                    "message" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "data" : {
+                      "type" : "string",
+                      "description" : "this is for jwt and other tokens"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/citizen/login" : {
+      "post" : {
+        "summary" : "Authenticates a citizen using a flexible identifier (email, NIN, phone number, or citizen code)",
+        "description" : "Authenticates a citizen using a flexible identifier (email, NIN, phone number, or citizen code)",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "identifier", "password" ],
+                "type" : "object",
+                "properties" : {
+                  "identifier" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "password" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : "the login request containing the identifier and password"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "ResponseEntity with full citizen profile data",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { },
+                  "description" : "ResponseEntity with full citizen profile data"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/admin/login" : {
+      "post" : {
+        "summary" : "Authenticates an admin user (agency_admin or super_admin) using their",
+        "description" : "Authenticates an admin user (agency_admin or super_admin) using their",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "code", "password" ],
+                "type" : "object",
+                "properties" : {
+                  "code" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "password" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : "the login request containing the citizen code and password"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "ResponseEntity with admin profile data and a signed JWT token",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { },
+                  "description" : "ResponseEntity with admin profile data and a signed JWT token"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/refresh" : {
+      "post" : {
+        "summary" : "refreshToken",
+        "description" : "refreshToken",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "key" : {
+                    "type" : "string"
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout" : {
+      "post" : {
+        "summary" : "logout",
+        "description" : "logout",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register/officer" : {
+      "post" : {
+        "summary" : "registerOfficer",
+        "description" : "registerOfficer",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "address", "dateOfBirth", "email", "firstName", "gender", "lastName", "lga", "nin", "password", "phoneNumber", "residenceLga", "specialty", "stateOfOrigin", "stateOfResidence" ],
+                "type" : "object",
+                "properties" : {
+                  "firstName" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "middleName" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "lastName" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "email" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : "",
+                    "format" : "email"
+                  },
+                  "phoneNumber" : {
+                    "maxLength" : 20,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "password" : {
+                    "maxLength" : 100,
+                    "minLength" : 8,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "nin" : {
+                    "maxLength" : 11,
+                    "minLength" : 11,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "lga" : {
+                    "maxLength" : 100,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "residenceLga" : {
+                    "maxLength" : 100,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "gender" : {
+                    "maxLength" : 7,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "address" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "stateOfResidence" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "stateOfOrigin" : {
+                    "maxLength" : 255,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "dateOfBirth" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "specialty" : {
+                    "maxLength" : 50,
+                    "type" : "string",
+                    "description" : "medical, education, hr, corporate_affairs, pension etc."
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "id" : {
+                      "type" : "integer",
+                      "description" : "",
+                      "format" : "int64"
+                    },
+                    "email" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "phoneNumber" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "nin" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "firstName" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "middleName" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "lastName" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "gender" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "address" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "stateOfResidence" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "stateOfOrigin" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "lga" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "residenceLga" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "citizenCode" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "userRole" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "specialty" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "token" : {
+                      "type" : "string",
+                      "description" : "Access JWT token for immediate login upon registration"
+                    },
+                    "message" : {
+                      "type" : "string",
+                      "description" : ""
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/health/questions" : {
+      "get" : {
+        "summary" : "getQuestions",
+        "description" : "getQuestions",
+        "parameters" : [ {
+          "name" : "citizenCode",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/health/records/{citizenCode}" : {
+      "get" : {
+        "summary" : "getHealthRecords",
+        "description" : "getHealthRecords",
+        "parameters" : [ {
+          "name" : "citizenCode",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/health/records" : {
+      "post" : {
+        "summary" : "logHealthRecord",
+        "description" : "logHealthRecord",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "citizenCode", "description", "recordType" ],
+                "type" : "object",
+                "properties" : {
+                  "citizenCode" : {
+                    "maxLength" : 30,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "recordType" : {
+                    "maxLength" : 50,
+                    "type" : "string",
+                    "description" : "VACCINATION, SCREENING, NUTRITION"
+                  },
+                  "description" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "notes" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "earlyHasReceivedVaccines" : {
+                    "type" : "boolean",
+                    "description" : "--- Early Childhood Fields (Ages 0-5) ---"
+                  },
+                  "earlyBcgVaccinationCompleted" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyPolioVaccinationSeries" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyDptPentavalentSeries" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyMeaslesMmrVaccination" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyYellowFeverVaccination" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyAllVaccinesUptodate" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyVaccinationCardAvailable" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyExclusivelyBreastfed6months" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyCurrentlyBreastfeeding" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyReceivingSupplementaryFoods" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyBirthWeight" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyCurrentWeightHeight" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlySevereMalnutritionSigns" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyReceivesSupplementaryNutritionProgram" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyEverHospitalized" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyCurrentHealthCondition" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "earlyMalariaTreatment3months" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyDiarrhealDiseaseTreatment3months" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyCongenitalChronicCondition" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyMotherAgeAtBirth" : {
+                    "type" : "integer",
+                    "description" : ""
+                  },
+                  "earlyMotherReceivedAnc" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyDeliverySetting" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "earlyMotherReceivedPnc" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyDevelopmentalMilestonesMet" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyDevelopmentalConcerns" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolDptTdBooster" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : "--- School Age Fields (Ages 6-11) ---"
+                  },
+                  "schoolMeaslesYfBooster" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolVaccinationCardAvailable" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "schoolCurrentHeightWeight" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolMalnutritionSigns" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolReceivesSchoolMeals" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "schoolDietaryRestrictionsAllergies" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolCurrentSymptoms" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "schoolParasiticInfectionTreatment" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "schoolMalariaDenguePastYear" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolPermanentHealthCondition" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolIllnessAbsencesPastTerm" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolFeelsSafeHealthyAtSchool" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolWaterSanitationAtSchool" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "schoolCanSeeClearly" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "schoolCanHearClearly" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "schoolHealthAwareness" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "schoolKnowsWhenToSeekHealthServices" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentHpvCervicalCancerVaccine" : {
+                    "type" : "boolean",
+                    "description" : "--- Adolescent Fields (Ages 12-18) ---"
+                  },
+                  "adolescentMenstruationStarted" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentMenstrualCycleRegular" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentReceivedSexEducation" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentAwareContraceptionSafeSex" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentSexuallyActive" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentContraceptionUse" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentEverPregnantFathered" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentStiHistory" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentDepressionAnxietyWorry" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentSelfHarmSuicidalThoughts" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentTraumaAbuseExperience" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentAccessMentalHealthSupport" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentFeelsSupported" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentTobaccoCigaretteUse" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentAlcoholUse" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentDrugUse" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentScreenTimeInternetUsage" : {
+                    "type" : "number",
+                    "description" : ""
+                  },
+                  "adolescentCurrentHeightWeight" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentFamilyHistoryChronicDisease" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentPhysicalActivityHours" : {
+                    "type" : "number",
+                    "description" : ""
+                  },
+                  "adolescentDietaryHabits" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "adolescentChronicHealthCondition" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentDisability" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentDisabilitySupportAtSchool" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "commonBloodGroup" : {
+                    "type" : "string",
+                    "description" : "--- Common / All-Ages Fields ---"
+                  },
+                  "commonBloodGenotype" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "commonIsExpectantParent" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "commonIsPregnant" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "commonHistoryOfDiabetes" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "commonHereditaryDisease" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "commonNhisEnrolled" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "commonNhisSeniorPlanActive" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/field-officers/health/records/{recordId}" : {
+      "put" : {
+        "summary" : "updateHealthRecord",
+        "description" : "updateHealthRecord",
+        "parameters" : [ {
+          "name" : "recordId",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "citizenCode", "description", "recordType" ],
+                "type" : "object",
+                "properties" : {
+                  "citizenCode" : {
+                    "maxLength" : 30,
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "recordType" : {
+                    "maxLength" : 50,
+                    "type" : "string",
+                    "description" : "VACCINATION, SCREENING, NUTRITION"
+                  },
+                  "description" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "notes" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "earlyHasReceivedVaccines" : {
+                    "type" : "boolean",
+                    "description" : "--- Early Childhood Fields (Ages 0-5) ---"
+                  },
+                  "earlyBcgVaccinationCompleted" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyPolioVaccinationSeries" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyDptPentavalentSeries" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyMeaslesMmrVaccination" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyYellowFeverVaccination" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyAllVaccinesUptodate" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyVaccinationCardAvailable" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyExclusivelyBreastfed6months" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyCurrentlyBreastfeeding" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyReceivingSupplementaryFoods" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyBirthWeight" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyCurrentWeightHeight" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlySevereMalnutritionSigns" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyReceivesSupplementaryNutritionProgram" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyEverHospitalized" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyCurrentHealthCondition" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "earlyMalariaTreatment3months" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyDiarrhealDiseaseTreatment3months" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "earlyCongenitalChronicCondition" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyMotherAgeAtBirth" : {
+                    "type" : "integer",
+                    "description" : ""
+                  },
+                  "earlyMotherReceivedAnc" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyDeliverySetting" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "earlyMotherReceivedPnc" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyDevelopmentalMilestonesMet" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "earlyDevelopmentalConcerns" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolDptTdBooster" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : "--- School Age Fields (Ages 6-11) ---"
+                  },
+                  "schoolMeaslesYfBooster" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolVaccinationCardAvailable" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "schoolCurrentHeightWeight" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolMalnutritionSigns" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolReceivesSchoolMeals" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "schoolDietaryRestrictionsAllergies" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolCurrentSymptoms" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "schoolParasiticInfectionTreatment" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "schoolMalariaDenguePastYear" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolPermanentHealthCondition" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolIllnessAbsencesPastTerm" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolFeelsSafeHealthyAtSchool" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "schoolWaterSanitationAtSchool" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "schoolCanSeeClearly" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "schoolCanHearClearly" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "schoolHealthAwareness" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "schoolKnowsWhenToSeekHealthServices" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentHpvCervicalCancerVaccine" : {
+                    "type" : "boolean",
+                    "description" : "--- Adolescent Fields (Ages 12-18) ---"
+                  },
+                  "adolescentMenstruationStarted" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentMenstrualCycleRegular" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentReceivedSexEducation" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentAwareContraceptionSafeSex" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentSexuallyActive" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentContraceptionUse" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentEverPregnantFathered" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentStiHistory" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentDepressionAnxietyWorry" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentSelfHarmSuicidalThoughts" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentTraumaAbuseExperience" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentAccessMentalHealthSupport" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentFeelsSupported" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentTobaccoCigaretteUse" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentAlcoholUse" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentDrugUse" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "adolescentScreenTimeInternetUsage" : {
+                    "type" : "number",
+                    "description" : ""
+                  },
+                  "adolescentCurrentHeightWeight" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentFamilyHistoryChronicDisease" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentPhysicalActivityHours" : {
+                    "type" : "number",
+                    "description" : ""
+                  },
+                  "adolescentDietaryHabits" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "adolescentChronicHealthCondition" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentDisability" : {
+                    "type" : "object",
+                    "properties" : {
+                      "key" : {
+                        "type" : "object",
+                        "properties" : { }
+                      }
+                    },
+                    "description" : ""
+                  },
+                  "adolescentDisabilitySupportAtSchool" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "commonBloodGroup" : {
+                    "type" : "string",
+                    "description" : "--- Common / All-Ages Fields ---"
+                  },
+                  "commonBloodGenotype" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "commonIsExpectantParent" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "commonIsPregnant" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "commonHistoryOfDiabetes" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "commonHereditaryDisease" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "commonNhisEnrolled" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  },
+                  "commonNhisSeniorPlanActive" : {
+                    "type" : "boolean",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "deleteHealthRecord",
+        "description" : "deleteHealthRecord",
+        "parameters" : [ {
+          "name" : "recordId",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "java.util.UUID" : {
+        "type" : "object",
+        "properties" : {
+          "mostSigBits" : {
+            "type" : "integer",
+            "description" : "",
+            "format" : "int64"
+          },
+          "leastSigBits" : {
+            "type" : "integer",
+            "description" : "",
+            "format" : "int64"
+          }
+        },
+        "description" : ""
+      },
+      "java.time.ZoneOffset" : {
+        "type" : "object",
+        "properties" : {
+          "totalSeconds" : {
+            "type" : "integer",
+            "description" : "The total offset in seconds."
+          }
+        },
+        "description" : "The offset from UTC/Greenwich."
+      },
+      "java.time.OffsetDateTime" : {
+        "type" : "object",
+        "properties" : {
+          "dateTime" : {
+            "type" : "string",
+            "description" : "The local date-time."
+          },
+          "offset" : {
+            "type" : "object",
+            "properties" : {
+              "totalSeconds" : {
+                "type" : "integer",
+                "description" : "The total offset in seconds."
+              }
+            },
+            "description" : "The offset from UTC/Greenwich."
+          }
+        },
+        "description" : ""
+      },
+      "java.lang.Object" : {
+        "type" : "object",
+        "properties" : { },
+        "description" : ""
+      },
+      "org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter.Handler" : {
+        "type" : "object",
+        "properties" : { },
+        "description" : ""
+      },
+      "org.springframework.http.MediaType" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "subtype" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "parameters" : {
+            "type" : "object",
+            "properties" : {
+              "key" : {
+                "type" : "string"
+              }
+            },
+            "description" : ""
+          },
+          "toStringValue" : {
+            "type" : "string",
+            "description" : ""
+          }
+        },
+        "description" : ""
+      },
+      "org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter.DataWithMediaType" : {
+        "type" : "object",
+        "properties" : {
+          "data" : {
+            "type" : "object",
+            "properties" : { },
+            "description" : ""
+          },
+          "mediaType" : {
+            "type" : "object",
+            "properties" : {
+              "type" : {
+                "type" : "string",
+                "description" : ""
+              },
+              "subtype" : {
+                "type" : "string",
+                "description" : ""
+              },
+              "parameters" : {
+                "type" : "object",
+                "properties" : {
+                  "key" : {
+                    "type" : "string"
+                  }
+                },
+                "description" : ""
+              },
+              "toStringValue" : {
+                "type" : "string",
+                "description" : ""
+              }
+            },
+            "description" : ""
+          }
+        },
+        "description" : "org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter.DataWithMediaType"
+      },
+      "java.lang.Throwable" : {
+        "type" : "object",
+        "properties" : {
+          "detailMessage" : {
+            "type" : "string",
+            "description" : "Specific details about the Throwable.  For example, for\n{@code FileNotFoundException}, this contains the name of\nthe file that could not be found."
+          },
+          "cause" : {
+            "type" : "object",
+            "properties" : {
+              "detailMessage" : {
+                "type" : "string",
+                "description" : "Specific details about the Throwable.  For example, for\n{@code FileNotFoundException}, this contains the name of\nthe file that could not be found."
+              },
+              "cause" : {
+                "type" : "object",
+                "properties" : { },
+                "description" : "The throwable that caused this throwable to get thrown, or null if this\nthrowable was not caused by another throwable, or if the causative\nthrowable is unknown.  If this field is equal to this throwable itself,\nit indicates that the cause of this throwable has not yet been\ninitialized.",
+                "default" : "this"
+              },
+              "stackTrace" : {
+                "type" : "array",
+                "description" : "The stack trace, as returned by{@link #getStackTrace()}.\n\nThe field is initialized to a zero-length array.  A{@code\n    * null} value of this field indicates subsequent calls to{@link\n    * #setStackTrace(StackTraceElement[])} and{@link\n    * #fillInStackTrace()} will be no-ops.",
+                "items" : {
+                  "type" : "object",
+                  "properties" : {
+                    "classLoaderName" : {
+                      "type" : "string",
+                      "description" : "The name of the class loader."
+                    },
+                    "moduleName" : {
+                      "type" : "string",
+                      "description" : "The module name."
+                    },
+                    "moduleVersion" : {
+                      "type" : "string",
+                      "description" : "The module version."
+                    },
+                    "declaringClass" : {
+                      "type" : "string",
+                      "description" : "The declaring class."
+                    },
+                    "methodName" : {
+                      "type" : "string",
+                      "description" : "The method name."
+                    },
+                    "fileName" : {
+                      "type" : "string",
+                      "description" : "The source file name."
+                    },
+                    "lineNumber" : {
+                      "type" : "integer",
+                      "description" : "The source line number."
+                    },
+                    "format" : {
+                      "maximum" : 128,
+                      "minimum" : -127,
+                      "type" : "integer",
+                      "description" : "Control to show full or partial module, package, and class names.",
+                      "default" : "0"
+                    }
+                  }
+                },
+                "default" : "new StackTraceElement[0]"
+              },
+              "suppressedExceptions" : {
+                "type" : "array",
+                "description" : "The list of suppressed exceptions, as returned by{@link\n    * #getSuppressed()}.  The list is initialized to a zero-element\nunmodifiable sentinel list.  When a serialized Throwable is\nread in, if the{@code suppressedExceptions} field points to a\nzero-element list, the field is reset to the sentinel value.",
+                "items" : {
+                  "type" : "object",
+                  "properties" : { },
+                  "description" : "java.lang.Throwable"
+                },
+                "default" : "Collections.emptyList()"
+              }
+            },
+            "description" : "The throwable that caused this throwable to get thrown, or null if this\nthrowable was not caused by another throwable, or if the causative\nthrowable is unknown.  If this field is equal to this throwable itself,\nit indicates that the cause of this throwable has not yet been\ninitialized.",
+            "default" : "this"
+          },
+          "stackTrace" : {
+            "type" : "array",
+            "description" : "The stack trace, as returned by{@link #getStackTrace()}.\n\nThe field is initialized to a zero-length array.  A{@code\n    * null} value of this field indicates subsequent calls to{@link\n    * #setStackTrace(StackTraceElement[])} and{@link\n    * #fillInStackTrace()} will be no-ops.",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "classLoaderName" : {
+                  "type" : "string",
+                  "description" : "The name of the class loader."
+                },
+                "moduleName" : {
+                  "type" : "string",
+                  "description" : "The module name."
+                },
+                "moduleVersion" : {
+                  "type" : "string",
+                  "description" : "The module version."
+                },
+                "declaringClass" : {
+                  "type" : "string",
+                  "description" : "The declaring class."
+                },
+                "methodName" : {
+                  "type" : "string",
+                  "description" : "The method name."
+                },
+                "fileName" : {
+                  "type" : "string",
+                  "description" : "The source file name."
+                },
+                "lineNumber" : {
+                  "type" : "integer",
+                  "description" : "The source line number."
+                },
+                "format" : {
+                  "maximum" : 128,
+                  "minimum" : -127,
+                  "type" : "integer",
+                  "description" : "Control to show full or partial module, package, and class names.",
+                  "default" : "0"
+                }
+              }
+            },
+            "default" : "new StackTraceElement[0]"
+          },
+          "suppressedExceptions" : {
+            "type" : "array",
+            "description" : "The list of suppressed exceptions, as returned by{@link\n    * #getSuppressed()}.  The list is initialized to a zero-element\nunmodifiable sentinel list.  When a serialized Throwable is\nread in, if the{@code suppressedExceptions} field points to a\nzero-element list, the field is reset to the sentinel value.",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "detailMessage" : {
+                  "type" : "string",
+                  "description" : "Specific details about the Throwable.  For example, for\n{@code FileNotFoundException}, this contains the name of\nthe file that could not be found."
+                },
+                "cause" : {
+                  "type" : "object",
+                  "properties" : { },
+                  "description" : "The throwable that caused this throwable to get thrown, or null if this\nthrowable was not caused by another throwable, or if the causative\nthrowable is unknown.  If this field is equal to this throwable itself,\nit indicates that the cause of this throwable has not yet been\ninitialized.",
+                  "default" : "this"
+                },
+                "stackTrace" : {
+                  "type" : "array",
+                  "description" : "The stack trace, as returned by{@link #getStackTrace()}.\n\nThe field is initialized to a zero-length array.  A{@code\n    * null} value of this field indicates subsequent calls to{@link\n    * #setStackTrace(StackTraceElement[])} and{@link\n    * #fillInStackTrace()} will be no-ops.",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "classLoaderName" : {
+                        "type" : "string",
+                        "description" : "The name of the class loader."
+                      },
+                      "moduleName" : {
+                        "type" : "string",
+                        "description" : "The module name."
+                      },
+                      "moduleVersion" : {
+                        "type" : "string",
+                        "description" : "The module version."
+                      },
+                      "declaringClass" : {
+                        "type" : "string",
+                        "description" : "The declaring class."
+                      },
+                      "methodName" : {
+                        "type" : "string",
+                        "description" : "The method name."
+                      },
+                      "fileName" : {
+                        "type" : "string",
+                        "description" : "The source file name."
+                      },
+                      "lineNumber" : {
+                        "type" : "integer",
+                        "description" : "The source line number."
+                      },
+                      "format" : {
+                        "maximum" : 128,
+                        "minimum" : -127,
+                        "type" : "integer",
+                        "description" : "Control to show full or partial module, package, and class names.",
+                        "default" : "0"
+                      }
+                    }
+                  },
+                  "default" : "new StackTraceElement[0]"
+                },
+                "suppressedExceptions" : {
+                  "type" : "array",
+                  "description" : "The list of suppressed exceptions, as returned by{@link\n    * #getSuppressed()}.  The list is initialized to a zero-element\nunmodifiable sentinel list.  When a serialized Throwable is\nread in, if the{@code suppressedExceptions} field points to a\nzero-element list, the field is reset to the sentinel value.",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : { },
+                    "description" : "java.lang.Throwable"
+                  },
+                  "default" : "Collections.emptyList()"
+                }
+              },
+              "description" : "java.lang.Throwable"
+            },
+            "default" : "Collections.emptyList()"
+          }
+        },
+        "description" : "Store an error before the handler is initialized."
+      },
+      "java.lang.Runnable" : {
+        "type" : "object",
+        "properties" : { },
+        "description" : "java.lang.Runnable"
+      },
+      "org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter.DefaultCallback" : {
+        "type" : "object",
+        "properties" : {
+          "delegates" : {
+            "type" : "array",
+            "description" : "",
+            "items" : {
+              "type" : "object",
+              "properties" : { },
+              "description" : "java.lang.Runnable"
+            },
+            "default" : "new ArrayList<>(1)"
+          }
+        },
+        "description" : "",
+        "default" : "new DefaultCallback()"
+      },
+      "org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter.ErrorCallback" : {
+        "type" : "object",
+        "properties" : { },
+        "description" : "",
+        "default" : "new ErrorCallback()"
+      },
+      "com.goldbyte.citieye_server.notification.internal.dto.WebPushSubscriptionDto.KeysDto" : {
+        "required" : [ "auth", "p256dh" ],
+        "type" : "object",
+        "properties" : {
+          "p256dh" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "auth" : {
+            "type" : "string",
+            "description" : ""
+          }
+        },
+        "description" : ""
+      }
+    }
+  }
+}

@@ -70,6 +70,8 @@ public class SecurityConfig {
                                 "/api/auth/refresh",
                                 "/api/auth/logout",
                                 "/api/admin/content/**",
+                                "/api/admin/officers/**",
+                                "/api/education/**",
                                 "/api/field-officers/health/**",
                                 "/api/field-officers/education/**",
                                 "/api/field-officers/opportunities/**",
@@ -95,6 +97,8 @@ public class SecurityConfig {
                                 "/api/auth/logout")
                         .permitAll()
                         .requestMatchers("/api/admin/content", "/api/admin/content/**")
+                        .hasAnyRole("agency_admin", "super_admin")
+                        .requestMatchers("/api/admin/officers", "/api/admin/officers/**")
                         .hasAnyRole("agency_admin", "super_admin")
                         .requestMatchers("/api/field-officers/health/**")
                         .hasAnyRole("field_officer_health", "agency_admin", "super_admin")

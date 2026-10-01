@@ -169,7 +169,7 @@ public class ProfileUpdateService {
             try {
                 return EmploymentStatus.valueOf(stringValue.toLowerCase());
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException(String.format("Invalid employment status '%s'. Must be one of: employed, unemployed, business_owner", stringValue));
+                throw new IllegalArgumentException(String.format("Invalid employment status '%s'. Must be one of: employed, unemployed, business_owner, artisan", stringValue));
             }
         }
 

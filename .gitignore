@@ -35,3 +35,10 @@ build/
 ### Environment ###
 .env
 *.env
+
+*.gitignore
+.gitignore
+/audio/
+/docs/
+/.agents/
+*.md

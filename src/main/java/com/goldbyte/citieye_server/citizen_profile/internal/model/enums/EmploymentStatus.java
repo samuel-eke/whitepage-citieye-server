@@ -6,5 +6,6 @@ package com.goldbyte.citieye_server.citizen_profile.internal.model.enums;
 public enum EmploymentStatus {
     employed,
     unemployed,
-    business_owner
+    business_owner,
+    artisan
 }
