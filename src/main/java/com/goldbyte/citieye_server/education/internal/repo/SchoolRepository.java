@@ -10,9 +10,13 @@ import java.util.List;
 @Repository
 public interface SchoolRepository extends JpaRepository<School, Long> {
 
+    List<School> findAllByStateIgnoreCase(String state);
+
+    List<School> findAllByStateIgnoreCaseAndLgaIgnoreCase(String state, String lga);
+
     List<School> findAllByLgaIgnoreCase(String lga);
 
     List<School> findByIdIn(Collection<Long> ids);
 
-    boolean existsByNameIgnoreCaseAndLgaIgnoreCase(String name, String lga);
+    boolean existsBySchoolNameIgnoreCaseAndLgaIgnoreCase(String schoolName, String lga);
 }

@@ -2334,7 +2334,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "required" : [ "createdAt", "lga", "name", "pupilCount" ],
+                    "required" : [ "createdAt", "lga", "schoolName", "totalStudentCount" ],
                     "type" : "object",
                     "properties" : {
                       "id" : {
@@ -2342,8 +2342,8 @@
                         "description" : "",
                         "format" : "int64"
                       },
-                      "name" : {
-                        "maxLength" : 150,
+                      "schoolName" : {
+                        "maxLength" : 255,
                         "type" : "string",
                         "description" : ""
                       },
@@ -2357,7 +2357,7 @@
                         "type" : "string",
                         "description" : ""
                       },
-                      "pupilCount" : {
+                      "totalStudentCount" : {
                         "minimum" : 1,
                         "type" : "integer",
                         "description" : ""
@@ -2427,10 +2427,10 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "required" : [ "lga", "name", "pupilCount" ],
+                "required" : [ "lga", "schoolName", "totalStudentCount" ],
                 "type" : "object",
                 "properties" : {
-                  "name" : {
+                  "schoolName" : {
                     "type" : "string",
                     "description" : ""
                   },
@@ -2442,7 +2442,7 @@
                     "type" : "string",
                     "description" : ""
                   },
-                  "pupilCount" : {
+                  "totalStudentCount" : {
                     "minimum" : 1,
                     "type" : "integer",
                     "description" : ""

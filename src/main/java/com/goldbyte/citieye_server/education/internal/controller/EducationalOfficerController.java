@@ -4,6 +4,8 @@ import com.goldbyte.citieye_server.education.internal.model.OfficerSchoolAssignm
 import com.goldbyte.citieye_server.education.internal.model.School;
 import com.goldbyte.citieye_server.education.internal.model.StudentRecord;
 import com.goldbyte.citieye_server.education.internal.service.EducationalOfficerService;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -53,10 +55,10 @@ public class EducationalOfficerController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         School school = new School();
-        school.setName(request.getName().trim());
+        school.setSchoolName(request.getSchoolName() != null ? request.getSchoolName().trim() : request.getName().trim());
         school.setLga(request.getLga().trim());
         school.setState(request.getState());
-        school.setPupilCount(request.getPupilCount());
+        school.setTotalStudentCount(request.getTotalStudentCount() != null ? request.getTotalStudentCount() : request.getStudentCount());
         school.setSchoolType(request.getSchoolType());
         school.setAddress(request.getAddress());
 
@@ -191,19 +193,41 @@ public class EducationalOfficerController {
     @Setter
     public static class SchoolRequest {
         @NotBlank(message = "School name is required")
-        private String name;
+        @JsonProperty("schoolName")
+        @JsonAlias({"name"})
+        private String schoolName;
 
         @NotBlank(message = "LGA is required")
         private String lga;
 
         private String state;
 
-        @NotNull(message = "Pupil count is required")
-        @Positive(message = "Total pupil count must be greater than zero")
-        private Integer pupilCount;
+        @NotNull(message = "Total student count is required")
+        @Positive(message = "Total student count must be greater than zero")
+        @JsonProperty("totalStudentCount")
+        @JsonAlias({"studentCount", "pupilCount", "totalStudents"})
+        private Integer totalStudentCount;
 
         private String schoolType;
         private String address;
+
+        @JsonProperty("name")
+        public String getName() {
+            return schoolName;
+        }
+
+        public void setName(String name) {
+            this.schoolName = name;
+        }
+
+        @JsonProperty("studentCount")
+        public Integer getStudentCount() {
+            return totalStudentCount;
+        }
+
+        public void setStudentCount(Integer studentCount) {
+            this.totalStudentCount = studentCount;
+        }
     }
 
     @Getter

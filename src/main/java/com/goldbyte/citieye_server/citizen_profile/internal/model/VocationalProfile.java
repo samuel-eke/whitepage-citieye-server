@@ -3,7 +3,8 @@ package com.goldbyte.citieye_server.citizen_profile.internal.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -18,10 +19,10 @@ import java.util.List;
 @Table(name = "vocational_profiles", schema = "citizen_profile")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class VocationalProfile {
+
+    public VocationalProfile() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

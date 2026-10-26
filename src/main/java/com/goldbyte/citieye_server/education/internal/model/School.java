@@ -1,5 +1,7 @@
 package com.goldbyte.citieye_server.education.internal.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -11,7 +13,7 @@ import java.time.OffsetDateTime;
 
 /**
  * Entity representing a school institution logged by educational officers.
- * Holds school name, LGA, and total pupil count.
+ * Holds school name, LGA, state, and total student count.
  */
 @Getter
 @Setter
@@ -25,9 +27,11 @@ public class School {
     private Long id;
 
     @NotNull
-    @Size(max = 150)
-    @Column(name = "name", nullable = false, length = 150)
-    private String name;
+    @Size(max = 255)
+    @Column(name = "school_name", nullable = false, length = 255)
+    @JsonProperty("schoolName")
+    @JsonAlias({"name"})
+    private String schoolName;
 
     @NotNull
     @Size(max = 100)
@@ -39,9 +43,11 @@ public class School {
     private String state;
 
     @NotNull
-    @Positive(message = "Total pupil count must be greater than zero")
-    @Column(name = "pupil_count", nullable = false)
-    private Integer pupilCount;
+    @Positive(message = "Total student count must be greater than zero")
+    @Column(name = "total_student_count", nullable = false)
+    @JsonProperty("totalStudentCount")
+    @JsonAlias({"studentCount", "pupilCount", "totalStudents"})
+    private Integer totalStudentCount;
 
     @Size(max = 50)
     @Column(name = "school_type", length = 50)
@@ -57,4 +63,23 @@ public class School {
 
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
+
+    // Backward-compatibility accessors for existing callers and serialization
+    @JsonProperty("name")
+    public String getName() {
+        return schoolName;
+    }
+
+    public void setName(String name) {
+        this.schoolName = name;
+    }
+
+    @JsonProperty("studentCount")
+    public Integer getStudentCount() {
+        return totalStudentCount;
+    }
+
+    public void setStudentCount(Integer studentCount) {
+        this.totalStudentCount = studentCount;
+    }
 }

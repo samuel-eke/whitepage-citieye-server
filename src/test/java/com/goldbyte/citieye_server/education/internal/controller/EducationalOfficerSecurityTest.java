@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -54,7 +55,7 @@ public class EducationalOfficerSecurityTest {
         request.setName("Emotan Primary School");
         request.setLga("Oredo");
         request.setState("Edo");
-        request.setPupilCount(850);
+        request.setStudentCount(850);
         request.setSchoolType("PRIMARY");
         request.setAddress("12 Mission Road, Benin City");
 
@@ -62,7 +63,7 @@ public class EducationalOfficerSecurityTest {
         created.setId(1L);
         created.setName("Emotan Primary School");
         created.setLga("Oredo");
-        created.setPupilCount(850);
+        created.setStudentCount(850);
 
         when(educationalOfficerService.createSchool(any(School.class), eq(officerCode), any()))
                 .thenReturn(created);
@@ -73,8 +74,8 @@ public class EducationalOfficerSecurityTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Emotan Primary School"))
-                .andExpect(jsonPath("$.pupilCount").value(850));
+                .andExpect(jsonPath("$.schoolName").value("Emotan Primary School"))
+                .andExpect(jsonPath("$.totalStudentCount").value(850));
     }
 
     @Test
@@ -88,7 +89,7 @@ public class EducationalOfficerSecurityTest {
         request.setName("Ikpoba Primary School");
         request.setLga("Ikpoba-Okha"); // Different LGA than assigned Oredo
         request.setState("Edo");
-        request.setPupilCount(600);
+        request.setStudentCount(600);
 
         when(educationalOfficerService.createSchool(any(School.class), eq(officerCode), any()))
                 .thenThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied. Educational officers are isolated to their assigned jurisdiction."));
@@ -170,7 +171,7 @@ public class EducationalOfficerSecurityTest {
         String officerToken = jwtTokenService.generateToken(officerCode,
                 List.of("field_officer_education", "EDIT_EDUCATION_RECORD"));
 
-        when(educationalOfficerService.getStudentRecords(null, "Egor", officerCode, any()))
+        when(educationalOfficerService.getStudentRecords(isNull(), eq("Egor"), eq(officerCode), any()))
                 .thenReturn(List.of()); // Empty filtered list preserving strict data isolation
 
         mockMvc.perform(get("/api/field-officers/education/students?lga=Egor")
@@ -202,5 +203,38 @@ public class EducationalOfficerSecurityTest {
         mockMvc.perform(get("/api/field-officers/education/students")
                         .header(HttpHeaders.AUTHORIZATION, citizenToken))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("R3 State-Wide School Access: Educational Officer retrieves schools within their state")
+    void testFieldOfficer_retrieveSchools_success() throws Exception {
+        String officerCode = "CIT-OFR-ED-ORE-0001";
+        String officerToken = jwtTokenService.generateToken(officerCode,
+                List.of("field_officer_education", "EDIT_EDUCATION_RECORD"));
+
+        School school1 = new School();
+        school1.setId(1L);
+        school1.setSchoolName("Benin Central College");
+        school1.setLga("Oredo");
+        school1.setState("Edo");
+        school1.setTotalStudentCount(1200);
+
+        School school2 = new School();
+        school2.setId(2L);
+        school2.setSchoolName("Ekpoma Grammar School");
+        school2.setLga("Esan West");
+        school2.setState("Edo");
+        school2.setTotalStudentCount(900);
+
+        when(educationalOfficerService.getSchools(isNull(), eq(officerCode), any()))
+                .thenReturn(List.of(school1, school2));
+
+        mockMvc.perform(get("/api/field-officers/education/schools")
+                        .header(HttpHeaders.AUTHORIZATION, officerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].schoolName").value("Benin Central College"))
+                .andExpect(jsonPath("$[0].lga").value("Oredo"))
+                .andExpect(jsonPath("$[1].schoolName").value("Ekpoma Grammar School"))
+                .andExpect(jsonPath("$[1].lga").value("Esan West"));
     }
 }
